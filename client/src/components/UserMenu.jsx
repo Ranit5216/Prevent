@@ -8,6 +8,7 @@ import { logout } from '../store/userSlice'
 import toast from 'react-hot-toast'
 import AxiosToastError from '../utils/AxiosToastError'
 import { HiOutlineExternalLink } from "react-icons/hi";
+import isAdmin from '../utils/isAdmin'
 
 
 
@@ -46,19 +47,38 @@ const UserMenu = ({close}) => {
     return (
         <div>
             <div className='font-semibold flex items-center gap-2'>My Account</div>
-            <div className='text-sm'>{user.name || user.mobile}<Link onClick={handleClose} to={"/dashboard/profile"}>< HiOutlineExternalLink className=' hover:bg-amber-300' size={15}/></Link></div>
+            <div className='text-sm'>{user.name || user.mobile} <span className='font-medium text-red-500'>{user.role === "ADMIN" ? "(Admin)" : ""}</span> <Link onClick={handleClose} to={"/dashboard/profile"}>< HiOutlineExternalLink className=' hover:bg-amber-300' size={15}/></Link></div>
 
             <Divider/>
             <div className="text-sm grid gap-1">
+                {
+                    isAdmin(user.role) && (
+                        <Link onClick={handleClose}  to={"/dashboard/category"} className="px-2 hover:bg-orange-200 py-1">Category</Link>
+                    )
+                }
 
-                <Link onClick={handleClose}  to={"/dashboard/category"} className="px-2 hover:bg-orange-200 py-1">Category</Link>
+                {
+                    isAdmin(user.role) && (
+                        <Link onClick={handleClose}  to={"/dashboard/subcategory"} className="px-2 hover:bg-orange-200 py-1">Sub Category</Link>
 
-                <Link onClick={handleClose}  to={"/dashboard/subcategory"} className="px-2 hover:bg-orange-200 py-1">Sub Category</Link>
+                    )
+                }
 
-                <Link onClick={handleClose}  to={"/dashboard/upload-product"} className="px-2 hover:bg-orange-200 py-1">Upload Product</Link>
+                {
+                    isAdmin(user.role) && (
+                        <Link onClick={handleClose}  to={"/dashboard/upload-product"} className="px-2 hover:bg-orange-200 py-1">Upload Product</Link>
 
-                <Link onClick={handleClose}  to={"/dashboard/product"} className="px-2 hover:bg-orange-200 py-1">Product</Link>
+                    )
+                }
 
+                {
+                    isAdmin(user.role) && (
+                        <Link onClick={handleClose}  to={"/dashboard/product"} className="px-2 hover:bg-orange-200 py-1">Product</Link>
+
+                    )
+                }
+
+                
                 <Link onClick={handleClose}  to={"/dashboard/myorders"} className="px-2 hover:bg-orange-200 py-1">My Orders</Link>
 
                 <Link onClick={handleClose}  to={"/dashboard/address"} className="px-2 hover:bg-orange-200 py-1">Save Address</Link>
