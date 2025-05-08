@@ -8,7 +8,7 @@ const Home = () => {
   const categoryData = useSelector(state => state.product.allCategory)
 
   const handleRedirectProductListpage = (id,cat)=>{
-    console.log(id.cat)
+    console.log(id, cat)
     
     
   }
@@ -35,7 +35,7 @@ const Home = () => {
            loadingCategory ? (
             new Array(12).fill(null).map((c,index)=>{
               return(
-                <div className='bg-white rounded p-4 min-h-36 grid gap-2 shadow animate-pulse'>
+                <div key={index} className='bg-white rounded p-4 min-h-36 grid gap-2 shadow animate-pulse'>
                    <div className='bg-blue-100 min-h-24 rounded'></div>
                    <div className='bg-blue-100 h-8 rounded'></div>
                 </div>
@@ -45,7 +45,7 @@ const Home = () => {
            ) : (
             categoryData.map((cat,index)=>{
               return(
-              <div>
+              <div key={index}>
                 <div className='w-full h-35 bg-blue-100' onClick={()=>handleRedirectProductListpage(cat._id,cat.name)}>
                   <img
                     src={cat.image}
