@@ -8,7 +8,7 @@ const Home = () => {
   const categoryData = useSelector(state => state.product.allCategory)
 
   const handleRedirectProductListpage = (id,cat)=>{
-    console.log(id.cat)
+    console.log(id,cat)
     
     
   }
