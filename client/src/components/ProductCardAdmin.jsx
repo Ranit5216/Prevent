@@ -70,7 +70,7 @@ const ProductCardAdmin = ({ data, fetchProductData }) => {
                     <div className='flex items-center justify-between gap-4'>
                         <h3 className='font-semibold'>Permanent Delete</h3>
                         <button onClick={()=>setOpenDelete(false)}>
-                          <IoClose size={25}/>
+                          <IoClose className='cursor-pointer' size={25}/>
                         </button>
                     </div>
                     <p className='my-2'>Are you sure want to delete permanent ?</p>

@@ -90,7 +90,7 @@ const CategoryPage = () => {
                 categoryData.map((category,index)=>{
                     return(
                         <div>
-                            <div className=" p-1 m-10 w-30 h-36 rounded shadow-md" key={category._id}>
+                            <div className=" pb-8 m-10 w-30 h-36 rounded shadow-md" key={category._id}>
                                 <img
                                     src={category.image}
                                     className="w-full h-full"

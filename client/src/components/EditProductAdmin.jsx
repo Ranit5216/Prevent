@@ -155,7 +155,7 @@ const EditProductAdmin = ({ close ,data : propsData,fetchProductData}) => {
           <div className='p-2   bg-white shadow-md flex items-center justify-between'>
             <h2 className='font-semibold'>Upload Product</h2>
             <button onClick={close}>
-              <IoClose size={20}/>
+              <IoClose className='cursor-pointer' size={20}/>
             </button>
           </div>
           <div className='grid p-3'>
@@ -414,7 +414,7 @@ const EditProductAdmin = ({ close ,data : propsData,fetchProductData}) => {
               </div>
 
               <button
-                className='bg-primary-100 hover:bg-primary-200 py-2 rounded font-semibold'
+                className='bg-amber-200 hover:bg-amber-300 cursor-pointer py-2 rounded font-semibold'
               >
                 Update Product
               </button>

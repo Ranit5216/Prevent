@@ -2,13 +2,31 @@ import React from 'react'
 import banner from '../assets/Event Banner.png'
 import bannerMobile from '../assets/Mobile Event Banner.png'
 import { useSelector } from 'react-redux'
+import { valideURLConvert } from '../utils/valideURLConvert'
+import {useNavigate} from 'react-router-dom'
+import CategoryWiseProductDisplay from '../components/CategoryWiseProductDisplay'
+
 
 const Home = () => {
   const loadingCategory = useSelector(state => state.product.loadingCategory)
   const categoryData = useSelector(state => state.product.allCategory)
+  const subCategoryData = useSelector(state => state.product.allSubCategory)
+  const navigate = useNavigate()
+
 
   const handleRedirectProductListpage = (id,cat)=>{
     console.log(id,cat)
+    const subcategory = subCategoryData.find(sub =>{
+      const filterData = sub.category.some(c => {
+        return c._id == id
+      })
+
+      return filterData ? true : null
+    })
+
+    const url = `/${valideURLConvert(cat)}-${id}/${valideURLConvert(subcategory.name)}-${subcategory._id}`
+    navigate(url)
+    console.log(url)
     
     
   }
@@ -35,7 +53,7 @@ const Home = () => {
            loadingCategory ? (
             new Array(12).fill(null).map((c,index)=>{
               return(
-                <div key={index} className='bg-white rounded p-4 min-h-36 grid gap-2 shadow animate-pulse'>
+                <div key={index + "loading"} className='bg-white rounded p-4 min-h-36 grid gap-2 shadow animate-pulse'>
                    <div className='bg-blue-100 min-h-24 rounded'></div>
                    <div className='bg-blue-100 h-8 rounded'></div>
                 </div>
@@ -53,7 +71,7 @@ const Home = () => {
                   
                   />
                 </div>
-                <div className='w-full h-12 mt-1 bg-blue-100'>
+                <div className='w-full h-12 mt-1 bg-blue-100 text-ellipsis line-clamp-2'>
                   {cat.name}
                 </div>
               </div>
@@ -63,8 +81,25 @@ const Home = () => {
            )
           }
         </div>
-      </section>
+
+        {/***display category product */}
+      {
+        categoryData?.map((c,index)=>{
+          return(
+            <CategoryWiseProductDisplay 
+              key={c?._id+"CategorywiseProduct"} 
+              id={c?._id} 
+              name={c?.name}
+            />
+          )
+        })
+      }
+
+
+
+   </section>
   )
 }
+   
 
 export default Home
