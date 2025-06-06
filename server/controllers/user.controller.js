@@ -12,7 +12,7 @@ import jwt from 'jsonwebtoken'
 
 export async function registerUserController(request,response) {
     try {
-        const { name, email, password } = request.body
+        const { name, email, password, role } = request.body
 
         if(!name || !email || !password){
             return response.status(400).json({
@@ -38,7 +38,8 @@ export async function registerUserController(request,response) {
         const payload = {
             name, 
             email,
-            password : hashPassword
+            password : hashPassword,
+            role: role || "USER" // Use provided role or default to USER
         }
 
         const newUser = new UserModel(payload)

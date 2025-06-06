@@ -15,7 +15,13 @@ const SearchPage = () => {
   const [page,setPage] = useState(1)
   const [totalPage,setTotalPage] = useState(1)
   const params = useLocation()
-  const searchText = params?.search?.slice(3)
+  const searchText = params?.search?.slice(3) || ""
+
+  // Reset page when search text changes
+  useEffect(() => {
+    setPage(1)
+    setData([])
+  }, [searchText])
 
   const fetchData = async() => {
     try {
@@ -23,7 +29,7 @@ const SearchPage = () => {
         const response = await Axios({
             ...SummaryApi.searchProduct,
             data : {
-              search : searchText ,
+              search : searchText,
               page : page,
             }
         })
@@ -42,7 +48,6 @@ const SearchPage = () => {
               })
             }
             setTotalPage(responseData.totalPage)
-            console.log(responseData)
         }
     } catch (error) {
         AxiosToastError(error)
@@ -52,7 +57,9 @@ const SearchPage = () => {
   }
 
   useEffect(()=>{
-    fetchData()
+    if (searchText) {
+      fetchData()
+    }
   },[page,searchText])
 
   console.log("page",page)
@@ -70,8 +77,13 @@ const SearchPage = () => {
 
         <InfiniteScroll
               dataLength={data.length}
-              hasMore={true}
+              hasMore={totalPage > page}
               next={handleFetchMore}
+              loader={<div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 py-4 gap-4'>
+                {loadingArrayCard.map((_,index)=>(
+                  <CardLoading key={"loadingsearchpage"+index}/>
+                ))}
+              </div>}
         >
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 py-4 gap-4'>
               {
@@ -81,17 +93,6 @@ const SearchPage = () => {
                   )
                 })
               }
-
-            {/***loading data */}
-            {
-              loading && (
-                loadingArrayCard.map((_,index)=>{
-                  return(
-                    <CardLoading key={"loadingsearchpage"+index}/>
-                  )
-                })
-              )
-            }
         </div>
         </InfiniteScroll>
 

@@ -5,7 +5,7 @@ const orderSchema = new mongoose.Schema({
         type : mongoose.Schema.ObjectId,
         ref : 'User'
     },
-    oredrId : {
+    orderId : {
         type : String,
         required : [true, "Provide orderId"],
         unique : true
@@ -41,6 +41,11 @@ const orderSchema = new mongoose.Schema({
     invoice_receipt : {
         type : String,
         default : ""
+    },
+    order_status: {
+        type: String,
+        enum: ['PENDING', 'ACCEPTED', 'CANCELLED'],
+        default: 'PENDING'
     }
 },{
     timestamps : true

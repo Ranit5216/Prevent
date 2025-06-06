@@ -1,5 +1,3 @@
-// import { userDetails } from "../../../server/controllers/user.controller"
-
 export const baseURL = "http://localhost:8080"
 
 const SummaryApi = {
@@ -124,7 +122,46 @@ const SummaryApi = {
     updateCartItemQty : {
         url : '/api/cart/update-qty',
         method : 'put'
+    },
+    deleteCartItem : {
+        url : '/api/cart/delete-cart-item',
+        method : 'delete'
+    },
+    createAddress : {
+        url : '/api/address/create',
+        method : 'post'
+    },
+    getAddress : {
+        url : "/api/address/get",
+        method : 'get'
+    },
+    updateAddress : {
+        url : '/api/address/update',
+        method : 'put'
+    },
+    disableAddress : {
+        url : '/api/address/disable',
+        method : 'delete'
+    },
+    CashOnDeliveryOrder : {
+        url : "/api/order/cash-on-delivery",
+        method : "post"
+    },
+     payment_url : {
+        url : "/api/order/checkout",
+        method : 'post'
+    },
+    getOrderItems : {
+        url : '/api/order/order-list',
+        method : 'get'
+    },
+    getAllOrders: {
+        url: '/api/order/admin/all-orders',
+        method: 'get'
+    },
+    updateOrderStatus: {
+        url: '/api/order/admin/update-status',
+        method: 'put'
     }
-    
 }
 export default SummaryApi
