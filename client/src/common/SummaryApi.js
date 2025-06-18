@@ -166,6 +166,10 @@ const SummaryApi = {
     cancelOrder: {
         url: '/api/order/cancel',
         method: 'POST'
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4ad07c39714336a0b480684a7675a2fa7c822fa9
     }
 }
 export default SummaryApi

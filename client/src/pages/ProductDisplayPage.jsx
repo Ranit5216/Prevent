@@ -11,7 +11,15 @@ import BestPrice from '../assets/best price.jpeg'
 import WideVarity from '../assets/wide assortment.jpg'
 import { pricewithDiscount } from '../utils/PriceWithDiscount'
 import AddToCartButton from '../components/AddToCartButton'
+<<<<<<< HEAD
 import Loading from '../components/Loading'
+=======
+<<<<<<< HEAD
+import Loading from '../components/Loading'
+=======
+
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
+>>>>>>> 4ad07c39714336a0b480684a7675a2fa7c822fa9
 
 const ProductDisplayPage = () => {
   const params = useParams()
@@ -83,6 +91,10 @@ const ProductDisplayPage = () => {
                 </div>
               </div>
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 4ad07c39714336a0b480684a7675a2fa7c822fa9
               {/* Image Navigation Dots */}
               <div className="flex items-center justify-center gap-2">
                 {data.image.map((_, index) => (
@@ -95,6 +107,25 @@ const ProductDisplayPage = () => {
                   />
                 ))}
               </div>
+<<<<<<< HEAD
+=======
+=======
+            </div> 
+              
+              {
+                data.stock === 0 ? (
+                  <p className='text-lg text-red-500 my-2'>Out of Stock</p>
+                ) 
+                : (
+                   //<button className='my-4 px-4 py-1 bg-green-600 hover:bg-green-700 text-white rounded'>Add</button>
+                  <div className='my-4'>
+                    <AddToCartButton data={data}/>
+                  </div>
+                )
+              }
+           
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
+>>>>>>> 4ad07c39714336a0b480684a7675a2fa7c822fa9
 
               {/* Thumbnail Gallery */}
               <div className="relative">

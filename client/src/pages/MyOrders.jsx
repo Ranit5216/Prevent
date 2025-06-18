@@ -5,7 +5,14 @@ import Axios from '../utils/Axios'
 import SummaryApi from '../common/SummaryApi'
 import toast from 'react-hot-toast'
 import { useGlobalContext } from '../provider/GlobalProvider'
+<<<<<<< HEAD
 import { FaBox, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaEnvelope, FaUser } from 'react-icons/fa'
+=======
+<<<<<<< HEAD
+import { FaBox, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaEnvelope, FaUser } from 'react-icons/fa'
+=======
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
+>>>>>>> 4ad07c39714336a0b480684a7675a2fa7c822fa9
 
 const MyOrders = () => {
   const orders = useSelector(state => state.orders.order)
@@ -54,6 +61,10 @@ const MyOrders = () => {
     }
   }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 4ad07c39714336a0b480684a7675a2fa7c822fa9
   const handleCancelOrder = async (orderId) => {
     try {
       const response = await Axios({
@@ -72,6 +83,11 @@ const MyOrders = () => {
     }
   }
 
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
+>>>>>>> 4ad07c39714336a0b480684a7675a2fa7c822fa9
   useEffect(() => {
     if (user.role === "ADMIN") {
       fetchAllOrders()
@@ -92,6 +108,10 @@ const MyOrders = () => {
   }
 
   return (
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 4ad07c39714336a0b480684a7675a2fa7c822fa9
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
       <div className="max-w-7xl mx-auto">
         {/* My Orders Section */}
@@ -139,11 +159,76 @@ const MyOrders = () => {
                       </div>
                     )}
                   </div>
+<<<<<<< HEAD
+=======
+=======
+    <div>
+      <div className='bg-white shadow-md p-3 font-semibold'>
+        <h1>My Orders</h1>
+      </div>
+
+      {user.role === "ADMIN" && (
+        <div className='mt-4'>
+          <div className='bg-white shadow-md p-3 font-semibold'>
+            <h1>Booking Orders</h1>
+          </div>
+          {loading ? (
+            <div className='text-center p-4'>Loading...</div>
+          ) : allOrders.length === 0 ? (
+            <NoData />
+          ) : (
+            <div className='space-y-4 p-4'>
+              {allOrders.map((order) => (
+                <div key={order._id} className='bg-white p-4 rounded shadow'>
+                  <div className='flex justify-between items-start mb-4'>
+                    <div>
+                      <p className='font-medium'>Order No: {order.orderId}</p>
+                      <p className='text-sm text-gray-600'>Customer: {order.userId?.name}</p>
+                      <p className='text-sm text-gray-600'>Email: {order.userId?.email}</p>
+                      <p className='text-sm text-gray-600'>Phone: {order.userId?.mobile}</p>
+                    </div>
+                    <span className={`px-3 py-1 rounded-full text-sm ${getStatusColor(order.order_status)}`}>
+                      {order.order_status}
+                    </span>
+                  </div>
+                  <div className='flex gap-3 mb-4'>
+                    <img
+                      src={order.product_details.image[0]}
+                      className='w-14 h-14 object-cover rounded'
+                      alt={order.product_details.name}
+                    />
+                    <div>
+                      <p className='font-medium'>{order.product_details.name}</p>
+                      <p className='text-sm text-gray-600'>Amount: ₹{order.totalAmt}</p>
+                    </div>
+                  </div>
+                  {order.order_status === 'PENDING' && (
+                    <div className='flex gap-2'>
+                      <button
+                        onClick={() => handleUpdateStatus(order.orderId, 'ACCEPTED')}
+                        className='px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600'
+                      >
+                        Accept
+                      </button>
+                      <button
+                        onClick={() => handleUpdateStatus(order.orderId, 'CANCELLED')}
+                        className='px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600'
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  )}
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
+>>>>>>> 4ad07c39714336a0b480684a7675a2fa7c822fa9
                 </div>
               ))}
             </div>
           )}
         </div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 4ad07c39714336a0b480684a7675a2fa7c822fa9
 
         {/* Admin Orders Section */}
         {user.role === "ADMIN" && (
@@ -239,6 +324,31 @@ const MyOrders = () => {
             )}
           </div>
         )}
+<<<<<<< HEAD
+=======
+=======
+      )}
+
+      <div className='mt-4'>
+        {!orders[0] && <NoData />}
+        {orders.map((order, index) => (
+          <div key={order._id + index + "order"} className='order rounded p-4 text-sm'>
+            <p>Order No: {order?.orderId}</p>
+            <div className='flex gap-3'>
+              <img
+                src={order.product_details.image[0]}
+                className='w-14 h-14'
+                alt={order.product_details.name}
+              />
+              <p className='font-medium'>{order.product_details.name}</p>
+            </div>
+            <span className={`mt-2 inline-block px-3 py-1 rounded-full text-sm ${getStatusColor(order.order_status)}`}>
+              {order.order_status}
+            </span>
+          </div>
+        ))}
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
+>>>>>>> 4ad07c39714336a0b480684a7675a2fa7c822fa9
       </div>
     </div>
   )
