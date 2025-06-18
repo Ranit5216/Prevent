@@ -8,7 +8,7 @@ export const admin = async(request,response,next)=>{
 
        if(user.role !== 'ADMIN'){
             return response.status(400).json({
-                message : "Permission denial",
+                message : "Permission denial", // denial 🤣
                 error : true,
                 success : false
             })

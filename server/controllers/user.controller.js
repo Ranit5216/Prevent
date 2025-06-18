@@ -12,7 +12,7 @@ import jwt from 'jsonwebtoken'
 
 export async function registerUserController(request,response) {
     try {
-        const { name, email, password } = request.body
+        const { name, email, password, role } = request.body
 
         if(!name || !email || !password){
             return response.status(400).json({
@@ -38,7 +38,8 @@ export async function registerUserController(request,response) {
         const payload = {
             name, 
             email,
-            password : hashPassword
+            password : hashPassword,
+            role: role || "USER" // Use provided role or default to USER
         }
 
         const newUser = new UserModel(payload)
@@ -248,7 +249,7 @@ export async function uploadAvatar(request,response){
 export async function updateUserDetails(request,response){
     try {
         const userId = request.userId //auth middleware
-        const { name, email, mobile, password } = request.body 
+        const { name, email, mobile, password, facebookLink, youtubeLink, instagramLink } = request.body 
 
         let hashPassword = ""
 
@@ -261,7 +262,10 @@ export async function updateUserDetails(request,response){
             ...(name && { name : name }),
             ...(email && { email : email }),
             ...(mobile && { mobile : mobile }),
-            ...(password && { password : hashPassword })
+            ...(password && { password : hashPassword }),
+            ...(facebookLink && { facebookLink : facebookLink }),
+            ...(youtubeLink && { youtubeLink : youtubeLink }),
+            ...(instagramLink && { instagramLink : instagramLink })
         })
 
         return response.json({
@@ -270,7 +274,6 @@ export async function updateUserDetails(request,response){
             success : true,
             data : updateUser
         })
-
 
     } catch (error) {
         return response.status(500).json({
@@ -286,44 +289,63 @@ export async function forgotPasswordController(request,response) {
     try {
         const { email } = request.body 
 
+        if (!email) {
+            return response.status(400).json({
+                message: "Email is required",
+                error: true,
+                success: false
+            })
+        }
+
         const user = await UserModel.findOne({ email })
 
         if(!user){
             return response.status(400).json({
-                message : "Email not available",
-                error : true,
-                success : false
+                message: "Email not found",
+                error: true,
+                success: false
             })
         }
 
         const otp = generatedOtp()
-        const expireTime = new Date() + 60 * 60 * 1000 // 1hr
+        const expireTime = new Date(Date.now() + 60 * 60 * 1000) // 1hr from now
 
-        const update = await UserModel.findByIdAndUpdate(user._id,{
-            forgot_password_otp : otp,
-            forgot_password_expiry : new Date(expireTime).toISOString()
-        })
-
-        await sendEmail({
-            sendTo : email,
-            subject : "Forgot password from Prevent",
-            html : forgotPasswordTemplate({
-                name : user.name,
-                otp : otp
+        try {
+            await sendEmail({
+                sendTo: email,
+                subject: "Forgot password from Prevent",
+                html: forgotPasswordTemplate({
+                    name: user.name,
+                    otp: otp
+                })
             })
-        })
 
-        return response.json({
-            message : "check your email",
-            error : false,
-            success : true
-        })
+            // Only update the OTP if email was sent successfully
+            const update = await UserModel.findByIdAndUpdate(user._id, {
+                forgot_password_otp: otp,
+                forgot_password_expiry: expireTime.toISOString()
+            })
+
+            return response.json({
+                message: "OTP has been sent to your email",
+                error: false,
+                success: true
+            })
+        } catch (emailError) {
+            console.error("Failed to send OTP email:", emailError)
+            return response.status(500).json({
+                message: "Failed to send OTP. Please try again later.",
+                error: true,
+                success: false
+            })
+        }
 
     } catch (error) {
+        console.error("Forgot password error:", error)
         return response.status(500).json({
-            message : error.message || error,
-            error : true,
-            success : false
+            message: error.message || "Something went wrong",
+            error: true,
+            success: false
         })
     }
 }

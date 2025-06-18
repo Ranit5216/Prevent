@@ -1,11 +1,17 @@
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 
 const orderSchema = new mongoose.Schema({
     userId : {
         type : mongoose.Schema.ObjectId,
         ref : 'User'
     },
-    oredrId : {
+    user_details: {
+        name: String,
+        email: String,
+        mobile: String,
+        avatar: String
+    },
+    orderId : {
         type : String,
         required : [true, "Provide orderId"],
         unique : true
@@ -41,6 +47,24 @@ const orderSchema = new mongoose.Schema({
     invoice_receipt : {
         type : String,
         default : ""
+    },
+    order_status: {
+        type: String,
+        enum: ['PENDING', 'ACCEPTED', 'CANCELLED'],
+        default: 'PENDING'
+    },
+    admin_id: {
+        type: mongoose.Schema.ObjectId,
+        require: true,
+        ref: 'Admin'
+    },
+    admin_mobile: {
+        type: String,
+        default: ""
+    },
+    delivery_date: {
+        type: Date,
+        required: [true, "Delivery date is required"]
     }
 },{
     timestamps : true
