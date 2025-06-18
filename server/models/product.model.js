@@ -67,11 +67,19 @@ const productSchema = new mongoose.Schema({
 //create a text index
 productSchema.index({
     name: "text",
+<<<<<<< HEAD
     description: "text",
 }, {
     weights: {
         name: 10,
         description: 5,
+=======
+    description: "text"
+}, {
+    weights: {
+        name: 10,
+        description: 5
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
     }
 })
 
@@ -83,7 +91,11 @@ ProductModel.collection.dropIndexes()
   .then(() => {
     return ProductModel.collection.createIndex(
       { name: "text", description: "text" },
+<<<<<<< HEAD
       { weights: { name: 10, description: 5} }
+=======
+      { weights: { name: 10, description: 5 } }
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
     );
   })
   .then(() => {

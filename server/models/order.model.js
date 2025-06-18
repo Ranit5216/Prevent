@@ -5,12 +5,15 @@ const orderSchema = new mongoose.Schema({
         type : mongoose.Schema.ObjectId,
         ref : 'User'
     },
+<<<<<<< HEAD
     user_details: {
         name: String,
         email: String,
         mobile: String,
         avatar: String
     },
+=======
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
     orderId : {
         type : String,
         required : [true, "Provide orderId"],
@@ -52,6 +55,7 @@ const orderSchema = new mongoose.Schema({
         type: String,
         enum: ['PENDING', 'ACCEPTED', 'CANCELLED'],
         default: 'PENDING'
+<<<<<<< HEAD
     },
     admin_id: {
         type: mongoose.Schema.ObjectId,
@@ -65,6 +69,8 @@ const orderSchema = new mongoose.Schema({
     delivery_date: {
         type: Date,
         required: [true, "Delivery date is required"]
+=======
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
     }
 },{
     timestamps : true

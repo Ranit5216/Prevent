@@ -166,6 +166,7 @@ const SummaryApi = {
     cancelOrder: {
         url: '/api/order/cancel',
         method: 'POST'
+
     }
 }
 export default SummaryApi

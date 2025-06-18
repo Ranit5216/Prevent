@@ -1,14 +1,21 @@
 //import Stripe from "../config/stripe.js";
 import CartProductModel from "../models/cartproduct.model.js";
 import OrderModel from "../models/order.model.js";
+<<<<<<< HEAD
 import ProductModel from "../models/product.model.js";
+=======
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
 import UserModel from "../models/user.model.js";
 import mongoose from "mongoose";
 
 export async function CashOnDeliveryOrderController(request, response) {
     try {
         const userId = request.userId // auth middleware 
+<<<<<<< HEAD
         const { list_items, totalAmt, addressId, subTotalAmt, delivery_date } = request.body
+=======
+        const { list_items, totalAmt, addressId, subTotalAmt } = request.body
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
 
         // Validate required fields
         if (!list_items || !Array.isArray(list_items) || list_items.length === 0) {
@@ -27,6 +34,7 @@ export async function CashOnDeliveryOrderController(request, response) {
             })
         }
 
+<<<<<<< HEAD
         if (!delivery_date) {
             return response.status(400).json({
                 message: "Delivery date is required",
@@ -35,6 +43,8 @@ export async function CashOnDeliveryOrderController(request, response) {
             })
         }
 
+=======
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
         // Validate address exists
         const user = await UserModel.findById(userId)
         if (!user) {
@@ -45,6 +55,7 @@ export async function CashOnDeliveryOrderController(request, response) {
             })
         }
 
+<<<<<<< HEAD
         const payload = await Promise.all(list_items.map(async el => {
             if (!el.productId || !el.productId._id) {
                 throw new Error("Invalid product data")
@@ -58,6 +69,14 @@ export async function CashOnDeliveryOrderController(request, response) {
                     mobile: user.mobile,
                     avatar: user.avatar
                 },
+=======
+        const payload = list_items.map(el => {
+            if (!el.productId || !el.productId._id) {
+                throw new Error("Invalid product data")
+            }
+            return {
+                userId: userId,
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
                 orderId: `ORD-${new mongoose.Types.ObjectId()}`,
                 productId: el.productId._id,
                 product_details: {
@@ -69,10 +88,15 @@ export async function CashOnDeliveryOrderController(request, response) {
                 delivery_address: addressId,
                 subTotalAmt: subTotalAmt,
                 totalAmt: totalAmt,
+<<<<<<< HEAD
                 admin_id: (await ProductModel.findById(el.productId._id)).admin_id,
                 delivery_date: new Date(delivery_date)
             }
         }))
+=======
+            }
+        })
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
 
         const generatedOrder = await OrderModel.insertMany(payload)
 
@@ -106,6 +130,7 @@ export const pricewithDiscount = (price,dis = 1)=>{
 export async function paymentController(request,response){
     try {
         const userId = request.userId // auth middleware 
+<<<<<<< HEAD
         const { list_items, totalAmt, addressId, subTotalAmt, delivery_date } = request.body 
 
         if (!delivery_date) {
@@ -115,6 +140,9 @@ export async function paymentController(request,response){
                 success: false
             })
         }
+=======
+        const { list_items, totalAmt, addressId,subTotalAmt } = request.body 
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
 
         const user = await UserModel.findById(userId)
 
@@ -146,8 +174,12 @@ export async function paymentController(request,response){
             customer_email : user.email,
             metadata : {
                 userId : userId,
+<<<<<<< HEAD
                 addressId : addressId,
                 delivery_date: delivery_date
+=======
+                addressId : addressId
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
             },
             line_items : line_items,
             success_url : `${process.env.FRONTEND_URL}/success`,
@@ -174,7 +206,10 @@ const getOrderProductItems = async({
     addressId,
     paymentId,
     payment_status,
+<<<<<<< HEAD
     delivery_date
+=======
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
  })=>{
     const productList = []
 
@@ -195,7 +230,10 @@ const getOrderProductItems = async({
                 delivery_address : addressId,
                 subTotalAmt  : Number(item.amount_total / 100),
                 totalAmt  :  Number(item.amount_total / 100),
+<<<<<<< HEAD
                 delivery_date: new Date(delivery_date)
+=======
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
             }
 
             productList.push(paylod)
@@ -225,7 +263,10 @@ export async function webhookStripe(request,response){
             addressId : session.metadata.addressId,
             paymentId  : session.payment_intent,
             payment_status : session.payment_status,
+<<<<<<< HEAD
             delivery_date: session.metadata.delivery_date
+=======
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
         })
     
       const order = await OrderModel.insertMany(orderProduct)
@@ -269,9 +310,14 @@ export async function getOrderDetailsController(request,response){
 }
 
 export async function getAllOrdersController(request, response) {
+<<<<<<< HEAD
     const admin_id = request.userId
     try {
         const orders = await OrderModel.find({admin_id})
+=======
+    try {
+        const orders = await OrderModel.find()
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
             .sort({ createdAt: -1 })
             .populate('delivery_address')
             .populate('userId', 'name email mobile')
@@ -294,6 +340,7 @@ export async function getAllOrdersController(request, response) {
 export async function updateOrderStatusController(request, response) {
     try {
         const { orderId, status } = request.body
+<<<<<<< HEAD
         const admin_id = request.userId
 
         // Get admin details to get mobile number
@@ -338,14 +385,39 @@ export async function cancelOrderController(request, response) {
         if (!orderId) {
             return response.status(400).json({
                 message: "Order ID is required",
+=======
+
+        if (!orderId || !status) {
+            return response.status(400).json({
+                message: "Order ID and status are required",
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
                 error: true,
                 success: false
             })
         }
 
+<<<<<<< HEAD
         const order = await OrderModel.findOne({ orderId, userId })
 
         if (!order) {
+=======
+        const validStatuses = ['PENDING', 'ACCEPTED', 'CANCELLED']
+        if (!validStatuses.includes(status)) {
+            return response.status(400).json({
+                message: "Invalid status value",
+                error: true,
+                success: false
+            })
+        }
+
+        const updatedOrder = await OrderModel.findOneAndUpdate(
+            { orderId: orderId },
+            { order_status: status },
+            { new: true }
+        )
+
+        if (!updatedOrder) {
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
             return response.status(404).json({
                 message: "Order not found",
                 error: true,
@@ -353,6 +425,7 @@ export async function cancelOrderController(request, response) {
             })
         }
 
+<<<<<<< HEAD
         // Only allow cancellation if order is still pending
         if (order.order_status !== 'PENDING') {
             return response.status(400).json({
@@ -373,6 +446,14 @@ export async function cancelOrderController(request, response) {
             success: true
         })
 
+=======
+        return response.json({
+            message: "Order status updated successfully",
+            data: updatedOrder,
+            error: false,
+            success: true
+        })
+>>>>>>> 3dc8716a5f1b9afee4f3f4c58afce981c5e6691c
     } catch (error) {
         return response.status(500).json({
             message: error.message || error,
