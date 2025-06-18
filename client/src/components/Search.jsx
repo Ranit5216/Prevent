@@ -11,21 +11,25 @@ const Search = () => {
     const [isSearchPage,setIsSearchPage] = useState(false)
     const [isMobile ] = useMobile()
     const params = useLocation()
-     const searchText = params.search.slice(3)
+    const searchText = params.search ? params.search.slice(3) : ""
+    const [searchValue, setSearchValue] = useState(searchText)
+
     useEffect(()=>{
         const isSearch = location.pathname === "/search"
         setIsSearchPage(isSearch)
-    },[location]
+    },[location])
 
-    )
+    useEffect(() => {
+        setSearchValue(searchText)
+    }, [searchText])
 
     const redirectToSearchPage = ()=>{
-    navigate("/search")
-
+        navigate("/search")
     }
 
     const handleOnChange = (e)=>{
         const value = e.target.value
+        setSearchValue(value)
         const url = `search?q=${value}`
         navigate(url)
     }
@@ -41,9 +45,9 @@ const Search = () => {
                     <FaArrowLeft size={20}/>
                 </Link>
             ) : (
-                <button className='flex justify-center items-center h-full p-3 group-focus-within:text-primary-200'>
+                <div className='flex justify-center items-center h-full p-3 group-focus-within:text-primary-200'>
                     <IoSearch size={22}/>
-                </button>
+                </div>
             )
         }
         </div>
@@ -79,7 +83,7 @@ const Search = () => {
                             type='text'
                             placeholder='Search for photographer and makeup artist and more'
                             autoFocus
-                            defaultValue={searchText}
+                            value={searchValue}
                             className='bg-transparent w-full h-full outline-none'
                             onChange={handleOnChange}
                         />

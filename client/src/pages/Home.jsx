@@ -3,9 +3,9 @@ import banner from '../assets/Event Banner.png'
 import bannerMobile from '../assets/Mobile Event Banner.png'
 import { useSelector } from 'react-redux'
 import { valideURLConvert } from '../utils/valideURLConvert'
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import CategoryWiseProductDisplay from '../components/CategoryWiseProductDisplay'
-
+import { FaArrowRight } from 'react-icons/fa'
 
 const Home = () => {
   const loadingCategory = useSelector(state => state.product.loadingCategory)
@@ -13,93 +13,93 @@ const Home = () => {
   const subCategoryData = useSelector(state => state.product.allSubCategory)
   const navigate = useNavigate()
 
-
-  const handleRedirectProductListpage = (id,cat)=>{
-    console.log(id,cat)
-    const subcategory = subCategoryData.find(sub =>{
+  const handleRedirectProductListpage = (id, cat) => {
+    const subcategory = subCategoryData.find(sub => {
       const filterData = sub.category.some(c => {
         return c._id == id
       })
-
       return filterData ? true : null
     })
 
     const url = `/${valideURLConvert(cat)}-${id}/${valideURLConvert(subcategory.name)}-${subcategory._id}`
     navigate(url)
-    console.log(url)
-    
-    
   }
-  return (
-      <section className='bg-green-50 '  >
-        <div className=' container mx-auto my-3 px-6'>
-          <div className={`w-full h-full min-h-45 bg-blue-100 rounded-3xl ${!banner && "animate-pulse"}`}>
-              <img
-              src={banner}
-              className='w-full h-45 rounded hidden lg:block'
-              alt='banner'
-              />
-              <img
-              src={bannerMobile}
-              className='w-full h-45 rounded lg:hidden '
-              alt='banner'
-              />
 
+  return (
+    <section className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50'>
+      {/* Hero Banner Section */}
+      <div className='container mx-auto px-4 py-8'>
+        <div className='relative overflow-hidden rounded-3xl shadow-2xl transform hover:scale-[1.02] transition-transform duration-300'>
+          <img
+            src={banner}
+            className='w-full h-[400px] object-cover hidden lg:block'
+            alt='banner'
+          />
+          <img
+            src={bannerMobile}
+            className='w-full h-[300px] object-cover lg:hidden'
+            alt='banner'
+          />
+          <div className='absolute inset-0 bg-gradient-to-r from-black/50 to-transparent flex items-center'>
+            <div className='text-white p-8 lg:p-12'>
+              <h1 className='text-3xl lg:text-5xl font-bold mb-4'>Welcome to Our Service</h1>
+              <p className='text-lg lg:text-xl mb-6 max-w-xl'>Discover amazing services tailored just for you</p>
+              <button className='bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors flex items-center gap-2'>
+                Explore Now <FaArrowRight />
+              </button>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div className='container mx-auto px-4 my-2 grid grid-cols-3 md:grid-cols-6 lg:grid-cols-9 gap-4'>
-          {
-           loadingCategory ? (
-            new Array(12).fill(null).map((c,index)=>{
-              return(
-                <div key={index + "loading"} className='bg-white rounded p-4 min-h-36 grid gap-2 shadow animate-pulse'>
-                   <div className='bg-blue-100 min-h-24 rounded'></div>
-                   <div className='bg-blue-100 h-8 rounded'></div>
-                </div>
-                                              
-              )
-            })
-           ) : (
-            categoryData.map((cat,index)=>{
-              return(
-              <div key={index}>
-                <div className='w-full h-35 bg-blue-100' onClick={()=>handleRedirectProductListpage(cat._id,cat.name)}>
-                  <img
-                    src={cat.image}
-                    className='w-full h-35 '
-                  
-                  />
-                </div>
-                <div className='w-full h-12 mt-1 bg-blue-100 text-ellipsis line-clamp-2'>
-                  {cat.name}
+      {/* Categories Section */}
+      <div className='container mx-auto px-4 py-12'>
+        <h2 className='text-2xl lg:text-3xl font-bold text-gray-800 mb-8 text-center'>Our Categories</h2>
+        <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6'>
+          {loadingCategory ? (
+            new Array(12).fill(null).map((_, index) => (
+              <div key={index + "loading"} className='bg-white rounded-xl p-4 shadow-lg animate-pulse'>
+                <div className='bg-blue-100 min-h-32 rounded-lg mb-3'></div>
+                <div className='bg-blue-100 h-6 rounded-lg'></div>
+              </div>
+            ))
+          ) : (
+            categoryData.map((cat, index) => (
+              <div 
+                key={index}
+                onClick={() => handleRedirectProductListpage(cat._id, cat.name)}
+                className='group cursor-pointer transform hover:scale-105 transition-all duration-300'
+              >
+                <div className='bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-shadow'>
+                  <div className='relative overflow-hidden rounded-lg aspect-square mb-3'>
+                    <img
+                      src={cat.image}
+                      className='w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300'
+                      alt={cat.name}
+                    />
+                  </div>
+                  <h3 className='text-center font-semibold text-gray-800 group-hover:text-blue-600 transition-colors'>
+                    {cat.name}
+                  </h3>
                 </div>
               </div>
-              )
-            })
-            
-           )
-          }
+            ))
+          )}
         </div>
+      </div>
 
-        {/***display category product */}
-      {
-        categoryData?.map((c,index)=>{
-          return(
-            <CategoryWiseProductDisplay 
-              key={c?._id+"CategorywiseProduct"} 
-              id={c?._id} 
-              name={c?.name}
-            />
-          )
-        })
-      }
-
-
-
-   </section>
+      {/* Category-wise Products Section */}
+      <div className='container mx-auto px-4 py-12'>
+        {categoryData?.map((c, index) => (
+          <CategoryWiseProductDisplay
+            key={c?._id + "CategorywiseProduct"}
+            id={c?._id}
+            name={c?.name}
+          />
+        ))}
+      </div>
+    </section>
   )
 }
-   
 
 export default Home

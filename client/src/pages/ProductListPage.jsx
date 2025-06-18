@@ -84,7 +84,7 @@ const ProductListPage = () => {
                
                 const url = `/${valideURLConvert(s?.category[0]?.name)}-${s?.category[0]?._id}/${valideURLConvert(s.name)}-${s._id}`
                 return(
-                  <Link to={url} className={`ml-1.5 rounded-2xl h-40 hover:bg-green-500 cursor-pointer ${subCategoryId === s._id ? "bg-green-300" : ""}`}>
+                  <Link key={index} to={url} className={`ml-1.5 rounded-2xl h-40 hover:bg-green-500 cursor-pointer ${subCategoryId === s._id ? "bg-green-300" : ""}`}>
                     <div className=' w-40 max-w-20 lg:max-w-44 lg:h-35 mx-auto rounded box-border ' >
                       <img
                         src={s.image}

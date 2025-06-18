@@ -47,6 +47,17 @@ const productSchema = new mongoose.Schema({
     public : {
         type : Boolean,
         default : true
+    },
+    admin_id: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+        require: true
+    },
+    admin_info: {
+        name: String,
+        facebookLink: String,
+        youtubeLink: String,
+        instagramLink: String
     }
 
 },{
@@ -55,13 +66,31 @@ const productSchema = new mongoose.Schema({
 
 //create a text index
 productSchema.index({
-    name  : "text",
-    description : 'text'
-},{
-    name : 10,
-    description : 5
+    name: "text",
+    description: "text",
+}, {
+    weights: {
+        name: 10,
+        description: 5,
+    }
 })
 
+
 const ProductModel = mongoose.model('product',productSchema)
+
+// Recreate text index
+ProductModel.collection.dropIndexes()
+  .then(() => {
+    return ProductModel.collection.createIndex(
+      { name: "text", description: "text" },
+      { weights: { name: 10, description: 5} }
+    );
+  })
+  .then(() => {
+    console.log('Text index created successfully');
+  })
+  .catch(err => {
+    console.error('Error creating text index:', err);
+  });
 
 export default ProductModel

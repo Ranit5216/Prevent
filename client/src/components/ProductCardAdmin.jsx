@@ -2,86 +2,117 @@ import React, { useState } from 'react'
 import EditProductAdmin from './EditProductAdmin'
 import CofirmBox from './CofirmBox'
 import { IoClose } from 'react-icons/io5'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 import SummaryApi from '../common/SummaryApi'
 import Axios from '../utils/Axios'
 import AxiosToastError from '../utils/AxiosToastError'
 import toast from 'react-hot-toast'
 
 const ProductCardAdmin = ({ data, fetchProductData }) => {
-  const [editOpen,setEditOpen]= useState(false)
-  const [openDelete,setOpenDelete] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
+  const [openDelete, setOpenDelete] = useState(false)
 
-  const handleDeleteCancel  = ()=>{
-      setOpenDelete(false)
+  const handleDeleteCancel = () => {
+    setOpenDelete(false)
   }
 
-  const handleDelete = async()=>{
+  const handleDelete = async () => {
     try {
       const response = await Axios({
         ...SummaryApi.deleteProduct,
-        data : {
-          _id : data._id
+        data: {
+          _id: data._id
         }
       })
 
-      const { data : responseData } = response
+      const { data: responseData } = response
 
-      if(responseData.success){
-          toast.success(responseData.message)
-          if(fetchProductData){
-            fetchProductData()
-          }
-          setOpenDelete(false)
+      if (responseData.success) {
+        toast.success(responseData.message)
+        if (fetchProductData) {
+          fetchProductData()
+        }
+        setOpenDelete(false)
       }
     } catch (error) {
       AxiosToastError(error)
     }
   }
+
   return (
-    <div className=' p-1.5 m-15 ml-3 w-32 h-36 bg-white rounded'>
-        <div className='w-full h-full'>
-            <img
-               src={data?.image[0]}  
-               alt={data?.name}
-               className='w-full h-full'
-            />
-        </div>
-        <div className='bg-white h-14 rounded p-1'>
-          <p className='text-ellipsis line-clamp-2 font-medium'>{data?.name}</p>
-        </div>
-        <div className=''>
-          <p className=' text-gray-500'>{data?.unit}</p>
-        </div>
-        <div className='grid grid-cols-2 gap-3 py-2 '>
-          <button onClick={()=>setEditOpen(true)} className='border px-1 py-1 text-sm border-green-600 bg-green-100 text-green-800 hover:bg-green-300 rounded cursor-pointer'>Edit</button>
-          <button onClick={()=>setOpenDelete(true)} className='border px-1 py-1 text-sm border-red-600 bg-red-100 text-red-600 hover:bg-red-300 rounded cursor-pointer'>Delete</button>
-        </div>
+    <div className="bg-white rounded-xl shadow-md overflow-hidden">
+      {/* Image Container */}
+      <div className="relative aspect-square overflow-hidden">
+        <img
+          src={data?.image[0]}
+          alt={data?.name}
+          className="w-full h-full object-cover"
+        />
+      </div>
 
-        {
-          editOpen && (
-            <EditProductAdmin fetchProductData={fetchProductData} data={data} close={()=>setEditOpen(false)}/>
-          )
-        }
+      {/* Content Container */}
+      <div className="p-4">
+        <h3 className="font-semibold text-gray-800 line-clamp-2 mb-2">{data?.name}</h3>
+        <p className="text-sm text-gray-500 mb-3">{data?.unit}</p>
 
-        {
-          openDelete && (
-            <section className='fixed top-0 left-0 right-0 bottom-0 bg-neutral-600 z-50 bg-opacity-70 p-4 flex justify-center items-center '>
-                <div className='bg-white p-4 w-full max-w-md rounded-md'>
-                    <div className='flex items-center justify-between gap-4'>
-                        <h3 className='font-semibold'>Permanent Delete</h3>
-                        <button onClick={()=>setOpenDelete(false)}>
-                          <IoClose className='cursor-pointer' size={25}/>
-                        </button>
-                    </div>
-                    <p className='my-2'>Are you sure want to delete permanent ?</p>
-                    <div className='flex justify-end gap-5 py-4'>
-                      <button onClick={handleDeleteCancel} className=' border px-3 py-1 rounded bg-red-100 border-red-500 text-red-500 hover:bg-red-300 cursor-pointer'>Cancel</button>
-                      <button onClick={handleDelete} className=' border px-3 py-1 rounded bg-green-100 border-green-500 text-green-500 hover:bg-green-300 cursor-pointer'>Delete</button>
-                    </div>
-                </div>
-            </section>
-          )
-        }
+        {/* Action Buttons */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setEditOpen(true)}
+            className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+          >
+            <FaEdit size={16} />
+            Edit
+          </button>
+          <button
+            onClick={() => setOpenDelete(true)}
+            className="flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+          >
+            <FaTrash size={16} />
+            Delete
+          </button>
+        </div>
+      </div>
+
+      {/* Modals */}
+      {editOpen && (
+        <EditProductAdmin
+          fetchProductData={fetchProductData}
+          data={data}
+          close={() => setEditOpen(false)}
+        />
+      )}
+
+      {openDelete && (
+        <section className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-gray-800">Delete Product</h3>
+              <button
+                onClick={() => setOpenDelete(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <IoClose size={24} />
+              </button>
+            </div>
+            <p className="text-gray-600 mb-6">Are you sure you want to delete this product? This action cannot be undone.</p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={handleDeleteCancel}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   )
 }

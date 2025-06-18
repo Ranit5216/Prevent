@@ -6,6 +6,9 @@ const initialValue = {
     email : "",
     avatar : "",
     mobile : "",
+    facebookLink: "",
+    youtubeLink: "",
+    instagramLink: "",
     verify_email : "",
     last_login_date : "",
     status : "",
@@ -25,6 +28,9 @@ const userSlice  = createSlice({
             state.email = action.payload?.email
             state.avatar = action.payload?.avatar
             state.mobile = action.payload?.mobile
+            state.facebookLink = action.payload?.facebookLink
+            state.youtubeLink = action.payload?.youtubeLink
+            state.instagramLink = action.payload?.instagramLink
             state.verify_email = action.payload?.verify_email
             state.last_login_date = action.payload?.last_login_date
             state.status = action.payload?.status
@@ -42,6 +48,9 @@ const userSlice  = createSlice({
             state.email = ""
             state.avatar = ""
             state.mobile = ""
+            state.facebookLink = ""
+            state.youtubeLink = ""
+            state.instagramLink = ""
             state.verify_email = ""
             state.last_login_date = ""
             state.status = ""

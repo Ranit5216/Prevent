@@ -23,6 +23,18 @@ const userSchema = new mongoose.Schema({
         type : Number,
         default : ""
     },
+    facebookLink: {
+        type: String,
+        default: ""
+    },
+    youtubeLink: {
+        type: String,
+        default: ""
+    },
+    instagramLink: {
+        type: String,
+        default: ""
+    },
     refresh_token : {
         type : String,
         default : ""
