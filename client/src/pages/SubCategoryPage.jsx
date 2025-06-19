@@ -6,11 +6,12 @@ import AxiosToastError from "../utils/AxiosToastError"
 import DisplayTable from "../components/DisplayTable"
 import { createColumnHelper } from "@tanstack/react-table"
 import ViewImage from "../components/ViewImage"
-import { MdDelete } from "react-icons/md";
-import { HiPencil } from "react-icons/hi";
+import { MdDelete } from "react-icons/md"
+import { HiPencil } from "react-icons/hi"
 import EditSubCategory from "../components/EditSubCategory"
 import CofirmBox from "../components/CofirmBox"
 import toast from "react-hot-toast"
+import { FaPlus } from "react-icons/fa"
 
 const SubCategoryPage = () => {
     const [openAddSubCategory,setOpenAddSubCategory] = useState(false)
@@ -131,57 +132,60 @@ const SubCategoryPage = () => {
     }
  
     return (
-        <section className="">
-            <div className="p-2 bg-white shadow-md flex items-center justify-between">
-                <h2 className="font-semibold">Sub Category</h2>
-                <button onClick={()=>setOpenAddSubCategory(true)} className="text-sm border border-amber-300 hover:bg-yellow-300 px-3 py-1 rounded cursor-pointer">Add Sub Category</button>
+        <section className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+            <div className="max-w-7xl mx-auto">
+                {/* Header Section */}
+                <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-2xl font-bold text-gray-800">Sub Categories</h2>
+                            <p className="text-gray-600 mt-1">Manage your subcategories here</p>
+                        </div>
+                        <button 
+                            onClick={() => setOpenAddSubCategory(true)}
+                            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors shadow-md hover:shadow-lg"
+                        >
+                            <FaPlus />
+                            Add Sub Category
+                        </button>
+                    </div>
+                </div>
+
+                {/* Table Section */}
+                <div className="bg-white rounded-xl shadow-lg p-6">
+                    <DisplayTable
+                        data={data}
+                        column={column}
+                    />
+                </div>
             </div>
 
-            <div>
-                <DisplayTable
-                    data={data}
-                    column={column}
-                />
-            </div>
-
-            {
-                openAddSubCategory && (
-                    <UploadSubCategoryModel
-                    close={()=>setOpenAddSubCategory(false)}
+            {/* Modals */}
+            {openAddSubCategory && (
+                <UploadSubCategoryModel
+                    close={() => setOpenAddSubCategory(false)}
                     fetchData={fetchSubCategory}
-                    />
-                )
+                />
+            )}
+            {ImageURL && 
+                <ViewImage url={ImageURL} close={() => setImageURL("")}/>
             }
-            {
-                ImageURL && 
-                <ViewImage url={ImageURL} close={()=>setImageURL("")}/>
-            }
-
-            {
-                OpenEdit &&
+            {OpenEdit &&
                 <EditSubCategory
-                data={editData} 
-                close={()=>setOpenEdit(false)}
-                fetchData={fetchSubCategory}
+                    data={editData} 
+                    close={() => setOpenEdit(false)}
+                    fetchData={fetchSubCategory}
                 />
             }
-
-            {
-                openDeleteConfirmBox && (
-                    <CofirmBox
-                    cancel={()=>setopenDeleteConfirmBox(false)}
-                    close={()=>setopenDeleteConfirmBox(false)}
+            {openDeleteConfirmBox && (
+                <CofirmBox
+                    cancel={() => setopenDeleteConfirmBox(false)}
+                    close={() => setopenDeleteConfirmBox(false)}
                     confirm={handleDeleteSubCategory}
-                    />
-                )
-            }
+                />
+            )}
         </section>
     )
-
- 
-         
-
- 
 }
 
 export default SubCategoryPage

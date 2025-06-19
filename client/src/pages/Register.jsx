@@ -12,7 +12,8 @@ const Register = () => {
         name: "",
         email: "",
         password: "",
-        confirmPassword: ""
+        confirmPassword: "",
+        role: "USER" // Default role
     })
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -30,7 +31,6 @@ const Register = () => {
     }
 
     const valideValue = Object.values(data).every(el => el)
-
 
     const handleSubmit = async(e)=>{
         e.preventDefault()
@@ -58,7 +58,8 @@ const Register = () => {
                     name : "",
                     email : "",
                     password : "",
-                    confirmPassword : ""
+                    confirmPassword : "",
+                    role: "USER"
                 })
                 navigate("/login")
             }
@@ -66,9 +67,6 @@ const Register = () => {
         } catch (error) {
             AxiosToastError(error)
         }
-
-
-
     }
     return (
         <section className='w-full container mx-auto px-2'>
@@ -94,13 +92,25 @@ const Register = () => {
                         <input
                             type='email'
                             id='email'
-                            className='bg-blue-50 p-2 border rounded outlin
-                            e-none focus:border-primary-200'
+                            className='bg-blue-50 p-2 border rounded outline-none focus:border-primary-200'
                             name='email'
                             value={data.email}
                             onChange={handleChange}
                             placeholder='Enter your email'
                         />
+                    </div>
+                    <div className='grid gap-1'>
+                        <label htmlFor='role'>Role :</label>
+                        <select
+                            id='role'
+                            className='bg-blue-50 p-2 border rounded outline-none focus:border-primary-200'
+                            name='role'
+                            value={data.role}
+                            onChange={handleChange}
+                        >
+                            <option value="USER">User</option>
+                            <option value="ADMIN">Admin</option>
+                        </select>
                     </div>
                     <div className='grid gap-1'>
                         <label htmlFor='password'>Password :</label>

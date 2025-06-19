@@ -1,4 +1,5 @@
 import ProductModel from "../models/product.model.js";
+import UserModel from "../models/user.model.js";
 
 export const createProductController = async(request,response)=>{
     try {
@@ -22,6 +23,17 @@ export const createProductController = async(request,response)=>{
                 success : false
             })
         }
+        const admin_id = request.userId
+
+        // Get admin information
+        const admin = await UserModel.findById(admin_id).select('name facebookLink youtubeLink instagramLink')
+        if (!admin) {
+            return response.status(404).json({
+                message: "Admin not found",
+                error: true,
+                success: false
+            })
+        }
 
         const product = new ProductModel({
             name ,
@@ -34,6 +46,13 @@ export const createProductController = async(request,response)=>{
             discount,
             description,
             more_details,
+            admin_id,
+            admin_info: {
+                name: admin.name,
+                facebookLink: admin.facebookLink,
+                youtubeLink: admin.youtubeLink,
+                instagramLink: admin.instagramLink
+            }
         })
         const saveProduct = await product.save()
 
@@ -53,11 +72,12 @@ export const createProductController = async(request,response)=>{
     }
 }
 
-export const getProductController = async(request,response)=>{
+export const getProductController = async (request,response)=>{
     try {
         
         let { page, limit, search } = request.body 
-
+        const admin_id = request.userId
+        console.log(request.userId)
         if(!page){
             page = 1
         }
@@ -65,19 +85,43 @@ export const getProductController = async(request,response)=>{
         if(!limit){
             limit = 10
         }
-
         const query = search ? {
+            admin_id,
             $text : {
                 $search : search
             }
-        } : {}
+        } : {
+            admin_id
+        }
 
         const skip = (page - 1) * limit
 
         const [data,totalCount] = await Promise.all([
-            ProductModel.find(query).sort({createdAt : -1 }).skip(skip).limit(limit).populate('category subCategory'),
+            ProductModel.find(query)
+                .sort({createdAt : -1 })
+                .skip(skip)
+                .limit(limit)
+                .populate('category subCategory')
+                .populate({
+                    path: 'admin_id',
+                    select: 'name facebookLink youtubeLink instagramLink'
+                }),
             ProductModel.countDocuments(query)
         ])
+
+        // Add admin info to each product
+        const productsWithAdminInfo = data.map(product => {
+            const productObj = product.toObject();
+            if (product.admin_id) {
+                productObj.admin_info = {
+                    name: product.admin_id.name,
+                    facebookLink: product.admin_id.facebookLink,
+                    youtubeLink: product.admin_id.youtubeLink,
+                    instagramLink: product.admin_id.instagramLink
+                };
+            }
+            return productObj;
+        });
 
         return response.json({
             message : "Product data",
@@ -85,7 +129,7 @@ export const getProductController = async(request,response)=>{
             success : true,
             totalCount : totalCount,
             totalNoPage : Math.ceil( totalCount / limit),
-            data : data
+            data : productsWithAdminInfo
         })
     } catch (error) {
         return response.status(500).json({
@@ -182,16 +226,46 @@ export const getProductDetails = async(request,response)=>{
     try {
         const { productId } = request.body 
 
-        const product = await ProductModel.findOne({ _id : productId })
+        if(!productId){
+            return response.status(400).json({
+                message : "Provide product id",
+                error : true,
+                success : false
+            })
+        }
 
+        const product = await ProductModel.findById(productId)
+            .populate('category subCategory')
+            .populate({
+                path: 'admin_id',
+                select: 'name facebookLink youtubeLink instagramLink'
+            })
+
+        if(!product){
+            return response.status(404).json({
+                message : "Product not found",
+                error : true,
+                success : false
+            })
+        }
+
+        // Add admin info to the product
+        const productObj = product.toObject();
+        if (product.admin_id) {
+            productObj.admin_info = {
+                name: product.admin_id.name,
+                facebookLink: product.admin_id.facebookLink,
+                youtubeLink: product.admin_id.youtubeLink,
+                instagramLink: product.admin_id.instagramLink
+            };
+        }
 
         return response.json({
-            message : "product details",
-            data : product,
+            message : "Product details",
+            data : productObj,
             error : false,
             success : true
         })
-
     } catch (error) {
         return response.status(500).json({
             message : error.message || error,

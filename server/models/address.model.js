@@ -9,6 +9,10 @@ const addressSchema = new mongoose.Schema({
         type : String,
         default : ""
     },
+    state : {
+        type : String,
+        default : ""
+    },
     pincode : {
         type : String
     },
@@ -22,8 +26,11 @@ const addressSchema = new mongoose.Schema({
     status : {
         type : Boolean,
         default : true
+    },
+    userId : {
+        type : mongoose.Schema.ObjectId,
+        default : ""
     }
-    
 },{
     timestamps : true
 })

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useGlobalContext } from '../provider/GlobalProvider'
 import Axios from '../utils/Axios'
 import SummaryApi from '../common/SummaryApi'
@@ -7,6 +7,7 @@ import AxiosToastError from '../utils/AxiosToastError'
 import Loading from './Loading'
 import { useSelector } from 'react-redux'
 import { FaMinus, FaPlus } from "react-icons/fa6";
+import PropTypes from 'prop-types'
 
 const AddToCartButton = ({ data }) => {
     const { fetchCartItem, updateCartItem, deleteCartItem } = useGlobalContext()
@@ -48,10 +49,10 @@ const AddToCartButton = ({ data }) => {
 
     //checking this item in cart or not
     useEffect(() => {
-        const checkingitem = cartItem.some(item => item.productId._id === data._id)
+        const checkingitem = cartItem.some(item => item._id === data._id)
         setIsAvailableCart(checkingitem)
 
-        const product = cartItem.find(item => item.productId._id === data._id)
+        const product = cartItem.find(item => item._id === data._id)
         setQty(product?.quantity)
         setCartItemsDetails(product)
     }, [data, cartItem])
@@ -101,6 +102,9 @@ const AddToCartButton = ({ data }) => {
 
         </div>
     )
+}
+AddToCartButton.propTypes = {
+    data: PropTypes.object
 }
 
 export default AddToCartButton
