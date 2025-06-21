@@ -129,13 +129,13 @@ const CategoryPage = () => {
 
             {
                 openUploadCategory && (
-                    <UploadCategoryModel fetchCategory={fetchCategory} close={()=>setOpenUploadCategory(false)}/>
+                    <UploadCategoryModel fetchData={fetchCategory} close={()=>setOpenUploadCategory(false)}/>
                 )
             }
 
             {
                 openEdit && (
-                    <EditCategory data={editData} close={()=>setOpenEdit(false)} fetchCategory={fetchCategory}/>
+                    <EditCategory data={editData} close={()=>setOpenEdit(false)} fetchData={fetchCategory}/>
                 )
             }
             
