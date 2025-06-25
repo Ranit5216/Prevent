@@ -17,6 +17,7 @@ const Register = () => {
     })
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
 
     const handleChange = (e) => {
@@ -30,22 +31,52 @@ const Register = () => {
         })
     }
 
+    // Email validation function
+    const isValidEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        return emailRegex.test(email)
+    }
+
+    // Password validation function
+    const isValidPassword = (password) => {
+        return password.length >= 6
+    }
+
     const valideValue = Object.values(data).every(el => el)
 
     const handleSubmit = async(e)=>{
         e.preventDefault()
 
+        // Validate email format
+        if (!isValidEmail(data.email)) {
+            toast.error("Please enter a valid email address")
+            return
+        }
+
+        // Validate password length
+        if (!isValidPassword(data.password)) {
+            toast.error("Password must be at least 6 characters long")
+            return
+        }
+
         if(data.password !== data.confirmPassword){
             toast.error(
-                "password and confirm password must be same"
+                "Password and confirm password must be same"
             )
             return
         }
 
+        setIsLoading(true)
+
         try {
             const response = await Axios({
                 ...SummaryApi.register,
-                data : data
+                data : {
+                    name: data.name,
+                    email: data.email,
+                    password: data.password,
+                    role: data.role
+                }
             })
             
             if(response.data.error){
@@ -65,7 +96,10 @@ const Register = () => {
             }
 
         } catch (error) {
+            console.error("Registration error:", error)
             AxiosToastError(error)
+        } finally {
+            setIsLoading(false)
         }
     }
     return (
@@ -159,7 +193,12 @@ const Register = () => {
                         </div>
                     </div>
 
-                    <button disabled={!valideValue} className={` ${valideValue ? "bg-green-800 hover:bg-green-700" : "bg-gray-500" }    text-white py-2 rounded font-semibold my-3 tracking-wide`}>Register</button>
+                    <button 
+                        disabled={!valideValue || isLoading} 
+                        className={` ${valideValue && !isLoading ? "bg-green-800 hover:bg-green-700" : "bg-gray-500" } text-white py-2 rounded font-semibold my-3 tracking-wide`}
+                    >
+                        {isLoading ? "Registering..." : "Register"}
+                    </button>
 
                 </form>
 

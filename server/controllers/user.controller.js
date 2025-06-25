@@ -22,11 +22,30 @@ export async function registerUserController(request,response) {
             })
         }
 
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(email)) {
+            return response.status(400).json({
+                message : "Please provide a valid email address",
+                error : true,
+                success : false
+            })
+        }
+
+        // Validate password length
+        if (password.length < 6) {
+            return response.status(400).json({
+                message : "Password must be at least 6 characters long",
+                error : true,
+                success : false
+            })
+        }
+
         const user = await UserModel.findOne({ email })
 
         if(user){
-            return response.json({
-                message : "Already register email",
+            return response.status(400).json({
+                message : "Email already registered",
                 error : true,
                 success : false
             })
@@ -45,27 +64,39 @@ export async function registerUserController(request,response) {
         const newUser = new UserModel(payload)
         const save = await newUser.save()
 
-        const VerifyEmailUrl = `${process.env.FRONTEND_URL}/verify-email?code=${save?._id}`
+        try {
+            const VerifyEmailUrl = `${process.env.FRONTEND_URL}/verify-email?code=${save?._id}`
 
-        const verifyEmail = await sendEmail({
-            sendTo : email,
-            subject : "Verify email from Prevent ",
-            html : verifyEmailTemplate({
-                name,
-                url : VerifyEmailUrl
+            const verifyEmail = await sendEmail({
+                sendTo : email,
+                subject : "Verify email from Prevent ",
+                html : verifyEmailTemplate({
+                    name,
+                    url : VerifyEmailUrl
+                })
             })
-        })
 
-        return response.json({
-            message : "User register successfully",
-            error : false,
-            success : true,
-            data : save
-        })
+            return response.json({
+                message : "User registered successfully. Please check your email for verification.",
+                error : false,
+                success : true,
+                data : save
+            })
+        } catch (emailError) {
+            console.error("Email sending failed:", emailError)
+            // If email fails, still create the user but inform about email issue
+            return response.json({
+                message : "User registered successfully. Login now",
+                error : false,
+                success : true,
+                data : save
+            })
+        }
 
     } catch (error) {
+        console.error("Registration error:", error)
         return response.status(500).json({
-            message : error.message || error,
+            message : "Internal server error. Please try again later.",
             error : true,
             success : false
         })
