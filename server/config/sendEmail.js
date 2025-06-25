@@ -23,15 +23,8 @@ const sendEmail = async({sendTo, subject, html })=>{
             throw new Error("Invalid email format")
         }
 
-        // Check for common disposable email domains
-        const disposableDomains = ['tempmail.com', 'throwawaymail.com', 'mailinator.com'];
-        const domain = sendTo.split('@')[1];
-        if (disposableDomains.includes(domain)) {
-            throw new Error("Disposable email addresses are not allowed")
-        }
-
         const { data, error } = await resend.emails.send({
-            from: 'Prevent <onboarding@resend.dev>',
+            from: 'Prevent <noreply@yourdomain.com>',
             to: sendTo,
             subject: subject,
             html: html,
