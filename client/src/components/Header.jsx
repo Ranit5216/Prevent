@@ -66,7 +66,7 @@ const Header = () => {
     <header className='h-28 lg:h-20 lg:shadow-md sticky top-0 z-40 bg-red-500 flex items-center flex-col justify-center gap-1'>
       {
         !(isSearchPage && isMobile) && (
-        <div className='container mx-auto flex items-center px-2 justify-between'>
+        <div className='container mx-auto flex items-center px-2 lg:pt-1 justify-between'>
           {/**logo */}
           <div className='h-full'>
             <Link to={"/"} className='h-full flex justify-center items-center'>
@@ -79,8 +79,8 @@ const Header = () => {
               />
               <img
                   src={logo}
-                  width={120}
-                  height={120}
+                  width={130}
+                  height={130}
                   alt='logo'
                   className='lg:hidden'
               />
