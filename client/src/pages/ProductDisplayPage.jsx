@@ -73,12 +73,12 @@ const ProductDisplayPage = () => {
             {/* Left Column - Image Gallery */}
             <div className="space-y-6">
               {/* Main Image */}
-              <div className="bg-white rounded-xl overflow-hidden shadow-md">
+              <div className="bg-white rounded-xl lg:h-120  overflow-hidden shadow-md">
                 <div className="aspect-square relative">
                   <img
                     src={data.image[image]}
                     alt={data.name}
-                    className="w-full h-full object-contain p-4"
+                    className="w-full h-full lg:h-120 object-contain p-4 "
                   />
                 </div>
               </div>
