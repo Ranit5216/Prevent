@@ -191,6 +191,8 @@ const UploadProduct = () => {
                                 <>
                                    <FaCloudUploadAlt size={35}/>
                                    <p>Upload Image</p>
+                                   <p>Image size will be 2600*1900</p>
+                                   
                                 </>
                               )
                             }

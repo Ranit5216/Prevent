@@ -8,7 +8,6 @@ import Axios from '../utils/Axios'
 import SummaryApi from '../common/SummaryApi'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
-import { loadStripe } from '@stripe/stripe-js'
 import { FaMapMarkerAlt, FaCalendarAlt, FaCreditCard, FaMoneyBillWave } from 'react-icons/fa'
 
 const CheckoutPage = () => {
@@ -67,42 +66,6 @@ const CheckoutPage = () => {
       } catch (error) {
         AxiosToastError(error)
       }
-  }
-
-  const handleOnlinePayment = async()=>{
-    if (!deliveryDate) {
-        toast.error("Please select a delivery date")
-        return
-    }
-    try {
-        toast.loading("Loading...")
-        const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY
-        const stripePromise = await loadStripe(stripePublicKey)
-       
-        const response = await Axios({
-            ...SummaryApi.payment_url,
-            data : {
-              list_items : cartItemsList,
-              addressId : addressList[selectAddress]?._id,
-              subTotalAmt : totalPrice,
-              totalAmt :  totalPrice,
-              delivery_date: deliveryDate
-            }
-        })
-
-        const { data : responseData } = response
-
-        stripePromise.redirectToCheckout({ sessionId : responseData.id })
-        
-        if(fetchCartItem){
-          fetchCartItem()
-        }
-        if(fetchOrder){
-          fetchOrder()
-        }
-    } catch (error) {
-        AxiosToastError(error)
-    }
   }
 
   return (
@@ -216,19 +179,11 @@ const CheckoutPage = () => {
 
             <div className='mt-8 space-y-4'>
               <button 
-                onClick={handleOnlinePayment}
-                className='w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-2'
-              >
-                <FaCreditCard />
-                Pay Online
-              </button>
-
-              <button 
                 onClick={handleCashOnDelivery}
                 className='w-full py-3 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-all flex items-center justify-center gap-2'
               >
                 <FaMoneyBillWave />
-                Cash on Delivery
+                Cash on Booking
               </button>
             </div>
           </div>
