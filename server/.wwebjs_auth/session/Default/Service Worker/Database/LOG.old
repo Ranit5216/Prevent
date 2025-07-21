@@ -1,2 +1,3 @@
-2025/07/21-16:59:18.496 9f0 Creating DB C:\Users\ranit\Desktop\prevent-main-update (3)\prevent-main-update\server\.wwebjs_auth\session\Default\Service Worker\Database since it was missing.
-2025/07/21-16:59:18.508 9f0 Reusing MANIFEST C:\Users\ranit\Desktop\prevent-main-update (3)\prevent-main-update\server\.wwebjs_auth\session\Default\Service Worker\Database/MANIFEST-000001
+2025/07/21-17:00:48.382 5098 Reusing MANIFEST C:\Users\ranit\Desktop\prevent-main-update (3)\prevent-main-update\server\.wwebjs_auth\session\Default\Service Worker\Database/MANIFEST-000001
+2025/07/21-17:00:48.383 5098 Recovering log #3
+2025/07/21-17:00:48.384 5098 Reusing old log C:\Users\ranit\Desktop\prevent-main-update (3)\prevent-main-update\server\.wwebjs_auth\session\Default\Service Worker\Database/000003.log 
