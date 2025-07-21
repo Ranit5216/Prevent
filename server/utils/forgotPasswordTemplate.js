@@ -24,7 +24,7 @@ const forgotPasswordTemplate = ({ name, otp }) => {
         <p>If you did not request a password reset, please ignore this email or contact support if you have concerns.</p>
         
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
-            <p style="margin: 0;">Best regards,<br>The Prevent Team</p>
+            <p style="margin: 0;">Best regards,<br>The PreEvent Team</p>
         </div>
     </div>
 </body>

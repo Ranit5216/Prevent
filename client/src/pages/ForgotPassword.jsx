@@ -42,8 +42,9 @@ const ForgotPassword = () => {
 
             if(response.data.success){
                 toast.success(response.data.message)
-                navigate("/verification-otp",{
-                  state : data
+                localStorage.setItem('forgot_email', data.email); // Store for OTP fallback
+                navigate("/otp-verification",{
+                  state : { email: data.email, fromForgot: true }
                 })
                 setData({
                     email : "",

@@ -11,6 +11,7 @@ const Register = () => {
     const [data, setData] = useState({
         name: "",
         email: "",
+        mobile: "", // Add mobile field
         password: "",
         confirmPassword: "",
         role: "USER" // Default role
@@ -53,6 +54,12 @@ const Register = () => {
             return
         }
 
+        // Validate mobile number (basic check)
+        if (!/^\d{10}$/.test(data.mobile)) {
+            toast.error("Please enter a valid 10-digit mobile number")
+            return
+        }
+
         // Validate password length
         if (!isValidPassword(data.password)) {
             toast.error("Password must be at least 6 characters long")
@@ -74,6 +81,7 @@ const Register = () => {
                 data : {
                     name: data.name,
                     email: data.email,
+                    mobile: data.mobile, // Send mobile to backend
                     password: data.password,
                     role: data.role
                 }
@@ -85,14 +93,21 @@ const Register = () => {
 
             if(response.data.success){
                 toast.success(response.data.message)
+                localStorage.setItem('otp_email', data.email); // Store email for OTP fallback
+                navigate("/otp-verification", {
+                    state: {
+                        email: data.email,
+                        role: data.role
+                    }
+                })
                 setData({
                     name : "",
                     email : "",
+                    mobile: "", // Reset mobile
                     password : "",
                     confirmPassword : "",
                     role: "USER"
                 })
-                navigate("/login")
             }
 
         } catch (error) {
@@ -132,6 +147,26 @@ const Register = () => {
                             onChange={handleChange}
                             placeholder='Enter your email'
                         />
+                    </div>
+                    <div className='grid gap-1'>
+                        <label htmlFor='mobile'>Mobile Number :</label>
+                        <div className='flex items-center'>
+                            <span className='bg-blue-50 p-2 border border-r-0 rounded-l outline-none select-none'>+91</span>
+                            <input
+                                type='text'
+                                id='mobile'
+                                className='bg-blue-50 p-2 border rounded-r outline-none focus:border-primary-200 w-full'
+                                name='mobile'
+                                value={data.mobile}
+                                onChange={e => {
+                                    // Only allow numbers, max 10 digits
+                                    const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
+                                    setData(prev => ({ ...prev, mobile: value }));
+                                }}
+                                placeholder='Enter your 10-digit mobile number'
+                                maxLength={10}
+                            />
+                        </div>
                     </div>
                     <div className='grid gap-1'>
                         <label htmlFor='role'>Role :</label>

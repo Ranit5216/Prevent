@@ -8,6 +8,10 @@ const productSchema = new mongoose.Schema({
         type : Array,
         default : []
     },
+    video : {
+        type : Array,
+        default : []
+    },
     category : [
         {
             type : mongoose.Schema.ObjectId,
@@ -20,10 +24,6 @@ const productSchema = new mongoose.Schema({
             ref : 'subCategory'
         }
     ],
-    unit : {
-        type : String,
-        default : ""
-    },
     stock : {
         type : Number,
         default : 0

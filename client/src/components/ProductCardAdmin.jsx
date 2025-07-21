@@ -53,7 +53,6 @@ const ProductCardAdmin = ({ data, fetchProductData }) => {
       {/* Content Container */}
       <div className="p-4">
         <h3 className="font-semibold text-gray-800 line-clamp-2 mb-2">{data?.name}</h3>
-        <p className="text-sm text-gray-500 mb-3">{data?.unit}</p>
 
         {/* Action Buttons */}
         <div className="flex gap-2">

@@ -12,29 +12,70 @@ const OtpVerification = () => {
     const navigate = useNavigate()
     const inputRef = useRef([])
     const location = useLocation()
+    const [isResending, setIsResending] = useState(false)
+    // Support both registration and forgot password flows
+    const [email, setEmail] = useState(
+        location?.state?.email ||
+        localStorage.getItem('otp_email') ||
+        localStorage.getItem('forgot_email') ||
+        ""
+    );
+
+    // Track which flow we're in
+    const [flow, setFlow] = useState(location?.state?.fromForgot ? 'forgot' : 'register');
+
+    useEffect(() => {
+        if (location?.state?.fromForgot) {
+            setFlow('forgot');
+        } else {
+            setFlow('register');
+        }
+    }, [location]);
 
     console.log("location",location)
 
-    useEffect(()=>{
-        if(!location?.state?.email){
-            navigate("/forgot-password")
+    useEffect(() => {
+        if (location?.state?.email) {
+            // If coming from registration, store in otp_email
+            if (location.pathname.includes('otp-verification')) {
+                localStorage.setItem('otp_email', location.state.email);
+                setFlow('register');
+            }
+            // If coming from forgot password, store in forgot_email
+            if (location.pathname.includes('otp-verification') && location.state.fromForgot) {
+                localStorage.setItem('forgot_email', location.state.email);
+                setFlow('forgot');
+            }
+            setEmail(location.state.email);
+        } else if (localStorage.getItem('forgot_email')) {
+            setEmail(localStorage.getItem('forgot_email'));
+            setFlow('forgot');
+        } else if (localStorage.getItem('otp_email')) {
+            setEmail(localStorage.getItem('otp_email'));
+            setFlow('register');
+        } else if (!email) {
+            navigate("/register");
         }
-    },[])
+    }, [location, email, navigate]);
 
     const valideValue = data.every(el => el)
 
     const handleSubmit = async(e)=>{
-        e.preventDefault()
+        e.preventDefault();
 
         try {
+            const apiConfig = flow === 'forgot'
+                ? SummaryApi.forgot_password_otp_verification
+                : SummaryApi.verify_otp;
+
             const response = await Axios({
-                ...SummaryApi.forgot_password_otp_verification,
+                ...apiConfig,
                 data : {
                     otp : data.join(""),
-                    email : location?.state?.email
+                    email : email
                 }
-            })
-            
+            });
+
             if(response.data.error){
                 toast.error(response.data.message)
             }
@@ -42,21 +83,40 @@ const OtpVerification = () => {
             if(response.data.success){
                 toast.success(response.data.message)
                 setData(["","","","","",""])
-                navigate("/reset-password",{
-                    state : {
-                        data : response.data,
-                        email : location?.state?.email
-                    }
-                })
+                if(flow === 'forgot'){
+                    localStorage.removeItem('forgot_email');
+                    navigate("/reset-password", { state: { email: email, data: response.data } });
+                } else {
+                    localStorage.removeItem('otp_email');
+                    navigate("/login")
+                }
             }
 
         } catch (error) {
-            console.log('error',error)
             AxiosToastError(error)
         }
+    }
 
-
-
+    const handleResendOtp = async () => {
+        setIsResending(true)
+        try {
+            const response = await Axios({
+                ...SummaryApi.resend_otp,
+                data: {
+                    email: email
+                }
+            })
+            if(response.data.error){
+                toast.error(response.data.message)
+            }
+            if(response.data.success){
+                toast.success(response.data.message)
+            }
+        } catch (error) {
+            AxiosToastError(error)
+        } finally {
+            setIsResending(false)
+        }
     }
 
     return (
@@ -104,6 +164,9 @@ const OtpVerification = () => {
                     </div>
              
                     <button disabled={!valideValue} className={` ${valideValue ? "bg-green-800 hover:bg-green-700" : "bg-gray-500" }    text-white py-2 rounded font-semibold my-3 tracking-wide`}>Verify OTP</button>
+                    <button type="button" onClick={handleResendOtp} disabled={isResending} className="bg-blue-600 text-white py-2 rounded font-semibold tracking-wide mt-2">
+                        {isResending ? "Resending..." : "Resend OTP"}
+                    </button>
 
                 </form>
 

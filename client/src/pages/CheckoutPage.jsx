@@ -80,7 +80,7 @@ const CheckoutPage = () => {
             <div className='bg-white rounded-xl shadow-lg p-6'>
               <div className='flex items-center gap-3 mb-4'>
                 <FaMapMarkerAlt className='text-blue-600 text-xl' />
-                <h3 className='text-xl font-semibold text-gray-800'>Delivery Address</h3>
+                <h3 className='text-xl font-semibold text-gray-800'>Booking Address</h3>
               </div>
               
               <div className='space-y-4'>
@@ -140,7 +140,7 @@ const CheckoutPage = () => {
                   className='w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
                 />
                 <p className='text-sm text-gray-500'>
-                  Please select a delivery date between tomorrow and 30 days from now
+                  Please select a Booking date between tomorrow and 30 days from now
                 </p>
               </div>
             </div>
@@ -161,11 +161,11 @@ const CheckoutPage = () => {
               
               <div className='flex justify-between items-center text-gray-600'>
                 <span>Quantity Total</span>
-                <span className='font-medium text-gray-800'>{totalQty} items</span>
+                <span className='font-medium text-gray-800'>{totalQty} Service</span>
               </div>
               
               <div className='flex justify-between items-center text-gray-600'>
-                <span>Delivery Charge</span>
+                <span>Travelling Charge</span>
                 <span className='text-green-600 font-medium'>Free</span>
               </div>
               

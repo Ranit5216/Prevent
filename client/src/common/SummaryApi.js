@@ -166,6 +166,14 @@ const SummaryApi = {
     cancelOrder: {
         url: '/api/order/cancel',
         method: 'POST'
+    },
+    verify_otp: {
+        url: '/api/user/verify-otp',
+        method: 'post'
+    },
+    resend_otp: {
+        url: '/api/user/resend-otp',
+        method: 'post'
     }
 }
 export default SummaryApi

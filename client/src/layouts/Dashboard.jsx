@@ -9,7 +9,7 @@ const Dashboard = () => {
   console.log("user dashboard",user)
   return (
     <section className='bg-white'>
-        <div className= 'container mx-auto p-4 grid grid-cols-1 lg:grid-cols-2'>
+        <div className= 'container mx-auto p-4 grid grid-cols-1 lg:grid-cols-2 '>
                 {/**left for menu */}
                 <div className='py-4 sticky top-24 max-h-120 overflow-y-auto hidden lg:block border-r'>
                     <UserMenu/>

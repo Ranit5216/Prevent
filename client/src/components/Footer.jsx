@@ -2,6 +2,8 @@ import React from 'react'
 import { FaFacebook } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
 import { FaLinkedin } from "react-icons/fa";
+import { FaYoutube } from "react-icons/fa6";
+
 
 const Footer = () => {
   return (
@@ -13,11 +15,11 @@ const Footer = () => {
                 <a href='' className='hover:text-primary-100'>
                     <FaFacebook/>
                 </a>
-                <a href='' className='hover:text-primary-100'>
+                <a href='https://www.instagram.com/preevent_official.in/' className='hover:text-primary-100'>
                     <FaInstagram/>
                 </a>
-                <a href='' className='hover:text-primary-100'>
-                    <FaLinkedin/>
+                <a href='https://www.youtube.com/channel/UCL8i8hmeYjSS3ci-0WhaZkg' className='hover:text-primary-100'>
+                    <FaYoutube/>
                 </a>
             </div>
         </div>

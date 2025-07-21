@@ -28,7 +28,7 @@ app.use(helmet({
     crossOriginResourcePolicy : false
 }))
 
-const PORT = 8080 || process.env.PORT
+    const PORT = 8080 || process.env.PORT
 
 app.get("/",(request,response)=>{
     ///server to client

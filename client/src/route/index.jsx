@@ -11,6 +11,7 @@ import UserMenuMobile from "../pages/UserMenuMobile";
 import Dashboard from "../layouts/Dashboard";
 import Profile from "../pages/Profile";
 import MyOrders from "../pages/MyOrders";
+import BookingOrders from "../pages/BookingOrders";
 import Address from "../pages/Address";
 import CategoryPage from "../pages/CategoryPage";
 import SubCategoryPage from "../pages/SubCategoryPage";
@@ -52,7 +53,7 @@ const router = createBrowserRouter([
                 element : <ForgotPassword/>
             }, 
             {
-                path : "verification-otp",
+                path : "otp-verification",
                 element : <OtpVerification/>
             },
             {
@@ -74,6 +75,10 @@ const router = createBrowserRouter([
                     {
                         path : "myorders",
                         element : <MyOrders/>
+                    },
+                    {
+                        path : "bookingorders",
+                        element : <AdminPermision><BookingOrders/></AdminPermision>
                     },
                     {
                         path : "address",

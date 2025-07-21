@@ -4,11 +4,11 @@ const uploadImageController = async(request,response)=>{
     try {
         const file = request.file
 
-        const uploadImage = await uploadImageClodinary(file)
+        const uploadFile = await uploadImageClodinary(file)
 
         return response.json({
             message : "Upload done",
-            data : uploadImage,
+            data : uploadFile,
             success : true,
             error : false
         })

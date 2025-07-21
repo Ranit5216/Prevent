@@ -69,7 +69,6 @@ const DisplayCartItem = ({close}) => {
                                                         </div>
                                                         <div className='w-full max-w-sm'>
                                                             <p className='text-sm font-medium text-gray-800 line-clamp-2'>{item?.productId?.name}</p>
-                                                            <p className='text-sm text-gray-500 mt-1'>{item?.productId?.unit}</p>
                                                             <p className='font-bold text-blue-600 mt-2'>{DisplayPriceInRupees(pricewithDiscount(item?.productId?.price,item?.productId?.discount))}</p>
                                                         </div>
                                                         <div className='flex flex-col gap-3'>

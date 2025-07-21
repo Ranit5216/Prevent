@@ -10,15 +10,15 @@ import forgotPasswordTemplate from '../utils/forgotPasswordTemplate.js'
 import jwt from 'jsonwebtoken'
 
 
-export async function registerUserController(request,response) {
+export async function registerUserController(request, response) {
     try {
-        const { name, email, password, role } = request.body
+        const { name, email, password, role, mobile } = request.body // Add mobile
 
-        if(!name || !email || !password){
+        if (!name || !email || !password || !mobile) { // Require mobile
             return response.status(400).json({
-                message : "Provide email, name, password",
-                error : true,
-                success : false
+                message: "Provide email, name, password, mobile",
+                error: true,
+                success: false
             })
         }
 
@@ -26,111 +26,175 @@ export async function registerUserController(request,response) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(email)) {
             return response.status(400).json({
-                message : "Please provide a valid email address",
-                error : true,
-                success : false
+                message: "Please provide a valid email address",
+                error: true,
+                success: false
+            })
+        }
+
+        // Validate mobile number (basic check)
+        if (!/^\d{10}$/.test(mobile)) {
+            return response.status(400).json({
+                message: "Please provide a valid 10-digit mobile number",
+                error: true,
+                success: false
             })
         }
 
         // Validate password length
         if (password.length < 6) {
             return response.status(400).json({
-                message : "Password must be at least 6 characters long",
-                error : true,
-                success : false
+                message: "Password must be at least 6 characters long",
+                error: true,
+                success: false
             })
         }
 
         const user = await UserModel.findOne({ email })
 
-        if(user){
+        if (user) {
             return response.status(400).json({
-                message : "Email already registered",
-                error : true,
-                success : false
+                message: "Email already registered",
+                error: true,
+                success: false
             })
         }
 
         const salt = await bcryptjs.genSalt(10)
-        const hashPassword = await bcryptjs.hash(password,salt)
+        const hashPassword = await bcryptjs.hash(password, salt)
+
+        // Generate OTP and expiry (10 minutes)
+        const otp = generatedOtp().toString()
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000)
 
         const payload = {
-            name, 
+            name,
             email,
-            password : hashPassword,
-            role: role || "USER" // Use provided role or default to USER
+            password: hashPassword,
+            role: role || "USER", // Use provided role or default to USER
+            mobile, // Save mobile
+            otp,
+            otpExpiry
         }
 
         const newUser = new UserModel(payload)
         const save = await newUser.save()
 
         try {
-            const VerifyEmailUrl = `${process.env.FRONTEND_URL}/verify-email?code=${save?._id}`
-
-            const verifyEmail = await sendEmail({
-                sendTo : email,
-                subject : "Verify email from Prevent ",
-                html : verifyEmailTemplate({
+            await sendEmail({
+                sendTo: email,
+                subject: "Your Prevent OTP for Email Verification",
+                html: verifyEmailTemplate({
                     name,
-                    url : VerifyEmailUrl
+                    otp
                 })
             })
 
             return response.json({
-                message : "User registered successfully. Please check your email for verification.",
-                error : false,
-                success : true,
-                data : save
+                message: "User registered successfully. Please check your email for OTP verification.",
+                error: false,
+                success: true,
+                data: { _id: save._id, email: save.email }
             })
         } catch (emailError) {
             console.error("Email sending failed:", emailError)
-            // If email fails, still create the user but inform about email issue
             return response.json({
-                message : "User registered successfully. Login now",
-                error : false,
-                success : true,
-                data : save
+                message: "User registered, but OTP email failed to send.",
+                error: true,
+                success: false,
+                data: { _id: save._id, email: save.email }
             })
         }
-
     } catch (error) {
         console.error("Registration error:", error)
         return response.status(500).json({
-            message : "Internal server error. Please try again later.",
-            error : true,
-            success : false
+            message: "Internal server error. Please try again later.",
+            error: true,
+            success: false
         })
     }
 }
 
-export async function verifyEmailController(request,response){
+// OTP verification controller
+export async function verifyOtpController(request, response) {
     try {
-        const { code } = request.body
-
-        const user = await UserModel.findOne({ _id : code}) 
-        
-        if(!user){
+        const { email, otp } = request.body
+        const user = await UserModel.findOne({ email })
+        if (!user) {
             return response.status(400).json({
-                message : "Invalid code",
-                error : true,
-                success : false
+                message: "User not found",
+                error: true,
+                success: false
             })
         }
-
-        const updateUser = await UserModel.updateOne({ _id : code},{
-            verify_email : true
-        })
-
+        if (user.otp !== otp) {
+            return response.status(400).json({
+                message: "Invalid OTP",
+                error: true,
+                success: false
+            })
+        }
+        if (user.otpExpiry < new Date()) {
+            return response.status(400).json({
+                message: "OTP expired",
+                error: true,
+                success: false
+            })
+        }
+        user.verify_email = true
+        user.otp = null
+        user.otpExpiry = null
+        await user.save()
         return response.json({
-            message : "Verify email done",
-            success : true,
-            error : false
+            message: "Email verified successfully!",
+            error: false,
+            success: true
         })
     } catch (error) {
         return response.status(500).json({
-            message : error.message || error,
-            error : true,
-            success : true
+            message: error.message || error,
+            error: true,
+            success: false
+        })
+    }
+}
+
+// Resend OTP controller
+export async function resendOtpController(request, response) {
+    try {
+        const { email } = request.body
+        const user = await UserModel.findOne({ email })
+        if (!user) {
+            return response.status(400).json({
+                message: "User not found",
+                error: true,
+                success: false
+            })
+        }
+        // Generate new OTP and expiry
+        const otp = generatedOtp().toString()
+        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000)
+        user.otp = otp
+        user.otpExpiry = otpExpiry
+        await user.save()
+        await sendEmail({
+            sendTo: email,
+            subject: "Your Prevent OTP for Email Verification (Resend)",
+            html: verifyEmailTemplate({
+                name: user.name,
+                otp
+            })
+        })
+        return response.json({
+            message: "OTP resent successfully. Please check your email.",
+            error: false,
+            success: true
+        })
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false
         })
     }
 }
@@ -155,6 +219,19 @@ export async function loginController(request,response) {
                 message : "User not register",
                 error : true,
                 success : false
+            })
+        }
+
+        // Debug log for createdAt and verify_email
+        console.log('LOGIN DEBUG:', { email, createdAt: user.createdAt, verify_email: user.verify_email });
+        // Prevent login if email is not verified, but only for new users
+        // Set your cutoff date below (e.g., when email verification was introduced)
+        const EMAIL_VERIFICATION_CUTOFF = new Date('2025-07-21T00:00:00Z'); // <-- updated to today
+        if(user.createdAt >= EMAIL_VERIFICATION_CUTOFF && !user.verify_email){
+            return response.status(400).json({
+                message: "Please verify your email with OTP before logging in.",
+                error: true,
+                success: false
             })
         }
 
@@ -344,7 +421,7 @@ export async function forgotPasswordController(request,response) {
         try {
             await sendEmail({
                 sendTo: email,
-                subject: "Forgot password from Prevent",
+                subject: "Forgot password from PreEvent",
                 html: forgotPasswordTemplate({
                     name: user.name,
                     otp: otp
@@ -404,9 +481,11 @@ export async function verifyForgotPasswordOtp(request,response){
             })
         }
 
-        const currentTime = new Date().toISOString()
+        // Debug log for troubleshooting
+        console.log('VERIFY FORGOT OTP:', { email, otp, userOtp: user.forgot_password_otp, expiry: user.forgot_password_expiry });
 
-        if(user.forgot_password_expiry < currentTime  ){
+        const currentTime = new Date();
+        if(new Date(user.forgot_password_expiry) < currentTime){
             return response.status(400).json({
                 message : "Otp is expired",
                 error : true,
@@ -414,7 +493,7 @@ export async function verifyForgotPasswordOtp(request,response){
             })
         }
 
-        if(otp !== user.forgot_password_otp){
+        if(String(otp) !== String(user.forgot_password_otp)){
             return response.status(400).json({
                 message : "Invalid otp",
                 error : true,

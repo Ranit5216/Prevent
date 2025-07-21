@@ -6,9 +6,9 @@ export const createProductController = async(request,response)=>{
         const { 
             name ,
             image ,
+            video , // add video field
             category,
             subCategory,
-            unit,
             stock,
             price,
             discount,
@@ -16,7 +16,7 @@ export const createProductController = async(request,response)=>{
             more_details,
         } = request.body 
 
-        if(!name || !image[0] || !category[0] || !subCategory[0] || !unit || !price || !description ){
+        if(!name || !image[0] || !category[0] || !subCategory[0] || !price || !description ){
             return response.status(400).json({
                 message : "Enter required fields",
                 error : true,
@@ -38,9 +38,9 @@ export const createProductController = async(request,response)=>{
         const product = new ProductModel({
             name ,
             image ,
+            video , // save video field
             category,
             subCategory,
-            unit,
             stock,
             price,
             discount,

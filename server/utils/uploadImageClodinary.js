@@ -6,16 +6,16 @@ cloudinary.config({
     api_secret : process.env.CLODINARY_API_SECRET_KEY 
 })
 
-const uploadImageClodinary = async(image)=>{
-    const buffer = image?.buffer || Buffer.from(await Image.arrayBuffer())
+const uploadImageClodinary = async(file)=>{
+    const buffer = file?.buffer || Buffer.from(await file.arrayBuffer())
 
-    const uploadImage = await new Promise((resolve,reject)=>{
-        cloudinary.uploader.upload_stream({ folder : "Prevent"},(error,uploadResult)=>{
+    const uploadFile = await new Promise((resolve,reject)=>{
+        cloudinary.uploader.upload_stream({ folder : "Prevent", resource_type: "auto" },(error,uploadResult)=>{
             return resolve(uploadResult)
         }).end(buffer)
     })
 
-    return uploadImage
+    return uploadFile
 }
 
 export default uploadImageClodinary

@@ -24,7 +24,7 @@ const sendEmail = async({sendTo, subject, html })=>{
         }
 
         const { data, error } = await resend.emails.send({
-            from: 'Prevent <noreply@yourdomain.com>',
+            from: 'PreEvent <noreply@preevent.in>',
             to: sendTo,
             subject: subject,
             html: html,
@@ -33,11 +33,11 @@ const sendEmail = async({sendTo, subject, html })=>{
         if (error) {
             console.error("Email sending failed:", error);
             // Handle specific Resend API errors
-            if (error.message.includes('rate limit')) {
+            if (error.message && error.message.includes('rate limit')) {
                 throw new Error("Too many email requests. Please try again later.");
-            } else if (error.message.includes('invalid email')) {
+            } else if (error.message && error.message.includes('invalid email')) {
                 throw new Error("Invalid email address");
-            } else if (error.message.includes('domain')) {
+            } else if (error.message && error.message.includes('domain')) {
                 throw new Error("Email domain is not allowed");
             }
             throw error;

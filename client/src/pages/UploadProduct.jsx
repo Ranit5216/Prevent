@@ -12,14 +12,15 @@ import SummaryApi from '../common/SummaryApi';
 import AxiosToastError from '../utils/AxiosToastError';
 import successAlert from '../utils/SuccessAlert';
 import { useEffect } from 'react';
+import uploadFile from '../utils/UploadImage';
 
 const UploadProduct = () => {
   const [data,setData] = useState({
       name : "",
       image : [],
+      video : [], // new state for videos
       category : [],
       subCategory : [],
-      unit : "",
       stock : "",
       price : "",
       discount : "",
@@ -35,6 +36,7 @@ const UploadProduct = () => {
 
   const [openAddField,setOpenAddField] = useState(false)
   const [fieldName,setFieldName] = useState("")
+  const [videoLoading,setVideoLoading] = useState(false)
 
 
   const handleChange = (e)=>{
@@ -77,6 +79,24 @@ const UploadProduct = () => {
         }
       })
   }
+
+  const handleUploadVideo = async(e)=>{
+    const file = e.target.files[0]
+    if(!file){
+      return 
+    }
+    setVideoLoading(true)
+    const response = await uploadFile(file)
+    const { data : VideoResponse } = response
+    const videoUrl = VideoResponse.data.url 
+    setData((preve)=>{
+      return{
+        ...preve,
+        video : [...preve.video,videoUrl]
+      }
+    })
+    setVideoLoading(false)
+}
 
   const handleRemoveCategory = async(index)=>{
     data.category.splice(index,1)
@@ -127,7 +147,6 @@ const UploadProduct = () => {
             image : [],
             category : [],
             subCategory : [],
-            unit : "",
             stock : "",
             price : "",
             discount : "",
@@ -228,6 +247,55 @@ const UploadProduct = () => {
                     </div>
 
                 </div>
+                {/* Video upload section */}
+                <div>
+                  <p className='font-medium'>Video</p>
+                  <div>
+                    <label htmlFor='productVideo' className='bg-blue-50 h-24 border rounded flex justify-center items-center cursor-pointer'>
+                      <div className='text-center flex justify-center items-center flex-col'>
+                        {
+                          videoLoading ?  <Loading/> : (
+                            <>
+                              <FaCloudUploadAlt size={35}/>
+                              <p>Upload Video</p>
+                              <p>Video size up to 50MB</p>
+                            </>
+                          )
+                        }
+                      </div>
+                      <input 
+                        type='file'
+                        id='productVideo'
+                        className='hidden'
+                        accept='video/*'
+                        onChange={handleUploadVideo}
+                      />
+                    </label>
+                    {/* display uploaded videos */}
+                    <div className='flex flex-wrap gap-4'>
+                      {
+                        data.video && data.video.map((vid,index) =>{
+                            return(
+                              <div key={vid+index} className='h-20 mt-1 w-32 min-w-32 bg-blue-50 border relative group'>
+                                <video
+                                  src={vid}
+                                  controls
+                                  className='w-full h-full object-scale-down cursor-pointer'
+                                  style={{maxHeight:'80px'}}
+                                />
+                                <div onClick={()=>{
+                                  data.video.splice(index,1)
+                                  setData((preve)=>({ ...preve, video: [...preve.video] }))
+                                }} className='absolute bottom-0 right-0 p-1 bg-red-600 hover:bg-red-600 rounded text-white hidden group-hover:block cursor-pointer'>
+                                  <MdDelete/>
+                                </div>
+                              </div>
+                            )
+                        })
+                      }
+                    </div>
+                  </div>
+                </div>
                 <div className='grid gap-1'>
                   <label className='font-medium'>Category</label>
                   <div>
@@ -317,19 +385,7 @@ const UploadProduct = () => {
                   </div>
                 </div>
 
-                <div className='grid gap-1'>
-                  <label htmlFor='unit' className='font-medium'>Unit</label>
-                  <input 
-                    id='unit'
-                    type='text'
-                    placeholder='Enter product unit'
-                    name='unit'
-                    value={data.unit}
-                    onChange={handleChange}
-                    required
-                    className='bg-blue-50 p-2 outline-none border focus-within:border-amber-300 rounded'
-                  />
-                </div>
+                {/* REMOVED: Unit input field */}
 
                 <div className='grid gap-1'>
                   <label htmlFor='stock' className='font-medium'>Number of Stock</label>
