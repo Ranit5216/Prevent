@@ -30,11 +30,9 @@ const GlobalProvider = ({children}) => {
     
           if(responseData.success){
             dispatch(handleAddItemCart(responseData.data))
-            console.log(responseData)
           }
     
         } catch (error) {
-          console.log(error)
         }
     }
 
@@ -127,7 +125,6 @@ const GlobalProvider = ({children}) => {
             dispatch(setOrder(responseData.data))
         }
       } catch (error) {
-        console.log(error)
       }
     }
 

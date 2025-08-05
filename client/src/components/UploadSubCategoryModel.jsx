@@ -44,7 +44,6 @@ const UploadSubCategoryModel = ({close, fetchData}) => {
             }
         })
     }
-    console.log("subcategorydata",subCategoryData)
 
     const handleRemoveCategorySelected = (categoryId)=>{
         const index = subCategoryData.category.findIndex(el => el._id === categoryId )
@@ -67,7 +66,6 @@ const UploadSubCategoryModel = ({close, fetchData}) => {
 
             const { data : responseData } = response
 
-            console.log("responseData",responseData)
             if(responseData.success){
                 toast.success(responseData.message)
                 if(close){

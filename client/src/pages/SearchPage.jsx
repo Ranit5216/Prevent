@@ -62,8 +62,6 @@ const SearchPage = () => {
     }
   },[page,searchText])
 
-  console.log("page",page)
-
   const handleFetchMore = ()=>{
     if(totalPage > page){
       setPage(preve => preve + 1)

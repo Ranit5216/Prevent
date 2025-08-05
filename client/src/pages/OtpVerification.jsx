@@ -6,6 +6,9 @@ import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
 import AxiosToastError from '../utils/AxiosToastError';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import fetchUserDetails from '../utils/fetchUserDetails';
+import { setUserDetails } from '../store/userSlice';
 
 const OtpVerification = () => {
     const [data, setData] = useState(["","","","","",""])
@@ -32,8 +35,6 @@ const OtpVerification = () => {
         }
     }, [location]);
 
-    console.log("location",location)
-
     useEffect(() => {
         if (location?.state?.email) {
             // If coming from registration, store in otp_email
@@ -59,6 +60,8 @@ const OtpVerification = () => {
     }, [location, email, navigate]);
 
     const valideValue = data.every(el => el)
+
+    const dispatch = useDispatch();
 
     const handleSubmit = async(e)=>{
         e.preventDefault();
@@ -88,7 +91,12 @@ const OtpVerification = () => {
                     navigate("/reset-password", { state: { email: email, data: response.data } });
                 } else {
                     localStorage.removeItem('otp_email');
-                    navigate("/login")
+                    // Store tokens and set user state, then redirect to home
+                    localStorage.setItem('accesstoken',response.data.data.accesstoken)
+                    localStorage.setItem('refreshToken',response.data.data.refreshToken)
+                    const userDetails = await fetchUserDetails();
+                    dispatch(setUserDetails(userDetails.data));
+                    navigate("/");
                 }
             }
 
@@ -141,7 +149,6 @@ const OtpVerification = () => {
                                             value={data[index]}
                                             onChange={(e)=>{
                                                 const value =  e.target.value
-                                                console.log("value",value)
 
                                                 const newData = [...data]
                                                 newData[index] = value

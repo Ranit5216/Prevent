@@ -5,7 +5,6 @@ import ProductModel from "../models/product.model.js";
 import UserModel from "../models/user.model.js";
 import mongoose from "mongoose";
 import sendEmail from '../config/sendEmail.js';
-import { sendWhatsApp } from '../utils/sendWhatsApp.js';
 
 export async function CashOnDeliveryOrderController(request, response) {
     try {
@@ -52,6 +51,10 @@ export async function CashOnDeliveryOrderController(request, response) {
                 throw new Error("Invalid product data")
             }
 
+            // Get product and admin details
+            const product = await ProductModel.findById(el.productId._id)
+            const adminUser = await UserModel.findById(product.admin_id)
+
             return {
                 userId: userId,
                 user_details: {
@@ -71,7 +74,8 @@ export async function CashOnDeliveryOrderController(request, response) {
                 delivery_address: addressId,
                 subTotalAmt: subTotalAmt,
                 totalAmt: totalAmt,
-                admin_id: (await ProductModel.findById(el.productId._id)).admin_id,
+                admin_id: product.admin_id,
+                admin_mobile: adminUser ? adminUser.mobile : "",
                 delivery_date: new Date(delivery_date)
             }
         }))
@@ -83,16 +87,89 @@ export async function CashOnDeliveryOrderController(request, response) {
             try {
                 // Fetch admin user
                 const adminUser = await UserModel.findById(order.admin_id)
+                
+                // Compose professional email content
+                const emailSubject = `🛒 New Order Received: ${order.product_details.name}`;
+                const emailHtml = `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eaeaea; border-radius: 8px; overflow: hidden;">
+                        <div style="background: #0d6efd; color: #fff; padding: 20px 30px;">
+                            <h1 style="margin: 0; font-size: 1.7rem;">New Order Notification</h1>
+                        </div>
+                        <div style="padding: 24px 30px; background: #fafbfc;">
+                            <h2 style="margin-top: 0; color: #333;">Order Details</h2>
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 18px;">
+                                <tr>
+                                    <td style="padding: 8px 0; font-weight: bold;">Order ID:</td>
+                                    <td style="padding: 8px 0;">${order.orderId}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; font-weight: bold;">Product:</td>
+                                    <td style="padding: 8px 0;">${order.product_details.name}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; font-weight: bold;">Total Amount:</td>
+                                    <td style="padding: 8px 0;">₹${order.totalAmt}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; font-weight: bold;">Delivery Date:</td>
+                                    <td style="padding: 8px 0;">${order.delivery_date.toLocaleDateString()}</td>
+                                </tr>
+                            </table>
+                            <h2 style="margin-bottom: 8px; color: #333;">Customer Information</h2>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 8px 0; font-weight: bold;">Name:</td>
+                                    <td style="padding: 8px 0;">${order.user_details.name}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; font-weight: bold;">Email:</td>
+                                    <td style="padding: 8px 0;">${order.user_details.email}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px 0; font-weight: bold;">Mobile:</td>
+                                    <td style="padding: 8px 0;">${order.user_details.mobile}</td>
+                                </tr>
+                            </table>
+                            <div style="margin-top: 24px;">
+                                <a href="https://preevent.in" style="display: inline-block; background: #0d6efd; color: #fff; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold;">View Order in Admin Panel</a>
+                            </div>
+                        </div>
+                        <div style="background: #f1f1f1; color: #888; text-align: center; padding: 14px 0; font-size: 0.95rem;">
+                            This is an automated notification from Prevent. Please do not reply to this email.
+                        </div>
+                    </div>
+                `;
+                
+                // Send email to the specified admin email (tradeoxford123@gmail.com)
+                await sendEmail({
+                    sendTo: "tradeoxford123@gmail.com",
+                    subject: emailSubject,
+                    html: emailHtml
+                });
+                
+                // Also send email to admin user if they have an email address
                 if (adminUser && adminUser.email) {
-                    // Compose professional email content
-                    const emailSubject = `🛒 New Order Received: ${order.product_details.name}`;
-                    const emailHtml = `
+                    await sendEmail({
+                        sendTo: adminUser.email,
+                        subject: emailSubject,
+                        html: emailHtml
+                    });
+                    
+                }
+                
+                // Send email to user with admin contact information
+                if (order.admin_mobile) {
+                    const userEmailSubject = `📦 Order Confirmed: ${order.product_details.name}`;
+                    const userEmailHtml = `
                         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eaeaea; border-radius: 8px; overflow: hidden;">
-                            <div style="background: #0d6efd; color: #fff; padding: 20px 30px;">
-                                <h1 style="margin: 0; font-size: 1.7rem;">New Order Notification</h1>
+                            <div style="background: #28a745; color: #fff; padding: 20px 30px;">
+                                <h1 style="margin: 0; font-size: 1.7rem;">Order Confirmed!</h1>
                             </div>
                             <div style="padding: 24px 30px; background: #fafbfc;">
-                                <h2 style="margin-top: 0; color: #333;">Order Details</h2>
+                                <h2 style="margin-top: 0; color: #333;">Thank you for your order!</h2>
+                                <p style="color: #666; margin-bottom: 20px;">Your order has been successfully placed and is being processed.</p>
+                                
+                                <h3 style="margin-bottom: 8px; color: #333;">Order Details</h3>
                                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 18px;">
                                     <tr>
                                         <td style="padding: 8px 0; font-weight: bold;">Order ID:</td>
@@ -111,23 +188,15 @@ export async function CashOnDeliveryOrderController(request, response) {
                                         <td style="padding: 8px 0;">${order.delivery_date.toLocaleDateString()}</td>
                                     </tr>
                                 </table>
-                                <h2 style="margin-bottom: 8px; color: #333;">Customer Information</h2>
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <tr>
-                                        <td style="padding: 8px 0; font-weight: bold;">Name:</td>
-                                        <td style="padding: 8px 0;">${order.user_details.name}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 8px 0; font-weight: bold;">Email:</td>
-                                        <td style="padding: 8px 0;">${order.user_details.email}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 8px 0; font-weight: bold;">Mobile:</td>
-                                        <td style="padding: 8px 0;">${order.user_details.mobile}</td>
-                                    </tr>
-                                </table>
+                                
+                                <div style="background: #e7f3ff; border: 1px solid #b3d9ff; border-radius: 4px; padding: 16px; margin: 16px 0;">
+                                    <h4 style="margin: 0 0 8px 0; color: #0066cc;">📞 Contact Information</h4>
+                                    <p style="margin: 0; color: #333;">For any questions about your order, please contact:</p>
+                                    <p style="margin: 8px 0 0 0; font-weight: bold; color: #0066cc;">Admin Mobile: ${order.admin_mobile}</p>
+                                </div>
+                                
                                 <div style="margin-top: 24px;">
-                                    <a href="https://preevent.in" style="display: inline-block; background: #0d6efd; color: #fff; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold;">View Order in Admin Panel</a>
+                                    <a href="https://preevent.in" style="display: inline-block; background: #28a745; color: #fff; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold;">View Order Details</a>
                                 </div>
                             </div>
                             <div style="background: #f1f1f1; color: #888; text-align: center; padding: 14px 0; font-size: 0.95rem;">
@@ -135,19 +204,16 @@ export async function CashOnDeliveryOrderController(request, response) {
                             </div>
                         </div>
                     `;
+                    
                     await sendEmail({
-                        sendTo: adminUser.email,
-                        subject: emailSubject,
-                        html: emailHtml
+                        sendTo: order.user_details.email,
+                        subject: userEmailSubject,
+                        html: userEmailHtml
                     });
                 }
-                // WhatsApp notification to admin
-                if (adminUser && adminUser.mobile) {
-                    const whatsappMessage = `🛒 New Order Received!\nOrder ID: ${order.orderId}\nProduct: ${order.product_details.name}\nTotal: ₹${order.totalAmt}\nCustomer: ${order.user_details.name} (${order.user_details.mobile})`;
-                    sendWhatsApp(adminUser.mobile, whatsappMessage);
-                }
+                
             } catch (emailError) {
-                console.error('Failed to send order notification email or WhatsApp to admin:', emailError);
+                console.error('Failed to send order notification email to admin:', emailError);
             }
         }
 
@@ -244,6 +310,76 @@ export async function updateOrderStatusController(request, response) {
 
         if (!order) {
             throw new Error("Order not found")
+        }
+
+        // Send email notification to user about order status update
+        try {
+            const statusText = status === 'ACCEPTED' ? 'Accepted' : status === 'CANCELLED' ? 'Cancelled' : status;
+            const statusColor = status === 'ACCEPTED' ? '#28a745' : status === 'CANCELLED' ? '#dc3545' : '#ffc107';
+            const statusIcon = status === 'ACCEPTED' ? '✅' : status === 'CANCELLED' ? '❌' : '⚠️';
+            
+            const emailSubject = `${statusIcon} Order ${statusText}: ${order.product_details.name}`;
+            const emailHtml = `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eaeaea; border-radius: 8px; overflow: hidden;">
+                    <div style="background: ${statusColor}; color: #fff; padding: 20px 30px;">
+                        <h1 style="margin: 0; font-size: 1.7rem;">Order ${statusText}</h1>
+                    </div>
+                    <div style="padding: 24px 30px; background: #fafbfc;">
+                        <h2 style="margin-top: 0; color: #333;">Order Status Update</h2>
+                        <p style="color: #666; margin-bottom: 20px;">Your Booking has been <strong>${statusText.toLowerCase()}</strong> by our admin team.</p>
+                        
+                        <h3 style="margin-bottom: 8px; color: #333;">Booking Details</h3>
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 18px;">
+                            <tr>
+                                <td style="padding: 8px 0; font-weight: bold;">Order ID:</td>
+                                <td style="padding: 8px 0;">${order.orderId}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; font-weight: bold;">Product:</td>
+                                <td style="padding: 8px 0;">${order.product_details.name}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; font-weight: bold;">Total Amount:</td>
+                                <td style="padding: 8px 0;">₹${order.totalAmt}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; font-weight: bold;">Status:</td>
+                                <td style="padding: 8px 0; color: ${statusColor}; font-weight: bold;">${statusText.toUpperCase()}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; font-weight: bold;">Updated On:</td>
+                                <td style="padding: 8px 0;">${new Date().toLocaleDateString()}</td>
+                            </tr>
+                        </table>
+                        
+                        ${status === 'ACCEPTED' ? `
+                        <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; padding: 12px; margin: 16px 0;">
+                            <p style="margin: 0; color: #155724;"><strong>Great news!</strong> Your Booking has been accepted and is being processed. You will receive further updates on your delivery.</p>
+                        </div>
+                        ` : status === 'CANCELLED' ? `
+                        <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; padding: 12px; margin: 16px 0;">
+                            <p style="margin: 0; color: #721c24;"><strong>Order Cancelled:</strong> Your Booking has been cancelled. If you have any questions, please contact our support team.</p>
+                        </div>
+                        ` : ''}
+                        
+                        <div style="margin-top: 24px;">
+                            <a href="https://preevent.in" style="display: inline-block; background: #0d6efd; color: #fff; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold;">View Booking Details</a>
+                        </div>
+                    </div>
+                    <div style="background: #f1f1f1; color: #888; text-align: center; padding: 14px 0; font-size: 0.95rem;">
+                        This is an automated notification from Prevent. Please do not reply to this email.
+                    </div>
+                </div>
+            `;
+            
+            await sendEmail({
+                sendTo: order.user_details.email,
+                subject: emailSubject,
+                html: emailHtml
+            });
+            
+        } catch (emailError) {
+            console.error('Failed to send order status update email to user:', emailError);
         }
 
         return response.json({

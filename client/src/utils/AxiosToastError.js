@@ -12,7 +12,7 @@ const AxiosToastError = (error)=>{
     } else if (error?.response?.status === 404) {
         toast.error("Service not found. Please check your connection.")
     } else if (error?.response?.status === 401) {
-        toast.error("Unauthorized. Please login again.")
+        toast.error("User not Login. Please Login First")
     } else if (error?.response?.status === 403) {
         toast.error("Access forbidden.")
     } else if (error?.code === 'NETWORK_ERROR' || error?.code === 'ERR_NETWORK') {

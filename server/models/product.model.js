@@ -86,9 +86,6 @@ ProductModel.collection.dropIndexes()
       { weights: { name: 10, description: 5} }
     );
   })
-  .then(() => {
-    console.log('Text index created successfully');
-  })
   .catch(err => {
     console.error('Error creating text index:', err);
   });

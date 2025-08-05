@@ -6,7 +6,7 @@ const auth = async(request,response,next)=>{
        
         if(!token){
             return response.status(401).json({
-                message : "Provide token"
+                message : "User not Login. Please Login First"
             })
         }
 
@@ -14,7 +14,7 @@ const auth = async(request,response,next)=>{
 
         if(!decode){
             return response.status(401).json({
-                message : "unauthorized access",
+                message : "User not Login. Please Login First",
                 error : true,
                 success : false
             })
@@ -26,7 +26,7 @@ const auth = async(request,response,next)=>{
 
     } catch (error) {
         return response.status(500).json({
-            message : "You have not login",///error.message || error,
+            message : "User not Login. Please Login First",
             error : true,
             success : false
         })

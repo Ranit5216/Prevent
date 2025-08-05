@@ -14,7 +14,17 @@ import productRouter from './route/product.route.js'
 import cartRouter from './route/cart.route.js'
 import addressRouter from './route/address.route.js'
 import orderRouter from './route/order.route.js'
+import http from 'http';
 
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  // Do not exit the process
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Do not exit the process
+});
 
 const app = express()
 app.use(cors({
@@ -46,11 +56,12 @@ app.use("/api/cart",cartRouter)
 app.use("/api/address",addressRouter)
 app.use("/api/order",orderRouter)
 
+const server = http.createServer(app);
+
 connectDB().then(()=>{
     app.listen(PORT,()=>{
         console.log("Server is running",PORT)
     })
-    
 })
 
 

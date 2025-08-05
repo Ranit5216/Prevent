@@ -145,10 +145,27 @@ export async function verifyOtpController(request, response) {
         user.otp = null
         user.otpExpiry = null
         await user.save()
+
+        // Generate tokens as in loginController
+        const accesstoken = await generatedAccessToken(user._id)
+        const refreshToken = await genertedRefreshToken(user._id)
+
+        const cookiesOption = {
+            httpOnly : true,
+            secure : true,
+            sameSite : "None"
+        }
+        response.cookie('accessToken',accesstoken,cookiesOption)
+        response.cookie('refreshToken',refreshToken,cookiesOption)
+
         return response.json({
             message: "Email verified successfully!",
             error: false,
-            success: true
+            success: true,
+            data: {
+                accesstoken,
+                refreshToken
+            }
         })
     } catch (error) {
         return response.status(500).json({
@@ -222,8 +239,6 @@ export async function loginController(request,response) {
             })
         }
 
-        // Debug log for createdAt and verify_email
-        console.log('LOGIN DEBUG:', { email, createdAt: user.createdAt, verify_email: user.verify_email });
         // Prevent login if email is not verified, but only for new users
         // Set your cutoff date below (e.g., when email verification was introduced)
         const EMAIL_VERIFICATION_CUTOFF = new Date('2025-07-21T00:00:00Z'); // <-- updated to today
@@ -481,9 +496,6 @@ export async function verifyForgotPasswordOtp(request,response){
             })
         }
 
-        // Debug log for troubleshooting
-        console.log('VERIFY FORGOT OTP:', { email, otp, userOtp: user.forgot_password_otp, expiry: user.forgot_password_expiry });
-
         const currentTime = new Date();
         if(new Date(user.forgot_password_expiry) < currentTime){
             return response.status(400).json({
@@ -633,8 +645,6 @@ export async function refreshToken(request,response){
 export async function userDetails(request,response){
     try {
         const userId  = request.userId
-
-        console.log(userId)
 
         const user = await UserModel.findById(userId).select('-password -refresh_token')
 
