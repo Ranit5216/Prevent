@@ -33,19 +33,19 @@ const Home = () => {
           <img
             src={banner}
             className='w-full h-[400px] object-cover hidden lg:block'
-            alt='banner'
+            alt='PreEvent - Professional Event Planning Services Banner'
           />
           <img
             src={bannerMobile}
             className='w-full h-[300px] object-cover lg:hidden'
-            alt='banner'
+            alt='PreEvent - Professional Event Planning Services Mobile Banner'
           />
           <div className='absolute inset-0 bg-gradient-to-r from-black/50 to-transparent flex items-center'>
             <div className='text-white p-8 lg:p-12'>
-              <h1 className='text-3xl lg:text-5xl font-bold mb-4'>Welcome to Our Service</h1>
-              <p className='text-lg lg:text-xl mb-6 max-w-xl'>Discover amazing services tailored just for you</p>
+              <h1 className='text-3xl lg:text-5xl font-bold mb-4'>PreEvent - Professional Event Planning Services</h1>
+              <p className='text-lg lg:text-xl mb-6 max-w-xl'>Transform your vision into reality with PreEvent's comprehensive event planning services. From weddings to corporate events, we handle every detail with precision and creativity.</p>
               <button className='bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors flex items-center gap-2'>
-                Explore Now <FaArrowRight />
+                Explore PreEvent Services <FaArrowRight />
               </button>
             </div>
           </div>
@@ -54,7 +54,7 @@ const Home = () => {
 
       {/* Categories Section */}
       <div className='container mx-auto px-4 py-12'>
-        <h2 className='text-2xl lg:text-3xl font-bold text-gray-800 mb-8 text-center'>Our Categories</h2>
+        <h2 className='text-2xl lg:text-3xl font-bold text-gray-800 mb-8 text-center'>PreEvent Event Planning Categories</h2>
         <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6'>
           {loadingCategory ? (
             new Array(12).fill(null).map((_, index) => (

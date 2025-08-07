@@ -69,19 +69,19 @@ const Header = () => {
         <div className='container mx-auto flex items-center px-2 lg:pt-1 justify-between'>
           {/**logo */}
           <div className='h-full'>
-            <Link to={"/"} className='h-full flex justify-center items-center'>
+            <Link to={"/"} className='h-full flex justify-center items-center' aria-label="PreEvent - Professional Event Planning Services">
               <img
                   src={logo}
                   width={190}
                   height={190}
-                  alt='logo'
+                  alt='PreEvent - Professional Event Planning Services'
                   className='hidden lg:block '
               />
               <img
                   src={logo}
                   width={130}
                   height={130}
-                  alt='logo'
+                  alt='PreEvent - Professional Event Planning Services'
                   className='lg:hidden'
               />
             </Link>
