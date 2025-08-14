@@ -46,6 +46,42 @@ export async function CashOnDeliveryOrderController(request, response) {
             })
         }
 
+        // Check for duplicate orders within the last 30 seconds
+        const thirtySecondsAgo = new Date(Date.now() - 30 * 1000)
+        const recentOrders = await OrderModel.find({
+            userId: userId,
+            createdAt: { $gte: thirtySecondsAgo },
+            order_status: 'PENDING'
+        })
+
+        if (recentOrders.length > 0) {
+            return response.status(429).json({
+                message: "Order is already being processed. Please wait a moment.",
+                error: true,
+                success: false
+            })
+        }
+
+        // Check for duplicate orders with same items and delivery date within last 5 minutes
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
+        const productIds = list_items.map(item => item.productId._id)
+        
+        const duplicateOrders = await OrderModel.find({
+            userId: userId,
+            productId: { $in: productIds },
+            delivery_date: new Date(delivery_date),
+            createdAt: { $gte: fiveMinutesAgo },
+            order_status: 'PENDING'
+        })
+
+        if (duplicateOrders.length > 0) {
+            return response.status(409).json({
+                message: "Similar order already exists. Please check your order history.",
+                error: true,
+                success: false
+            })
+        }
+
         const payload = await Promise.all(list_items.map(async el => {
             if (!el.productId || !el.productId._id) {
                 throw new Error("Invalid product data")
@@ -70,7 +106,7 @@ export async function CashOnDeliveryOrderController(request, response) {
                     image: el.productId.image
                 },
                 paymentId: "",
-                payment_status: "CASH ON DELIVERY",
+                payment_status: "CASH ON BOOKING",
                 delivery_address: addressId,
                 subTotalAmt: subTotalAmt,
                 totalAmt: totalAmt,
@@ -290,7 +326,7 @@ export async function getAllOrdersController(request, response) {
 
 export async function updateOrderStatusController(request, response) {
     try {
-        const { orderId, status } = request.body
+        const { orderId, status, cancellation_reason } = request.body
         const admin_id = request.userId
 
         // Get admin details to get mobile number
@@ -299,12 +335,28 @@ export async function updateOrderStatusController(request, response) {
             throw new Error("Admin not found")
         }
 
+        // Validate cancellation reason if status is CANCELLED
+        if (status === 'CANCELLED' && !cancellation_reason) {
+            return response.status(400).json({
+                message: "Cancellation reason is required when cancelling an order",
+                error: true,
+                success: false
+            })
+        }
+
+        const updateData = { 
+            order_status: status,
+            admin_mobile: status === 'ACCEPTED' ? admin.mobile : ""
+        }
+
+        // Add cancellation reason if status is CANCELLED
+        if (status === 'CANCELLED') {
+            updateData.cancellation_reason = cancellation_reason
+        }
+
         const order = await OrderModel.findOneAndUpdate(
             { orderId, admin_id },
-            { 
-                order_status: status,
-                admin_mobile: status === 'ACCEPTED' ? admin.mobile : ""
-            },
+            updateData,
             { new: true }
         )
 
@@ -350,6 +402,12 @@ export async function updateOrderStatusController(request, response) {
                                 <td style="padding: 8px 0; font-weight: bold;">Updated On:</td>
                                 <td style="padding: 8px 0;">${new Date().toLocaleDateString()}</td>
                             </tr>
+                            ${status === 'CANCELLED' && order.cancellation_reason ? `
+                            <tr>
+                                <td style="padding: 8px 0; font-weight: bold;">Cancellation Reason:</td>
+                                <td style="padding: 8px 0; color: #dc3545;">${order.cancellation_reason}</td>
+                            </tr>
+                            ` : ''}
                         </table>
                         
                         ${status === 'ACCEPTED' ? `
@@ -359,6 +417,11 @@ export async function updateOrderStatusController(request, response) {
                         ` : status === 'CANCELLED' ? `
                         <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; padding: 12px; margin: 16px 0;">
                             <p style="margin: 0; color: #721c24;"><strong>Order Cancelled:</strong> Your Booking has been cancelled. If you have any questions, please contact our support team.</p>
+                            ${order.cancellation_reason ? `
+                            <div style="margin-top: 8px; padding: 8px; background: #fff; border-radius: 4px; border-left: 3px solid #dc3545;">
+                                <p style="margin: 0; color: #721c24;"><strong>Reason:</strong> ${order.cancellation_reason}</p>
+                            </div>
+                            ` : ''}
                         </div>
                         ` : ''}
                         
@@ -448,3 +511,4 @@ export async function cancelOrderController(request, response) {
         })
     }
 }
+

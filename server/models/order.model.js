@@ -65,6 +65,10 @@ const orderSchema = new mongoose.Schema({
     delivery_date: {
         type: Date,
         required: [true, "Delivery date is required"]
+    },
+    cancellation_reason: {
+        type: String,
+        default: ""
     }
 },{
     timestamps : true

@@ -51,7 +51,7 @@ const Header = () => {
     //  return preve + curr.quantity
     //},0)
     //setTotalQty(qty)
-    
+
 
     //const tPrice = cartItem.reduce((preve,curr)=>{
      // return preve + (curr.productId.price * curr.quantity)
@@ -61,7 +61,7 @@ const Header = () => {
 
 
 
-  
+
   return (
     <header className='h-28 lg:h-20 lg:shadow-md sticky top-0 z-40 bg-red-500 flex items-center flex-col justify-center gap-1'>
       {
@@ -87,7 +87,7 @@ const Header = () => {
             </Link>
 
           </div>
-        
+
 
           {/**Search */}
           <div className='hidden lg:block'>
@@ -114,11 +114,11 @@ const Header = () => {
                       <p>Account</p>
                       {
                         openUserMenu ? (
-                          <GoTriangleUp size={25}/> 
+                          <GoTriangleUp size={25}/>
                         ) : (
                           <GoTriangleDown size={25}/>
                         )
-                      } 
+                      }
                     </div>
                     {
                       openUserMenu && (
@@ -129,14 +129,14 @@ const Header = () => {
                         </div>
                       )
                     }
-                    
+
                   </div>
                 ) : (
                   <button onClick={redirectToLoginPage} className='cursor-pointer text-lg px-2'>Login</button>
                 )
               }
-            
-                
+
+
                 <button onClick={()=>setOpenCartSection(true)} className='flex items-center gap-2 cursor-pointer bg-green-600 px-4 py-3 hover:bg-green-800 rounded text-white'>
                   {/**add to cart icon */}
                   <div className='animate-bounce'>
@@ -153,8 +153,8 @@ const Header = () => {
                         <p>My Cart</p>
                       )
                     }
-                    
-                    
+
+
                   </div>
                 </button>
             </div>
@@ -164,7 +164,7 @@ const Header = () => {
         )
 
       }
-        
+
       <div className='container mx-auto px-2 lg:hidden'>
         <Search/>
       </div>
@@ -176,7 +176,7 @@ const Header = () => {
       }
 
     </header>
-        
+
   )
 }
 

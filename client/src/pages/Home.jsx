@@ -43,7 +43,7 @@ const Home = () => {
           <div className='absolute inset-0 bg-gradient-to-r from-black/50 to-transparent flex items-center'>
             <div className='text-white p-8 lg:p-12'>
               <h1 className='text-3xl lg:text-5xl font-bold mb-4'>PreEvent - Professional Event Planning Services</h1>
-              <p className='text-lg lg:text-xl mb-6 max-w-xl'>Transform your vision into reality with PreEvent's comprehensive event planning services. From weddings to corporate events, we handle every detail with precision and creativity.</p>
+              <p className='text-lg lg:text-xl mb-6 max-w-xl'></p>
               <button className='bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-blue-50 transition-colors flex items-center gap-2'>
                 Explore PreEvent Services <FaArrowRight />
               </button>

@@ -8,7 +8,7 @@ import Axios from '../utils/Axios'
 import SummaryApi from '../common/SummaryApi'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
-import { FaMapMarkerAlt, FaCalendarAlt, FaCreditCard, FaMoneyBillWave } from 'react-icons/fa'
+import { FaMapMarkerAlt, FaCalendarAlt, FaCreditCard, FaMoneyBillWave, FaSpinner } from 'react-icons/fa'
 
 const CheckoutPage = () => {
   const { notDiscountTotalPrice, totalPrice, totalQty, fetchCartItem, fetchOrder } = useGlobalContext()
@@ -16,6 +16,7 @@ const CheckoutPage = () => {
   const addressList = useSelector(state => state.addresses.addressList)
   const [selectAddress, setSelectAddress] = useState(0)
   const [deliveryDate, setDeliveryDate] = useState('')
+  const [isProcessingOrder, setIsProcessingOrder] = useState(false)
   const cartItemsList = useSelector(state => state.cartItem.cart)
   const navigate = useNavigate()
 
@@ -34,6 +35,20 @@ const CheckoutPage = () => {
           toast.error("Please select a delivery date")
           return
       }
+      
+      // Prevent multiple clicks
+      if (isProcessingOrder) {
+          return
+      }
+      
+      setIsProcessingOrder(true)
+      
+      // Add timeout to prevent button from being stuck
+      const timeoutId = setTimeout(() => {
+        setIsProcessingOrder(false)
+        toast.error("Request timeout. Please try again.")
+      }, 30000) // 30 seconds timeout
+      
       try {
           const response = await Axios({
             ...SummaryApi.CashOnDeliveryOrder,
@@ -64,7 +79,17 @@ const CheckoutPage = () => {
           }
 
       } catch (error) {
-        AxiosToastError(error)
+        // Handle specific error cases
+        if (error.response?.status === 429) {
+          toast.error("Order is already being processed. Please wait a moment.")
+        } else if (error.response?.status === 409) {
+          toast.error("Similar order already exists. Please check your order history.")
+        } else {
+          AxiosToastError(error)
+        }
+      } finally {
+        clearTimeout(timeoutId)
+        setIsProcessingOrder(false)
       }
   }
 
@@ -180,10 +205,24 @@ const CheckoutPage = () => {
             <div className='mt-8 space-y-4'>
               <button 
                 onClick={handleCashOnDelivery}
-                className='w-full py-3 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-all flex items-center justify-center gap-2'
+                disabled={isProcessingOrder}
+                className={`w-full py-3 border-2 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
+                  isProcessingOrder 
+                    ? 'border-gray-300 text-gray-400 bg-gray-50 cursor-not-allowed' 
+                    : 'border-blue-600 text-blue-600 hover:bg-blue-50'
+                }`}
               >
-                <FaMoneyBillWave />
-                Cash on Booking
+                {isProcessingOrder ? (
+                  <>
+                    <FaSpinner className="animate-spin" />
+                    Processing Order...
+                  </>
+                ) : (
+                  <>
+                    <FaMoneyBillWave />
+                    Cash on Booking
+                  </>
+                )}
               </button>
             </div>
           </div>
