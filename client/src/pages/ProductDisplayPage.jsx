@@ -52,11 +52,62 @@ const ProductDisplayPage = () => {
     fetchProductDetails();
   }, [params]);
 
+  // Debug container dimensions when data changes
+  useEffect(() => {
+    if (imageContainer.current && data.image.length > 0) {
+      const container = imageContainer.current;
+      console.log('Container dimensions:', {
+        scrollWidth: container.scrollWidth,
+        clientWidth: container.clientWidth,
+        scrollLeft: container.scrollLeft,
+        imageCount: data.image.length,
+        canScroll: container.scrollWidth > container.clientWidth
+      });
+    }
+  }, [data.image]);
+
   const handleScrollRight = () => {
-    imageContainer.current.scrollLeft += 120;
+    if (imageContainer.current) {
+      const container = imageContainer.current;
+      const scrollAmount = 200;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      const newScrollLeft = Math.min(container.scrollLeft + scrollAmount, maxScroll);
+      
+      console.log('Scrolling right:', {
+        current: container.scrollLeft,
+        max: maxScroll,
+        new: newScrollLeft,
+        scrollWidth: container.scrollWidth,
+        clientWidth: container.clientWidth
+      });
+      
+      container.scrollTo({
+        left: newScrollLeft,
+        behavior: 'smooth'
+      });
+    } else {
+      console.log('imageContainer ref is null');
+    }
   };
+  
   const handleScrollLeft = () => {
-    imageContainer.current.scrollLeft -= 120;
+    if (imageContainer.current) {
+      const container = imageContainer.current;
+      const scrollAmount = 200;
+      const newScrollLeft = Math.max(container.scrollLeft - scrollAmount, 0);
+      
+      console.log('Scrolling left:', {
+        current: container.scrollLeft,
+        new: newScrollLeft
+      });
+      
+      container.scrollTo({
+        left: newScrollLeft,
+        behavior: 'smooth'
+      });
+    } else {
+      console.log('imageContainer ref is null');
+    }
   };
 
   // Lightbox modal for gallery
@@ -118,26 +169,34 @@ const ProductDisplayPage = () => {
                   <FaExpand className="text-gray-600" />
                 </button>
                 {/* Navigation Arrows for mobile */}
-                <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-2 lg:hidden">
-                  <button
-                    onClick={handleScrollLeft}
-                    className="bg-white/80 hover:bg-white p-2 rounded-full shadow pointer-events-auto transition-all duration-300 hover:scale-110"
-                  >
-                    <FaAngleLeft className="text-gray-600" />
-                  </button>
-                  <button
-                    onClick={handleScrollRight}
-                    className="bg-white/80 hover:bg-white p-2 rounded-full shadow pointer-events-auto transition-all duration-300 hover:scale-110"
-                  >
-                    <FaAngleRight className="text-gray-600" />
-                  </button>
-                </div>
+                {data.image.length > 4 && (
+                  <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-2 lg:hidden">
+                    <button
+                      onClick={handleScrollLeft}
+                      className="bg-white/90 hover:bg-white p-3 rounded-full shadow-lg pointer-events-auto transition-all duration-300 hover:scale-110 z-10"
+                      aria-label="Scroll left"
+                    >
+                      <FaAngleLeft className="text-gray-700 text-lg" />
+                    </button>
+                    <button
+                      onClick={handleScrollRight}
+                      className="bg-white/90 hover:bg-white p-3 rounded-full shadow-lg pointer-events-auto transition-all duration-300 hover:scale-110 z-10"
+                      aria-label="Scroll right"
+                    >
+                      <FaAngleRight className="text-gray-700 text-lg" />
+                    </button>
+                  </div>
+                )}
               </div>
               {/* Thumbnails */}
               <div className="relative w-full mt-0">
                 <div
                   ref={imageContainer}
-                  className="flex gap-4 overflow-x-auto scrollbar-none scroll-smooth py-2"
+                  className="flex gap-4 overflow-x-auto scrollbar-none scroll-smooth py-2 w-full"
+                  style={{ 
+                    scrollBehavior: 'smooth',
+                    minWidth: 'max-content'
+                  }}
                 >
                   {data.image.map((img, index) => (
                     <button
@@ -180,20 +239,24 @@ const ProductDisplayPage = () => {
                   })}
                 </div>
                 {/* Navigation Arrows for desktop */}
-                <div className="hidden lg:flex absolute inset-y-0 left-0 right-0 items-center justify-between pointer-events-none">
-                  <button
-                    onClick={handleScrollLeft}
-                    className="bg-white/80 hover:bg-white p-2 rounded-full shadow pointer-events-auto transition-all duration-300 hover:scale-110"
-                  >
-                    <FaAngleLeft className="text-gray-600" />
-                  </button>
-                  <button
-                    onClick={handleScrollRight}
-                    className="bg-white/80 hover:bg-white p-2 rounded-full shadow pointer-events-auto transition-all duration-300 hover:scale-110"
-                  >
-                    <FaAngleRight className="text-gray-600" />
-                  </button>
-                </div>
+                {data.image.length > 4 && (
+                  <div className="hidden lg:flex absolute inset-y-0 left-0 right-0 items-center justify-between">
+                    <button
+                      onClick={handleScrollLeft}
+                      className="bg-white/90 hover:bg-white p-3 rounded-full shadow-lg pointer-events-auto transition-all duration-300 hover:scale-110 z-10 -ml-4"
+                      aria-label="Scroll left"
+                    >
+                      <FaAngleLeft className="text-gray-700 text-lg" />
+                    </button>
+                    <button
+                      onClick={handleScrollRight}
+                      className="bg-white/90 hover:bg-white p-3 rounded-full shadow-lg pointer-events-auto transition-all duration-300 hover:scale-110 z-10 -mr-4"
+                      aria-label="Scroll right"
+                    >
+                      <FaAngleRight className="text-gray-700 text-lg" />
+                    </button>
+                  </div>
+                )}
               </div>
               {/* Dots */}
               <div className="flex items-center justify-center gap-3 mt-4">
