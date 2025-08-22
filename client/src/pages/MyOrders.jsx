@@ -109,11 +109,11 @@ const MyOrders = () => {
     }
   }
 
-  const handleCancelOrder = async (orderId) => {
+  const handleCancelOrder = async (orderId, cancellation_reason) => {
     try {
       const response = await Axios({
         ...SummaryApi.cancelOrder,
-        data: { orderId }
+        data: { orderId, cancellation_reason }
       })
       const { data: responseData } = response
 
@@ -145,7 +145,11 @@ const MyOrders = () => {
 
   const handleCancellationConfirm = async (orderId, status, cancellation_reason) => {
     try {
-      await handleUpdateStatus(orderId, status, cancellation_reason)
+      if (user.role === "ADMIN") {
+        await handleUpdateStatus(orderId, status, cancellation_reason)
+      } else {
+        await handleCancelOrder(orderId, cancellation_reason)
+      }
     } catch (error) {
       console.error('Error in cancellation confirmation:', error)
       toast.error('Failed to cancel order. Please try again.')

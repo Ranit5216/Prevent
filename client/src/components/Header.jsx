@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import logo from '../assets/until-logo-1.png'
+import logo from '../assets/preevent-new-logo.png'
 import Search from './Search'
 import { TypeAnimation } from 'react-type-animation';
 import { Link, useLocation,useNavigate } from 'react-router-dom';
@@ -72,10 +72,10 @@ const Header = () => {
             <Link to={"/"} className='h-full flex justify-center items-center' aria-label="PreEvent - Professional Event Planning Services">
               <img
                   src={logo}
-                  width={190}
-                  height={190}
+                  width={110}
+                  height={100}
                   alt='PreEvent - Professional Event Planning Services'
-                  className='hidden lg:block '
+                  className='hidden mb-4 lg:block '
               />
               <img
                   src={logo}

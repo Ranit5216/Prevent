@@ -101,7 +101,7 @@ const DisplayCartItem = ({close}) => {
                                         <p className='font-medium'>{totalQty} items</p>
                                     </div>
                                     <div className='flex justify-between items-center'>
-                                        <p className='text-gray-600'>Delivery Charge</p>
+                                        <p className='text-gray-600'>Travelling Charge</p>
                                         <p className='text-green-600 font-medium'>Free</p>
                                     </div>
                                     <div className='border-t pt-3 mt-3 flex justify-between items-center'>

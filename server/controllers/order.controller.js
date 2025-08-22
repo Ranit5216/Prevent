@@ -463,11 +463,20 @@ export async function updateOrderStatusController(request, response) {
 export async function cancelOrderController(request, response) {
     try {
         const userId = request.userId
-        const { orderId } = request.body
+        const { orderId, cancellation_reason } = request.body
 
         if (!orderId) {
             return response.status(400).json({
                 message: "Order ID is required",
+                error: true,
+                success: false
+            })
+        }
+
+        // Validate cancellation reason
+        if (!cancellation_reason) {
+            return response.status(400).json({
+                message: "Cancellation reason is required",
                 error: true,
                 success: false
             })
@@ -492,9 +501,9 @@ export async function cancelOrderController(request, response) {
             })
         }
 
-        // Update order status to cancelled
+        // Update order status to cancelled and add cancellation reason
         order.order_status = 'CANCELLED'
-        await order.save()
+        order.cancellation_reason = cancellation_reason
 
         return response.json({
             message: "Order cancelled successfully",
