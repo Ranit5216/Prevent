@@ -175,6 +175,74 @@ const SummaryApi = {
     resend_otp: {
         url: '/api/user/resend-otp',
         method: 'post'
+    },
+    contactForm: {
+        url: '/api/contact/submit',
+        method: 'post'
+    },
+    getChatSession: {
+        url: '/api/chat/session',
+        method: 'get'
+    },
+    saveChatMessage: {
+        url: '/api/chat/message',
+        method: 'post'
+    },
+    getChatHistory: {
+        url: '/api/chat/history',
+        method: 'get'
+    },
+    getAllActiveChats: {
+        url: '/api/chat/admin/active-chats',
+        method: 'get'
+    },
+    canUserReview: {
+        url: '/api/review/can-review',
+        method: 'post'
+    },
+    createReview: {
+        url: '/api/review/create',
+        method: 'post'
+    },
+    getProductReviews: {
+        url: '/api/review/get',
+        method: 'post'
+    },
+    updateReview: {
+        url: '/api/review/update',
+        method: 'put'
+    },
+    deleteReview: {
+        url: '/api/review/delete',
+        method: 'delete'
+    },
+    markReviewHelpful: {
+        url: '/api/review/helpful',
+        method: 'post'
+    },
+    reportReview: {
+        url: '/api/review/report',
+        method: 'post'
+    },
+    getDashboardAnalytics: {
+        url: '/api/admin/dashboard-analytics',
+        method: 'get'
+    },
+    getSalesReports: {
+        url: '/api/admin/sales-reports',
+        method: 'post'
+    },
+    getCommissionData: {
+        url: '/api/admin/commission-data',
+        method: 'get'
+    },
+    saveNotificationSubscription: {
+        url: '/api/notifications/subscribe',
+        method: 'post'
+    },
+    removeNotificationSubscription: {
+        url: '/api/notifications/unsubscribe',
+        method: 'delete'
     }
 }
 export default SummaryApi

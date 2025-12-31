@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - User Features Design Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #DC2626;
+            --primary-red-dark: #991B1B;
+            --primary-red-light: #FEE2E2;
+            --accent-yellow: #ffbf00;
+            --success-green: #00b050;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F5F5;
+            --border-color: #E5E7EB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'DM Sans', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+
+        /* User Dashboard */
+        .user-dashboard {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .user-details h2 {
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-details p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-light);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Order History */
+        .order-history {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .order-card {
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .order-card:hover {
+            border-color: var(--primary-red);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .order-id {
+            font-weight: 700;
+            color: var(--primary-red);
+        }
+
+        .order-date {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .order-status {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .status-delivered {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .status-pending {
+            background: var(--accent-yellow);
+            color: white;
+        }
+
+        .order-content {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .order-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 0.5rem;
+            object-fit: cover;
+        }
+
+        .order-details {
+            flex: 1;
+        }
+
+        .order-product-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .order-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .order-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-top: 0.5rem;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        .action-btn.primary {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        /* Saved Addresses */
+        .saved-addresses {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .address-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .address-card {
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .address-card:hover {
+            border-color: var(--primary-red);
+        }
+
+        .address-card.default {
+            border-color: var(--primary-red);
+            background: var(--primary-red-light);
+        }
+
+        .default-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--primary-red);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .address-type {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .address-details {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .address-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* Invoice Download */
+        .invoice-section {
+            background: linear-gradient(135deg, var(--primary-red-light), white);
+            border: 2px solid var(--primary-red);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .invoice-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .invoice-info h4 {
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .invoice-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .download-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .download-btn:hover {
+            background: var(--primary-red-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Re-order Section */
+        .reorder-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .reorder-card {
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reorder-info {
+            flex: 1;
+        }
+
+        .reorder-product {
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .reorder-date {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .reorder-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--success-green);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .reorder-btn:hover {
+            background: var(--success-green);
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .order-content {
+                flex-direction: column;
+            }
+
+            .address-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .order-actions {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👤 User Features</h1>
+            <p>Design Preview - Order history, re-order, invoices, and more</p>
+        </div>
+
+        <!-- User Dashboard -->
+        <div class="user-dashboard">
+            <div class="dashboard-header">
+                <div class="user-info">
+                    <div class="user-avatar">RK</div>
+                    <div class="user-details">
+                        <h2>Rajesh Kumar</h2>
+                        <p>rajesh.kumar@email.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-box"></i></div>
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-heart"></i></div>
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Wishlist Items</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Saved Addresses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-star"></i></div>
+                    <div class="stat-number">4.8</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order History -->
+        <div class="order-history">
+            <h2 class="section-title">
+                <i class="fas fa-history"></i>
+                Order History
+            </h2>
+
+            <!-- Order Card 1 -->
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <div class="order-id">Order #ORD-2024-001234</div>
+                        <div class="order-date">Placed on December 10, 2024</div>
+                    </div>
+                    <div class="order-status status-delivered">Delivered</div>
+                </div>
+                <div class="order-content">
+                    <img src="https://via.placeholder.com/100x100/DC2626/FFFFFF?text=Service" alt="Service" class="order-image">
+                    <div class="order-details">
+                        <div class="order-product-name">Premium Wedding Photography</div>
+                        <div class="order-info"><i class="fas fa-calendar"></i> Booking Date: December 15, 2024</div>
+                        <div class="order-info"><i class="fas fa-map-marker-alt"></i> Delhi, India</div>
+                        <div class="order-price">₹25,000</div>
+                    </div>
+                </div>
+                <div class="order-actions">
+                    <button class="action-btn">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                    <button class="action-btn">
+                        <i class="fas fa-download"></i> Download Invoice
+                    </button>
+                    <button class="action-btn primary">
+                        <i class="fas fa-redo"></i> Re-order
+                    </button>
+                    <button class="action-btn">
+                        <i class="fas fa-star"></i> Rate & Review
+                    </button>
+                </div>
+            </div>
+
+            <!-- Order Card 2 -->
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <div class="order-id">Order #ORD-2024-001189</div>
+                        <div class="order-date">Placed on December 5, 2024</div>
+                    </div>
+                    <div class="order-status status-pending">Pending</div>
+                </div>
+                <div class="order-content">
+                    <img src="https://via.placeholder.com/100x100/DC2626/FFFFFF?text=Service" alt="Service" class="order-image">
+                    <div class="order-details">
+                        <div class="order-product-name">Professional Makeup Artist</div>
+                        <div class="order-info"><i class="fas fa-calendar"></i> Booking Date: December 20, 2024</div>
+                        <div class="order-info"><i class="fas fa-map-marker-alt"></i> Mumbai, India</div>
+                        <div class="order-price">₹15,000</div>
+                    </div>
+                </div>
+                <div class="order-actions">
+                    <button class="action-btn">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                    <button class="action-btn">
+                        <i class="fas fa-times"></i> Cancel Order
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Saved Addresses -->
+        <div class="saved-addresses">
+            <h2 class="section-title">
+                <i class="fas fa-map-marker-alt"></i>
+                Saved Addresses
+            </h2>
+            <div class="address-grid">
+                <div class="address-card default">
+                    <div class="default-badge">Default</div>
+                    <div class="address-type">
+                        <i class="fas fa-home"></i> Home
+                    </div>
+                    <div class="address-details">
+                        123, Main Street<br>
+                        Sector 15, Noida<br>
+                        Uttar Pradesh - 201301<br>
+                        India<br>
+                        <strong>Phone:</strong> +91 9876543210
+                    </div>
+                    <div class="address-actions">
+                        <button class="action-btn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+
+                <div class="address-card">
+                    <div class="address-type">
+                        <i class="fas fa-briefcase"></i> Office
+                    </div>
+                    <div class="address-details">
+                        456, Business Park<br>
+                        Connaught Place<br>
+                        New Delhi - 110001<br>
+                        India<br>
+                        <strong>Phone:</strong> +91 9876543211
+                    </div>
+                    <div class="address-actions">
+                        <button class="action-btn">
+                            <i class="fas fa-check"></i> Set as Default
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+
+                <div class="address-card">
+                    <div class="address-type">
+                        <i class="fas fa-map-marker-alt"></i> Other
+                    </div>
+                    <div class="address-details">
+                        789, Event Venue<br>
+                        Gurgaon<br>
+                        Haryana - 122001<br>
+                        India<br>
+                        <strong>Phone:</strong> +91 9876543212
+                    </div>
+                    <div class="address-actions">
+                        <button class="action-btn">
+                            <i class="fas fa-check"></i> Set as Default
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="action-btn">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice Downloads -->
+        <div class="invoice-section">
+            <h2 class="section-title">
+                <i class="fas fa-file-invoice"></i>
+                Download Invoices
+            </h2>
+            <div class="invoice-card">
+                <div class="invoice-info">
+                    <h4>Order #ORD-2024-001234</h4>
+                    <p>Wedding Photography - December 15, 2024</p>
+                </div>
+                <button class="download-btn">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+            </div>
+            <div class="invoice-card">
+                <div class="invoice-info">
+                    <h4>Order #ORD-2024-001189</h4>
+                    <p>Makeup Artist - December 20, 2024</p>
+                </div>
+                <button class="download-btn">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Re-order -->
+        <div class="reorder-section">
+            <h2 class="section-title">
+                <i class="fas fa-redo"></i>
+                Quick Re-order
+            </h2>
+            <div class="reorder-card">
+                <div class="reorder-info">
+                    <div class="reorder-product">Premium Wedding Photography</div>
+                    <div class="reorder-date">Last ordered: December 10, 2024</div>
+                </div>
+                <button class="reorder-btn">
+                    <i class="fas fa-shopping-cart"></i> Re-order
+                </button>
+            </div>
+            <div class="reorder-card">
+                <div class="reorder-info">
+                    <div class="reorder-product">Professional Makeup Artist</div>
+                    <div class="reorder-date">Last ordered: November 25, 2024</div>
+                </div>
+                <button class="reorder-btn">
+                    <i class="fas fa-shopping-cart"></i> Re-order
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

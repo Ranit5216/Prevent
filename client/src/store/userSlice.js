@@ -6,6 +6,7 @@ const initialValue = {
     email : "",
     avatar : "",
     mobile : "",
+    location: "",
     facebookLink: "",
     youtubeLink: "",
     instagramLink: "",
@@ -28,6 +29,7 @@ const userSlice  = createSlice({
             state.email = action.payload?.email
             state.avatar = action.payload?.avatar
             state.mobile = action.payload?.mobile
+            state.location = action.payload?.location || ""
             state.facebookLink = action.payload?.facebookLink
             state.youtubeLink = action.payload?.youtubeLink
             state.instagramLink = action.payload?.instagramLink
@@ -48,6 +50,7 @@ const userSlice  = createSlice({
             state.email = ""
             state.avatar = ""
             state.mobile = ""
+            state.location = ""
             state.facebookLink = ""
             state.youtubeLink = ""
             state.instagramLink = ""

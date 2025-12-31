@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import dotenv from 'dotenv'
+import logger from '../utils/logger.js'
 dotenv.config()
 
 if(!process.env.RESEND_API){
@@ -31,7 +32,7 @@ const sendEmail = async({sendTo, subject, html })=>{
         });
 
         if (error) {
-            console.error("Email sending failed:", error);
+            logger.error("Email sending failed:", error);
             // Handle specific Resend API errors
             if (error.message && error.message.includes('rate limit')) {
                 throw new Error("Too many email requests. Please try again later.");
@@ -46,7 +47,7 @@ const sendEmail = async({sendTo, subject, html })=>{
         return data;
         
     } catch (error){
-        console.error("Error in sendEmail:", error);
+        logger.error("Error in sendEmail:", error);
         throw error;
     }
 }

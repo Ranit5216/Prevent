@@ -205,6 +205,33 @@ const ProductDisplayPage = () => {
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
                 ) : null}
+                {/* Navigation Arrows for Main Image */}
+                {totalMedia > 1 && (
+                  <>
+                    {/* Left Arrow */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePrevImage();
+                      }}
+                      className="absolute left-2 sm:left-3 md:left-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white p-2 sm:p-2.5 md:p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 border border-gray-200"
+                      aria-label="Previous image"
+                    >
+                      <FaAngleLeft className="text-[#DC2626] text-base sm:text-lg md:text-xl" />
+                    </button>
+                    {/* Right Arrow */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleNextImage();
+                      }}
+                      className="absolute right-2 sm:right-3 md:right-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white p-2 sm:p-2.5 md:p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 border border-gray-200"
+                      aria-label="Next image"
+                    >
+                      <FaAngleRight className="text-[#DC2626] text-base sm:text-lg md:text-xl" />
+                    </button>
+                  </>
+                )}
                 {/* Expand Icon */}
                 {totalMedia > 0 && (
                   <button
@@ -273,56 +300,6 @@ const ProductDisplayPage = () => {
                     );
                   })}
                 </div>
-                {/* Navigation Arrows for thumbnails - Mobile */}
-                {totalMedia > 3 && (
-                  <div className="lg:hidden absolute inset-y-0 left-0 right-0 flex items-center justify-between pointer-events-none px-0.5 sm:px-1">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleScrollLeft();
-                      }}
-                      className="bg-white/95 hover:bg-white p-1.5 sm:p-2 rounded-full shadow-lg pointer-events-auto transition-all duration-300 hover:scale-110 z-20 border border-[#E5E7EB]"
-                      aria-label="Scroll thumbnails left"
-                    >
-                      <FaAngleLeft className="text-[#DC2626] text-sm sm:text-base" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleScrollRight();
-                      }}
-                      className="bg-white/95 hover:bg-white p-1.5 sm:p-2 rounded-full shadow-lg pointer-events-auto transition-all duration-300 hover:scale-110 z-20 border border-[#E5E7EB]"
-                      aria-label="Scroll thumbnails right"
-                    >
-                      <FaAngleRight className="text-[#DC2626] text-sm sm:text-base" />
-                    </button>
-                  </div>
-                )}
-                {/* Navigation Arrows for thumbnails - Desktop */}
-                {totalMedia > 4 && (
-                  <div className="hidden lg:flex absolute inset-y-0 left-0 right-0 items-center justify-between pointer-events-none">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleScrollLeft();
-                      }}
-                      className="bg-white/95 hover:bg-white p-3 rounded-full shadow-lg pointer-events-auto transition-all duration-300 hover:scale-110 z-20 -ml-4 border border-[#E5E7EB]"
-                      aria-label="Scroll thumbnails left"
-                    >
-                      <FaAngleLeft className="text-[#DC2626] text-lg" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleScrollRight();
-                      }}
-                      className="bg-white/95 hover:bg-white p-3 rounded-full shadow-lg pointer-events-auto transition-all duration-300 hover:scale-110 z-20 -mr-4 border border-[#E5E7EB]"
-                      aria-label="Scroll thumbnails right"
-                    >
-                      <FaAngleRight className="text-[#DC2626] text-lg" />
-                    </button>
-                  </div>
-                )}
               </div>
               {/* Dots */}
               {totalMedia > 1 && (

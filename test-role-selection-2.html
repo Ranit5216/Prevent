@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - Registration (Design 2: Hidden/Less Prominent)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #F9FAFB 0%, #FFFFFF 50%, #F9FAFB 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(220, 38, 38, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 191, 0, 0.03) 0%, transparent 50%);
+        }
+
+        .registration-container {
+            width: 100%;
+            max-width: 540px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 
+                0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                0 10px 10px -5px rgba(0, 0, 0, 0.04),
+                0 0 0 1px rgba(220, 38, 38, 0.05);
+            border: 1px solid rgba(220, 38, 38, 0.1);
+        }
+
+        .accent-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #DC2626 0%, #ffbf00 50%, #DC2626 100%);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 0.875rem;
+            color: #6B7280;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+        }
+
+        .form-label i {
+            color: #DC2626;
+            opacity: 0.7;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #111827;
+            background: #F3F4F6;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #ffbf00;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.15);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6B7280;
+            font-size: 0.875rem;
+            pointer-events: none;
+        }
+
+        .form-input.has-icon {
+            padding-left: 44px;
+        }
+
+        /* Hidden Role Selection - Small Link */
+        .role-selection-hidden {
+            margin-bottom: 24px;
+            padding: 16px;
+            background: #F9FAFB;
+            border-radius: 8px;
+            border: 1px dashed #E5E7EB;
+            text-align: center;
+        }
+
+        .role-selection-hidden p {
+            font-size: 0.875rem;
+            color: #6B7280;
+            margin-bottom: 8px;
+        }
+
+        .vendor-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #DC2626;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .vendor-link:hover {
+            background: rgba(220, 38, 38, 0.1);
+            color: #991B1B;
+        }
+
+        .vendor-link i {
+            font-size: 0.75rem;
+        }
+
+        /* Hidden Role Input */
+        .hidden-role-input {
+            display: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            margin-top: 24px;
+            box-shadow: 0 4px 14px 0 rgba(220, 38, 38, 0.3);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            background: #9CA3AF;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .login-link p {
+            font-size: 0.875rem;
+            color: #6B7280;
+        }
+
+        .login-link a {
+            font-weight: 700;
+            color: #00b050;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #008040;
+            background: rgba(0, 176, 80, 0.1);
+        }
+
+        @media (max-width: 640px) {
+            .registration-container {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="registration-container">
+        <div class="accent-bar"></div>
+        
+        <div class="header">
+            <h1>Welcome to PreEvent</h1>
+            <p>Create your account to get started</p>
+        </div>
+
+        <form id="registerForm" onsubmit="handleSubmit(event)">
+            <!-- Design 2: Hidden/Less Prominent Admin Option -->
+            <div class="role-selection-hidden">
+                <p>Registering as a <strong>Customer</strong>?</p>
+                <a href="#" class="vendor-link" onclick="toggleVendorMode(event)">
+                    <i class="fas fa-store"></i>
+                    Register as Vendor instead
+                </a>
+            </div>
+
+            <input type="hidden" name="role" id="roleInput" value="USER" class="hidden-role-input">
+
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-user"></i> Name</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" class="form-input has-icon" name="name" placeholder="Enter your name" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-envelope"></i> Email</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" class="form-input has-icon" name="email" placeholder="Enter your email" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-phone"></i> Mobile Number</label>
+                <div style="display: flex;">
+                    <div style="padding: 12px 14px; background: #F3F4F6; border: 2px solid #E5E7EB; border-right: 0; border-radius: 8px 0 0 8px; font-weight: 600;">+91</div>
+                    <div class="input-wrapper" style="flex: 1;">
+                        <i class="fas fa-phone input-icon" style="left: 14px;"></i>
+                        <input type="text" class="form-input has-icon" name="mobile" placeholder="10-digit mobile" maxlength="10" required style="border-left: 0; border-radius: 0 8px 8px 0;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-lock"></i> Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" class="form-input has-icon" name="password" placeholder="Enter password" required minlength="6">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-lock"></i> Confirm Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" class="form-input has-icon" name="confirmPassword" placeholder="Confirm password" required minlength="6">
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Register</button>
+        </form>
+
+        <div class="login-link">
+            <p>Already have account? <a href="#login">Login</a></p>
+        </div>
+    </div>
+
+    <script>
+        let isVendorMode = false;
+
+        function toggleVendorMode(event) {
+            event.preventDefault();
+            isVendorMode = !isVendorMode;
+            const roleInput = document.getElementById('roleInput');
+            const roleSection = document.querySelector('.role-selection-hidden');
+            
+            if (isVendorMode) {
+                roleInput.value = 'ADMIN';
+                roleSection.innerHTML = `
+                    <p>Registering as a <strong>Vendor</strong>?</p>
+                    <a href="#" class="vendor-link" onclick="toggleVendorMode(event)">
+                        <i class="fas fa-user"></i>
+                        Register as Customer instead
+                    </a>
+                `;
+                roleSection.style.background = '#FEF2F2';
+                roleSection.style.borderColor = '#DC2626';
+            } else {
+                roleInput.value = 'USER';
+                roleSection.innerHTML = `
+                    <p>Registering as a <strong>Customer</strong>?</p>
+                    <a href="#" class="vendor-link" onclick="toggleVendorMode(event)">
+                        <i class="fas fa-store"></i>
+                        Register as Vendor instead
+                    </a>
+                `;
+                roleSection.style.background = '#F9FAFB';
+                roleSection.style.borderColor = '#E5E7EB';
+            }
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {
+                role: formData.get('role'),
+                name: formData.get('name'),
+                email: formData.get('email'),
+                mobile: formData.get('mobile'),
+                password: formData.get('password')
+            };
+            console.log('Registration Data:', data);
+            alert(`Role: ${data.role === 'USER' ? 'Customer' : 'Vendor'}\nName: ${data.name}\nEmail: ${data.email}`);
+        }
+
+        document.querySelector('input[name="mobile"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+        });
+    </script>
+</body>
+</html>
+

@@ -3,13 +3,13 @@ import { IoClose } from 'react-icons/io5'
 import { Link, useNavigate } from 'react-router-dom'
 import { useGlobalContext } from '../provider/GlobalProvider'
 import { DisplayPriceInRupees } from '../utils/DisplayPriceInRupees'
-import { FaCaretRight } from "react-icons/fa";
+import { FaArrowUp } from "react-icons/fa";
 import { useSelector } from 'react-redux'
 import AddToCartButton from './AddToCartButton'
 import { pricewithDiscount } from '../utils/PriceWithDiscount'
 import imageEmpty from '../assets/empty cart item.jpg'
 import toast from 'react-hot-toast'
-import { FaTrash } from 'react-icons/fa'
+import { FaTrash, FaShoppingCart } from 'react-icons/fa'
 
 const DisplayCartItem = ({close}) => {
     const { notDiscountTotalPrice, totalPrice, totalQty, deleteCartItem } = useGlobalContext()
@@ -31,126 +31,152 @@ const DisplayCartItem = ({close}) => {
         }
         toast("Please Login")
     }
+
+    // Close cart on Escape key
+    React.useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === 'Escape' && close) {
+                close()
+            }
+        }
+        document.addEventListener('keydown', handleEscape)
+        return () => document.removeEventListener('keydown', handleEscape)
+    }, [close])
+
   return (
-    <section className='bg-black/50 backdrop-blur-sm fixed top-0 bottom-0 right-0 left-0 z-50 transition-all duration-300'>
-        <div className='bg-white w-full max-w-sm h-screen ml-auto shadow-2xl transform transition-transform duration-300 flex flex-col'>
-            {/* Header */}
-            <div className='flex items-center p-6 shadow-md gap-3 justify-between bg-gradient-to-r from-blue-600 to-blue-700 text-white flex-shrink-0'>
-                <h2 className='font-bold text-xl'>Your Shopping Cart</h2>
-                <Link to={"/"} className='lg:hidden hover:scale-110 transition-transform'>
-                    <IoClose size={25}/>
-                </Link>
-                <button onClick={close} className='cursor-pointer hidden lg:block hover:scale-110 transition-transform'>
-                    <IoClose size={25}/>
+    <>
+        {/* Backdrop */}
+        <div 
+            className='fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-[999] transition-opacity duration-300'
+            onClick={close}
+        />
+
+        {/* Cart Overlay */}
+        <div className='fixed top-0 right-0 w-full max-w-[420px] h-screen bg-white shadow-[-4px_0_12px_rgba(0,0,0,0.15)] z-[1000] flex flex-col transition-transform duration-300'>
+            {/* Cart Header */}
+            <div className='bg-[#DC2626] text-white px-5 py-4 flex items-center justify-between flex-shrink-0'>
+                <h2 className='text-lg font-bold'>Your Booking Cart</h2>
+                <button 
+                    onClick={close}
+                    className='w-8 h-8 flex items-center justify-center rounded hover:bg-white/20 transition-colors'
+                    aria-label="Close cart"
+                >
+                    <IoClose size={20} className="text-white" />
                 </button>
             </div>
 
-            {/* Main Content */}
-            <div className='flex-1 overflow-y-auto min-h-0 p-4 flex flex-col gap-6'>
-                {/***display items */}
-                {
-                    cartItem[0] ? (
-                        <>
-                            <div className='flex items-center justify-between px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl shadow-md'>
-                                <p className='font-medium'>Your total savings</p>
-                                <p className='font-bold'>{DisplayPriceInRupees(notDiscountTotalPrice - totalPrice )}</p>
-                            </div>
-                            <div className='bg-white rounded-xl p-6 grid gap-6 overflow-auto shadow-md'>
-                                    {
-                                        cartItem[0] && (
-                                            cartItem.map((item,index)=>{
-                                                return(
-                                                    <div key={item?._id+"cartItemDisplay"} className='flex w-full gap-4 p-4 rounded-lg hover:bg-gray-50 transition-colors'>
-                                                        <div className='w-20 h-20 min-h-20 min-w-20 border rounded-lg overflow-hidden shadow-sm'>
-                                                            <img
-                                                                src={item?.productId?.image[0]}
-                                                                className='h-full w-full object-cover hover:scale-110 transition-transform duration-300'
-                                                            />
-                                                        </div>
-                                                        <div className='w-full max-w-sm'>
-                                                            <p className='text-sm font-medium text-gray-800 line-clamp-2'>{item?.productId?.name}</p>
-                                                            <p className='font-bold text-blue-600 mt-2'>{DisplayPriceInRupees(pricewithDiscount(item?.productId?.price,item?.productId?.discount))}</p>
-                                                        </div>
-                                                        <div className='flex flex-col gap-3'>
-                                                            <AddToCartButton data={item?.productId}/>
-                                                            <button 
-                                                                onClick={() => handleRemoveItem(item._id)}
-                                                                className='bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg flex items-center justify-center transition-colors'
-                                                            >
-                                                                <FaTrash size={14}/>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                )
-                                            })
-                                        )
-                                    }
-                            </div>
-                            <div className='bg-white p-6 rounded-xl shadow-md'>
-                                <h3 className='font-bold text-lg mb-4 text-gray-800'>Bill Details</h3>
-                                <div className='space-y-3'>
-                                    <div className='flex justify-between items-center'>
-                                        <p className='text-gray-600'>Items total</p>
-                                        <p className='flex items-center gap-2'>
-                                            <span className='line-through text-gray-400'>{DisplayPriceInRupees(notDiscountTotalPrice)}</span>
-                                            <span className='font-medium'>{DisplayPriceInRupees(totalPrice)}</span>
+            {/* Savings Bar */}
+            {cartItem[0] && (
+                <div className='bg-[#10B981] text-white px-5 py-3 text-sm font-semibold text-center flex-shrink-0'>
+                    Your total savings {DisplayPriceInRupees(notDiscountTotalPrice - totalPrice)}
+                </div>
+            )}
+
+            {/* Cart Content */}
+            <div className='flex-1 overflow-y-auto p-5 flex flex-col gap-5'>
+                {cartItem[0] ? (
+                    <>
+                        {/* Cart Items */}
+                        <div className='flex flex-col gap-4'>
+                            {cartItem.map((item) => (
+                                <div 
+                                    key={item?._id+"cartItemDisplay"} 
+                                    className='flex gap-3 p-3 bg-[#F1F5F9] rounded-lg border border-[#E2E8F0]'
+                                >
+                                    <img
+                                        src={item?.productId?.image[0]}
+                                        alt={item?.productId?.name}
+                                        className='w-20 h-20 min-w-20 min-h-20 rounded-lg object-cover bg-white'
+                                    />
+                                    <div className='flex-1 min-w-0'>
+                                        <h3 className='text-sm font-semibold text-[#0F172A] mb-1.5 line-clamp-2'>
+                                            {item?.productId?.name}
+                                        </h3>
+                                        <p className='text-base font-bold text-[#0F172A] mb-2'>
+                                            {DisplayPriceInRupees(pricewithDiscount(item?.productId?.price, item?.productId?.discount))}
                                         </p>
-                                    </div>
-                                    <div className='flex justify-between items-center'>
-                                        <p className='text-gray-600'>Quantity total</p>
-                                        <p className='font-medium'>{totalQty} items</p>
-                                    </div>
-                                    <div className='flex justify-between items-center'>
-                                        <p className='text-gray-600'>Travelling Charge</p>
-                                        <p className='text-green-600 font-medium'>Free</p>
-                                    </div>
-                                    <div className='border-t pt-3 mt-3 flex justify-between items-center'>
-                                        <p className='font-bold text-lg text-gray-800'>Grand total</p>
-                                        <p className='font-bold text-xl text-blue-600'>{DisplayPriceInRupees(totalPrice)}</p>
+                                        <div className='flex gap-2 items-center'>
+                                            <AddToCartButton data={item?.productId} />
+                                            <button 
+                                                onClick={() => handleRemoveItem(item._id)}
+                                                className='p-1.5 bg-[#DC2626] hover:bg-[#991B1B] text-white rounded-md transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center'
+                                                aria-label="Remove item"
+                                            >
+                                                <FaTrash size={12}/>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </>
-                    ) : (
-                        <div className='bg-white rounded-xl p-8 flex flex-col justify-center items-center shadow-md'>
-                            <img
-                                src={imageEmpty}
-                                className='w-64 h-64 object-contain mb-6' 
-                            />
-                            <p className='text-gray-600 mb-6 text-center'>Your cart is empty. Start shopping to add items!</p>
-                            <Link 
-                                onClick={close} 
-                                to={"/"} 
-                                className='bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-full font-medium hover:shadow-lg transition-all hover:scale-105'
-                            >
-                                Start Shopping
-                            </Link>
+                            ))}
                         </div>
-                    )
-                }
-            </div>
 
-            {/* Footer/Checkout */}
-            {
-                cartItem[0] && (
-                    <div className='p-4 bg-white border-t flex-shrink-0'>
-                        <div className='bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-4 rounded-xl shadow-lg flex items-center justify-between hover:shadow-xl transition-all'>
-                            <div className='font-bold text-xl'>
-                                {DisplayPriceInRupees(totalPrice)}
+                        {/* Bill Details */}
+                        <div className='bg-white border border-[#E2E8F0] rounded-lg p-4 mt-auto'>
+                            <h3 className='text-base font-bold text-[#0F172A] mb-4 pb-3 border-b border-[#E2E8F0]'>
+                                Bill Details
+                            </h3>
+                            
+                            <div className='space-y-3'>
+                                <div className='flex justify-between items-center text-sm'>
+                                    <span className='text-[#475569] font-medium'>Items total</span>
+                                    <div className='flex items-center gap-2'>
+                                        <span className='line-through text-[#94A3B8]'>
+                                            {DisplayPriceInRupees(notDiscountTotalPrice)}
+                                        </span>
+                                        <span className='font-semibold text-[#0F172A]'>
+                                            {DisplayPriceInRupees(totalPrice)}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className='flex justify-between items-center text-sm'>
+                                    <span className='text-[#475569] font-medium'>Quantity total</span>
+                                    <span className='font-semibold text-[#0F172A]'>{totalQty} items</span>
+                                </div>
+
+                                <div className='flex justify-between items-center text-sm'>
+                                    <span className='text-[#475569] font-medium'>Travelling Charge</span>
+                                    <span className='text-[#10B981] font-semibold'>Free</span>
+                                </div>
+
+                                <div className='flex justify-between items-center pt-4 mt-4 border-t-2 border-[#E2E8F0]'>
+                                    <span className='text-base font-bold text-[#0F172A]'>Grand total</span>
+                                    <span className='text-[#DC2626] text-lg font-bold'>
+                                        {DisplayPriceInRupees(totalPrice)}
+                                    </span>
+                                </div>
                             </div>
+
+                            {/* Checkout Button */}
                             <button 
-                                onClick={redirectToCheckoutPage} 
-                                className='cursor-pointer flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg hover:bg-white/30 transition-colors'
+                                onClick={redirectToCheckoutPage}
+                                className='w-full mt-4 px-5 py-3.5 bg-[#10B981] hover:bg-[#059669] text-white rounded-lg font-bold text-base transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 shadow-sm hover:shadow-md flex items-center justify-center gap-2'
                             >
-                                Proceed to Checkout
-                                <FaCaretRight/>
+                                <span>{DisplayPriceInRupees(totalPrice)} Proceed to Checkout</span>
+                                <FaArrowUp size={14} />
                             </button>
                         </div>
+                    </>
+                ) : (
+                    <div className='bg-white rounded-xl p-8 flex flex-col justify-center items-center shadow-md'>
+                        <img
+                            src={imageEmpty}
+                            className='w-64 h-64 object-contain mb-6' 
+                            alt="Empty cart"
+                        />
+                        <p className='text-[#475569] mb-6 text-center'>Your cart is empty. Start booking to add items!</p>
+                        <Link 
+                            onClick={close} 
+                            to={"/"} 
+                            className='bg-[#DC2626] hover:bg-[#991B1B] text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all hover:-translate-y-0.5 active:translate-y-0'
+                        >
+                            Start Booking
+                        </Link>
                     </div>
-                )
-            }
+                )}
+            </div>
         </div>
-    </section>
+    </>
   )
 }
 

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - Registration (Design 3: Separate Pages)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #F9FAFB 0%, #FFFFFF 50%, #F9FAFB 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(220, 38, 38, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 191, 0, 0.03) 0%, transparent 50%);
+        }
+
+        .selection-container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 
+                0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                0 10px 10px -5px rgba(0, 0, 0, 0.04),
+                0 0 0 1px rgba(220, 38, 38, 0.05);
+            border: 1px solid rgba(220, 38, 38, 0.1);
+            text-align: center;
+        }
+
+        .accent-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #DC2626 0%, #ffbf00 50%, #DC2626 100%);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .header {
+            margin-bottom: 48px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            font-size: 1rem;
+            color: #6B7280;
+        }
+
+        .selection-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .option-card {
+            border: 2px solid #E5E7EB;
+            border-radius: 16px;
+            padding: 32px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #F9FAFB;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .option-card:hover {
+            border-color: #DC2626;
+            background: #FFFFFF;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.15);
+        }
+
+        .option-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            transition: all 0.3s ease;
+        }
+
+        .option-card.vendor .option-icon {
+            background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+        }
+
+        .option-card:hover .option-icon {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .option-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .option-description {
+            font-size: 0.875rem;
+            color: #6B7280;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .option-features {
+            text-align: left;
+            font-size: 0.8rem;
+            color: #6B7280;
+        }
+
+        .option-features li {
+            margin-bottom: 6px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .option-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 32px 0;
+            color: #9CA3AF;
+            font-size: 0.875rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #E5E7EB;
+        }
+
+        .divider span {
+            padding: 0 16px;
+        }
+
+        .login-link {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .login-link p {
+            font-size: 0.875rem;
+            color: #6B7280;
+        }
+
+        .login-link a {
+            font-weight: 700;
+            color: #00b050;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #008040;
+            background: rgba(0, 176, 80, 0.1);
+        }
+
+        @media (max-width: 640px) {
+            .selection-container {
+                padding: 40px 24px;
+            }
+
+            .selection-options {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="selection-container">
+        <div class="accent-bar"></div>
+        
+        <div class="header">
+            <h1>Welcome to PreEvent</h1>
+            <p>Choose how you want to get started</p>
+        </div>
+
+        <!-- Design 3: Separate Registration Pages -->
+        <div class="selection-options">
+            <a href="#customer-register" class="option-card customer" onclick="handleSelection('USER', event)">
+                <div class="option-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="option-title">I'm a Customer</div>
+                <div class="option-description">I want to book services for my events</div>
+                <ul class="option-features">
+                    <li>Browse & book services</li>
+                    <li>Manage orders</li>
+                    <li>Track bookings</li>
+                </ul>
+            </a>
+
+            <a href="#vendor-register" class="option-card vendor" onclick="handleSelection('ADMIN', event)">
+                <div class="option-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <div class="option-title">I'm a Vendor</div>
+                <div class="option-description">I want to offer my services</div>
+                <ul class="option-features">
+                    <li>List your services</li>
+                    <li>Manage orders</li>
+                    <li>Grow your business</li>
+                </ul>
+            </a>
+        </div>
+
+        <div class="divider">
+            <span>OR</span>
+        </div>
+
+        <div class="login-link">
+            <p>Already have account? <a href="#login">Login</a></p>
+        </div>
+    </div>
+
+    <script>
+        function handleSelection(role, event) {
+            event.preventDefault();
+            console.log('Selected Role:', role);
+            alert(`You selected: ${role === 'USER' ? 'Customer Registration' : 'Vendor Registration'}\n\nIn actual implementation, this would redirect to:\n${role === 'USER' ? '/register' : '/register-vendor'}`);
+        }
+    </script>
+</body>
+</html>
+

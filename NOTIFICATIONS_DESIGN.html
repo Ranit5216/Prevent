@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - Notifications System Design Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #DC2626;
+            --primary-red-dark: #991B1B;
+            --primary-red-light: #FEE2E2;
+            --accent-yellow: #ffbf00;
+            --success-green: #00b050;
+            --info-blue: #3B82F6;
+            --warning-orange: #F59E0B;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F5F5;
+            --border-color: #E5E7EB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'DM Sans', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Notification Bell Icon (Header) */
+        .notification-header {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-icon-wrapper {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-bell {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            transition: transform 0.3s ease;
+        }
+
+        .notification-bell:hover {
+            transform: scale(1.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--primary-red);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 2px solid white;
+        }
+
+        /* Notification Dropdown */
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 400px;
+            max-height: 500px;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            margin-top: 1rem;
+            overflow: hidden;
+            display: none;
+            z-index: 1000;
+        }
+
+        .notification-dropdown.active {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dropdown-header h3 {
+            font-weight: 700;
+        }
+
+        .mark-all-read {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .mark-all-read:hover {
+            background: white;
+            color: var(--primary-red);
+        }
+
+        .notification-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Notification Item */
+        .notification-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .notification-item:hover {
+            background: var(--bg-light);
+        }
+
+        .notification-item.unread {
+            background: var(--primary-red-light);
+        }
+
+        .notification-item.unread::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary-red);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+
+        .notification-icon.order {
+            background: var(--info-blue);
+            color: white;
+        }
+
+        .notification-icon.success {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .notification-icon.warning {
+            background: var(--warning-orange);
+            color: white;
+        }
+
+        .notification-icon.promotion {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .notification-message {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-time {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .notification-action-btn {
+            padding: 0.25rem 0.5rem;
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .notification-action-btn:hover {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        /* Notification Center Page */
+        .notifications-page {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .notification-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            background: var(--bg-light);
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .filter-tab:hover,
+        .filter-tab.active {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        /* Notification Types */
+        .notification-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Settings */
+        .notification-settings {
+            background: var(--bg-light);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .settings-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .setting-info h4 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .setting-info p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-red);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Empty State */
+        .empty-notifications {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .empty-text {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .notification-dropdown {
+                width: 100%;
+                right: -2rem;
+            }
+
+            .notification-filters {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔔 Notifications System</h1>
+            <p>Design Preview - Stay updated with real-time notifications</p>
+        </div>
+
+        <!-- Notification Bell in Header -->
+        <div class="notification-header">
+            <h2>Header Notification Icon</h2>
+            <div class="notification-icon-wrapper" onclick="toggleDropdown()">
+                <i class="fas fa-bell notification-bell"></i>
+                <span class="notification-badge">5</span>
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <div class="dropdown-header">
+                        <h3>Notifications</h3>
+                        <button class="mark-all-read">Mark all as read</button>
+                    </div>
+                    <div class="notification-list">
+                        <div class="notification-item unread">
+                            <div class="notification-icon order">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">Order Accepted</div>
+                                <div class="notification-message">Your booking for "Wedding Photography" has been accepted!</div>
+                                <div class="notification-time">2 minutes ago</div>
+                            </div>
+                        </div>
+                        <div class="notification-item unread">
+                            <div class="notification-icon success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">Payment Successful</div>
+                                <div class="notification-message">Your payment of ₹25,000 has been processed successfully.</div>
+                                <div class="notification-time">1 hour ago</div>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">Booking Reminder</div>
+                                <div class="notification-message">Your event is scheduled for tomorrow. Don't forget!</div>
+                                <div class="notification-time">3 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon promotion">
+                                <i class="fas fa-gift"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">Special Offer</div>
+                                <div class="notification-message">Get 20% off on all catering services this week!</div>
+                                <div class="notification-time">1 day ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications Page -->
+        <div class="notifications-page">
+            <div class="page-header">
+                <div class="page-title">
+                    <i class="fas fa-bell"></i>
+                    Notifications
+                </div>
+                <button class="mark-all-read">Mark all as read</button>
+            </div>
+
+            <!-- Filters -->
+            <div class="notification-filters">
+                <button class="filter-tab active">All</button>
+                <button class="filter-tab">Orders</button>
+                <button class="filter-tab">Payments</button>
+                <button class="filter-tab">Promotions</button>
+                <button class="filter-tab">Reminders</button>
+            </div>
+
+            <!-- Order Notifications -->
+            <div class="notification-section">
+                <div class="section-title">
+                    <i class="fas fa-box"></i>
+                    Order Updates
+                </div>
+                <div class="notification-item unread">
+                    <div class="notification-icon order">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Order Accepted</div>
+                        <div class="notification-message">Your booking for "Premium Wedding Photography" has been accepted by the vendor. They will contact you soon!</div>
+                        <div class="notification-time">2 minutes ago</div>
+                        <div class="notification-actions">
+                            <button class="notification-action-btn">View Order</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="notification-item unread">
+                    <div class="notification-icon order">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Service Confirmed</div>
+                        <div class="notification-message">Your makeup artist booking for Dec 25, 2024 has been confirmed.</div>
+                        <div class="notification-time">1 hour ago</div>
+                        <div class="notification-actions">
+                            <button class="notification-action-btn">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Notifications -->
+            <div class="notification-section">
+                <div class="section-title">
+                    <i class="fas fa-credit-card"></i>
+                    Payment Updates
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Payment Successful</div>
+                        <div class="notification-message">Your payment of ₹25,000 for "Wedding Photography" has been processed successfully.</div>
+                        <div class="notification-time">3 hours ago</div>
+                        <div class="notification-actions">
+                            <button class="notification-action-btn">View Receipt</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Promotion Notifications -->
+            <div class="notification-section">
+                <div class="section-title">
+                    <i class="fas fa-gift"></i>
+                    Promotions & Offers
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon promotion">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Special Discount Available</div>
+                        <div class="notification-message">Get 20% off on all catering services this week! Use code: CATER20</div>
+                        <div class="notification-time">1 day ago</div>
+                        <div class="notification-actions">
+                            <button class="notification-action-btn">Shop Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reminder Notifications -->
+            <div class="notification-section">
+                <div class="section-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    Reminders
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Upcoming Event</div>
+                        <div class="notification-message">Your event is scheduled for tomorrow at 10:00 AM. Don't forget to prepare!</div>
+                        <div class="notification-time">2 days ago</div>
+                        <div class="notification-actions">
+                            <button class="notification-action-btn">View Event</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Settings -->
+        <div class="notification-settings">
+            <div class="settings-title">
+                <i class="fas fa-cog"></i>
+                Notification Settings
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Order Updates</h4>
+                    <p>Get notified when your order status changes</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Payment Notifications</h4>
+                    <p>Receive alerts for payment confirmations</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Promotional Offers</h4>
+                    <p>Get notified about special deals and discounts</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Event Reminders</h4>
+                    <p>Receive reminders for your upcoming events</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Email Notifications</h4>
+                    <p>Receive notifications via email</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Push Notifications</h4>
+                    <p>Receive browser push notifications</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('notificationDropdown');
+            const iconWrapper = document.querySelector('.notification-icon-wrapper');
+            if (!iconWrapper.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Filter tabs
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Mark as read
+        document.querySelectorAll('.notification-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.remove('unread');
+            });
+        });
+
+        // Mark all as read
+        document.querySelectorAll('.mark-all-read').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.notification-item').forEach(item => {
+                    item.classList.remove('unread');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

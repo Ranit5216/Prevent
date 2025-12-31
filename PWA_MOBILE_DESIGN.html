@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - PWA Mobile App Design Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #DC2626;
+            --primary-red-dark: #991B1B;
+            --primary-red-light: #FEE2E2;
+            --accent-yellow: #ffbf00;
+            --success-green: #00b050;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F5F5;
+            --border-color: #E5E7EB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'DM Sans', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Mobile Device Frame */
+        .mobile-device {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .mobile-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 44px;
+            background: var(--primary-red);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            background: var(--primary-red);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .mobile-header-icons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .header-icon {
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.75rem 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: var(--primary-red);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Mobile Content */
+        .mobile-content {
+            height: calc(100% - 44px - 60px - 60px);
+            overflow-y: auto;
+            padding-bottom: 1rem;
+        }
+
+        /* PWA Install Banner */
+        .pwa-install-banner {
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .install-text {
+            flex: 1;
+        }
+
+        .install-text h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .install-text p {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .install-btn {
+            background: white;
+            color: var(--primary-red);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        /* Offline Indicator */
+        .offline-indicator {
+            background: var(--warning-orange);
+            color: white;
+            padding: 0.5rem 1rem;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .offline-indicator.active {
+            display: block;
+        }
+
+        /* Home Screen */
+        .home-screen {
+            padding: 1rem;
+        }
+
+        .search-bar {
+            background: var(--bg-light);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .category-scroll {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 1rem 0;
+            margin-bottom: 1rem;
+        }
+
+        .category-item {
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-red-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-size: 1.5rem;
+            color: var(--primary-red);
+        }
+
+        .category-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 1rem;
+        }
+
+        .product-name {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-red);
+        }
+
+        /* Features Section */
+        .features-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            color: var(--success-green);
+            font-weight: 700;
+        }
+
+        /* Install Instructions */
+        .install-instructions {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .instruction-step {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .instruction-step:last-child {
+            border-bottom: none;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-red);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .features-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 PWA Mobile App Features</h1>
+            <p>Design Preview - Install as app, work offline, and more</p>
+        </div>
+
+        <!-- Mobile Device Preview -->
+        <div class="mobile-device">
+            <div class="mobile-screen">
+                <!-- Status Bar -->
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <span>📶 📶 📶 🔋</span>
+                </div>
+
+                <!-- Mobile Header -->
+                <div class="mobile-header">
+                    <div class="mobile-logo">PreEvent</div>
+                    <div class="mobile-header-icons">
+                        <i class="fas fa-search header-icon"></i>
+                        <i class="fas fa-bell header-icon"></i>
+                        <i class="fas fa-shopping-cart header-icon"></i>
+                    </div>
+                </div>
+
+                <!-- Offline Indicator -->
+                <div class="offline-indicator" id="offlineIndicator">
+                    <i class="fas fa-wifi"></i> You're offline. Some features may be limited.
+                </div>
+
+                <!-- PWA Install Banner -->
+                <div class="pwa-install-banner">
+                    <div class="install-text">
+                        <h3>Install PreEvent App</h3>
+                        <p>Add to home screen for better experience</p>
+                    </div>
+                    <button class="install-btn" onclick="installPWA()">
+                        Install
+                    </button>
+                </div>
+
+                <!-- Mobile Content -->
+                <div class="mobile-content">
+                    <div class="home-screen">
+                        <!-- Search Bar -->
+                        <div class="search-bar">
+                            <i class="fas fa-search" style="color: var(--text-secondary);"></i>
+                            <input type="text" class="search-input" placeholder="Search services...">
+                        </div>
+
+                        <!-- Categories -->
+                        <div class="category-scroll">
+                            <div class="category-item">
+                                <div class="category-icon">📷</div>
+                                <div class="category-name">Photo</div>
+                            </div>
+                            <div class="category-item">
+                                <div class="category-icon">💄</div>
+                                <div class="category-name">Makeup</div>
+                            </div>
+                            <div class="category-item">
+                                <div class="category-icon">🍽️</div>
+                                <div class="category-name">Catering</div>
+                            </div>
+                            <div class="category-item">
+                                <div class="category-icon">🎨</div>
+                                <div class="category-name">Decor</div>
+                            </div>
+                        </div>
+
+                        <!-- Product Card -->
+                        <div class="product-card">
+                            <img src="https://via.placeholder.com/375x180/DC2626/FFFFFF?text=Service" alt="Service" class="product-image">
+                            <div class="product-info">
+                                <div class="product-name">Premium Wedding Photography</div>
+                                <div class="product-price">₹25,000</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Navigation -->
+                <div class="bottom-nav">
+                    <div class="nav-item active">
+                        <i class="fas fa-home nav-icon"></i>
+                        <span class="nav-label">Home</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-search nav-icon"></i>
+                        <span class="nav-label">Search</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-heart nav-icon"></i>
+                        <span class="nav-label">Wishlist</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-shopping-cart nav-icon"></i>
+                        <span class="nav-label">Cart</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-user nav-icon"></i>
+                        <span class="nav-label">Profile</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-section">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <div class="feature-title">Install as App</div>
+                <div class="feature-description">
+                    Users can install PreEvent on their phone home screen. Works like a native app with full-screen experience.
+                </div>
+                <ul class="feature-list">
+                    <li>Add to Home Screen</li>
+                    <li>App-like experience</li>
+                    <li>No app store needed</li>
+                    <li>Fast loading</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-wifi-slash"></i>
+                </div>
+                <div class="feature-title">Offline Support</div>
+                <div class="feature-description">
+                    Browse previously viewed content even without internet connection. Perfect for areas with poor connectivity.
+                </div>
+                <ul class="feature-list">
+                    <li>Offline browsing</li>
+                    <li>Cached content</li>
+                    <li>Offline indicator</li>
+                    <li>Sync when online</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="feature-title">Fast Performance</div>
+                <div class="feature-description">
+                    Optimized for speed with service workers and caching. Loads instantly and works smoothly on all devices.
+                </div>
+                <ul class="feature-list">
+                    <li>Instant loading</li>
+                    <li>Service workers</li>
+                    <li>Smart caching</li>
+                    <li>Optimized assets</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="feature-title">Push Notifications</div>
+                <div class="feature-description">
+                    Receive real-time notifications even when the app is closed. Stay updated about orders, offers, and more.
+                </div>
+                <ul class="feature-list">
+                    <li>Browser push notifications</li>
+                    <li>Order updates</li>
+                    <li>Promotional alerts</li>
+                    <li>Customizable settings</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Install Instructions -->
+        <div class="install-instructions">
+            <h2 style="font-weight: 700; margin-bottom: 2rem; font-size: 1.5rem;">
+                <i class="fas fa-info-circle" style="color: var(--primary-red);"></i>
+                How to Install
+            </h2>
+
+            <div class="instruction-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>On Android (Chrome)</h4>
+                    <p>Open the website, tap the menu (3 dots), select "Add to Home screen" or "Install app". The app will appear on your home screen.</p>
+                </div>
+            </div>
+
+            <div class="instruction-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>On iPhone (Safari)</h4>
+                    <p>Open the website, tap the Share button, scroll down and select "Add to Home Screen". The app icon will be added to your home screen.</p>
+                </div>
+            </div>
+
+            <div class="instruction-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>On Desktop (Chrome/Edge)</h4>
+                    <p>Look for the install icon in the address bar, or go to Settings > Apps > Install this site as an app. The app will open in its own window.</p>
+                </div>
+            </div>
+
+            <div class="instruction-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Enjoy the App</h4>
+                    <p>Once installed, you can launch PreEvent like any other app. It will work offline, send notifications, and provide a native app experience!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function installPWA() {
+            alert('Install prompt will appear here. Users can add PreEvent to their home screen!');
+        }
+
+        // Simulate offline mode
+        function toggleOffline() {
+            const indicator = document.getElementById('offlineIndicator');
+            indicator.classList.toggle('active');
+        }
+
+        // Bottom nav interaction
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
+

@@ -1,33 +1,45 @@
 import { createBrowserRouter } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import App from "../App"
-import Home from "../pages/Home";
-import SearchPage from "../pages/SearchPage";
-import Login from "../pages/Login";
-import Register from "../pages/Register";
-import ForgotPassword from "../pages/ForgotPassword";
-import OtpVerification from "../pages/OtpVerification";
-import ResetPassword from "../pages/ResetPassword";
-import UserMenuMobile from "../pages/UserMenuMobile";
-import Dashboard from "../layouts/Dashboard";
-import Profile from "../pages/Profile";
-import MyOrders from "../pages/MyOrders";
-import BookingOrders from "../pages/BookingOrders";
-import Address from "../pages/Address";
-import CategoryPage from "../pages/CategoryPage";
-import SubCategoryPage from "../pages/SubCategoryPage";
-import UploadProduct from "../pages/UploadProduct";
-import ProductAdmin from "../pages/ProductAdmin";
-import AdminPermision from "../layouts/AdminPermission";
-import ProductListPage from "../pages/ProductListPage";
-import ProductDisplayPage from "../pages/ProductDisplayPage";
-import CartMobile from "../pages/CartMobile";
-import CheckoutPage from "../pages/CheckoutPage";
-import Success from "../pages/Success";
-import Cancel from "../pages/Cancel";
-import CustomerSupport from "../pages/CustomerSupport";
-import AdminChat from "../pages/AdminChat";
-import VendorDashboard from "../pages/VendorDashboard";
-import NotFound from "../pages/NotFound";
+import Loading from "../components/Loading";
+
+// Lazy load all pages for code splitting
+const Home = lazy(() => import("../pages/Home"));
+const SearchPage = lazy(() => import("../pages/SearchPage"));
+const Login = lazy(() => import("../pages/Login"));
+const Register = lazy(() => import("../pages/Register"));
+const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
+const OtpVerification = lazy(() => import("../pages/OtpVerification"));
+const ResetPassword = lazy(() => import("../pages/ResetPassword"));
+const UserMenuMobile = lazy(() => import("../pages/UserMenuMobile"));
+const Dashboard = lazy(() => import("../layouts/Dashboard"));
+const Profile = lazy(() => import("../pages/Profile"));
+const MyOrders = lazy(() => import("../pages/MyOrders"));
+const BookingOrders = lazy(() => import("../pages/BookingOrders"));
+const Address = lazy(() => import("../pages/Address"));
+const CategoryPage = lazy(() => import("../pages/CategoryPage"));
+const SubCategoryPage = lazy(() => import("../pages/SubCategoryPage"));
+const UploadProduct = lazy(() => import("../pages/UploadProduct"));
+const ProductAdmin = lazy(() => import("../pages/ProductAdmin"));
+const AdminPermision = lazy(() => import("../layouts/AdminPermission"));
+const ProductListPage = lazy(() => import("../pages/ProductListPage"));
+const ProductDisplayPage = lazy(() => import("../pages/ProductDisplayPage"));
+const CartMobile = lazy(() => import("../pages/CartMobile"));
+const CheckoutPage = lazy(() => import("../pages/CheckoutPage"));
+const Success = lazy(() => import("../pages/Success"));
+const Cancel = lazy(() => import("../pages/Cancel"));
+const CustomerSupport = lazy(() => import("../pages/CustomerSupport"));
+const AdminChat = lazy(() => import("../pages/AdminChat"));
+const VendorDashboard = lazy(() => import("../pages/VendorDashboard"));
+const About = lazy(() => import("../pages/About"));
+const NotFound = lazy(() => import("../pages/NotFound"));
+
+// Wrapper component for Suspense
+const LazyWrapper = ({ children }) => (
+  <Suspense fallback={<Loading />}>
+    {children}
+  </Suspense>
+);
 
 
 
@@ -38,121 +50,125 @@ const router = createBrowserRouter([
         children : [
             {
                 path : "",
-                element : <Home/>
+                element : <LazyWrapper><Home/></LazyWrapper>
             },
             {
                 path : "search",
-                element : <SearchPage/>
+                element : <LazyWrapper><SearchPage/></LazyWrapper>
             },
             {
                 path : "login",
-                element : <Login/>
+                element : <LazyWrapper><Login/></LazyWrapper>
             },
             {
                 path : "register",
-                element : <Register/>
+                element : <LazyWrapper><Register/></LazyWrapper>
             },
             {
                 path : "forgot-password",
-                element : <ForgotPassword/>
+                element : <LazyWrapper><ForgotPassword/></LazyWrapper>
             }, 
             {
                 path : "otp-verification",
-                element : <OtpVerification/>
+                element : <LazyWrapper><OtpVerification/></LazyWrapper>
             },
             {
                 path : "reset-password",
-                element : <ResetPassword/>
+                element : <LazyWrapper><ResetPassword/></LazyWrapper>
             },
             {
                 path : "user",
-                element : <UserMenuMobile/>
+                element : <LazyWrapper><UserMenuMobile/></LazyWrapper>
             },
             {
                 path : "dashboard",
-                element : <Dashboard/>,
+                element : <LazyWrapper><Dashboard/></LazyWrapper>,
                 children : [
                     {
                         path : "profile",
-                        element : <Profile/>
+                        element : <LazyWrapper><Profile/></LazyWrapper>
                     },
                     {
                         path : "myorders",
-                        element : <MyOrders/>
+                        element : <LazyWrapper><MyOrders/></LazyWrapper>
                     },
                     {
                         path : "bookingorders",
-                        element : <AdminPermision><BookingOrders/></AdminPermision>
+                        element : <LazyWrapper><AdminPermision><BookingOrders/></AdminPermision></LazyWrapper>
                     },
                     {
                         path : "address",
-                        element : <Address/>
+                        element : <LazyWrapper><Address/></LazyWrapper>
                     },
                     {
                         path : "category",
-                        element : <AdminPermision> <CategoryPage/> </AdminPermision>
+                        element : <LazyWrapper><AdminPermision> <CategoryPage/> </AdminPermision></LazyWrapper>
                     },
                     {
                         path : "subcategory",
-                        element : <AdminPermision><SubCategoryPage/></AdminPermision>
+                        element : <LazyWrapper><AdminPermision><SubCategoryPage/></AdminPermision></LazyWrapper>
                     },
                     {
                         path : "upload-product",
-                        element : <AdminPermision><UploadProduct/></AdminPermision>
+                        element : <LazyWrapper><AdminPermision><UploadProduct/></AdminPermision></LazyWrapper>
                     },
                     {
                         path : "product",
-                        element : <AdminPermision><ProductAdmin/></AdminPermision>
+                        element : <LazyWrapper><AdminPermision><ProductAdmin/></AdminPermision></LazyWrapper>
                     },
                     {
                         path : "admin-chat",
-                        element : <AdminPermision><AdminChat/></AdminPermision>
+                        element : <LazyWrapper><AdminPermision><AdminChat/></AdminPermision></LazyWrapper>
                     },
                     {
                         path : "vendor-dashboard",
-                        element : <AdminPermision><VendorDashboard/></AdminPermision>
+                        element : <LazyWrapper><AdminPermision><VendorDashboard/></AdminPermision></LazyWrapper>
                     },
                 ]
-            },
-            {
-                path : "product/:product",
-                element : <ProductDisplayPage/>
-            },
-            {
-                path : 'cart',
-                element : <CartMobile/>
-            },
-            {
-                path : "checkout",
-                element : <CheckoutPage/>
-            },
-            {
-                path : "success",
-                element : <Success/>
-            },
-            {
-                path : "cancel",
-                element : <Cancel/>
-            },
-            {
-                path : "support",
-                element : <CustomerSupport/>
             },
             {
                 path : ":category",
                 children : [
                     {
                         path : ":subCategory",
-                        element : <ProductListPage/>
+                        element : <LazyWrapper><ProductListPage/></LazyWrapper>
                     }
                 ]
             },
             {
-                path: "*",
-                element: <NotFound/>
+                path : "product/:product",
+                element : <LazyWrapper><ProductDisplayPage/></LazyWrapper>
+            },
+            {
+                path : 'cart',
+                element : <LazyWrapper><CartMobile/></LazyWrapper>
+            },
+            {
+                path : "checkout",
+                element : <LazyWrapper><CheckoutPage/></LazyWrapper>
+            },
+            {
+                path : "success",
+                element : <LazyWrapper><Success/></LazyWrapper>
+            },
+            {
+                path : "cancel",
+                element : <LazyWrapper><Cancel/></LazyWrapper>
+            },
+            {
+                path : "support",
+                element : <LazyWrapper><CustomerSupport/></LazyWrapper>
+            },
+            {
+                path : "about",
+                element : <LazyWrapper><About/></LazyWrapper>
             }
           
         ]
+    },
+    {
+        path: "*",
+        element: <LazyWrapper><NotFound/></LazyWrapper>
     }
 ])
 

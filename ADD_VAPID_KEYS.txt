@@ -1,0 +1,60 @@
+===========================================
+VAPID KEYS SETUP - COPY THESE VALUES
+===========================================
+
+YOUR GENERATED VAPID KEYS:
+--------------------------
+
+PUBLIC KEY (use in BOTH server and client):
+BAlnjq4lKihBZN-rnZoB9gJd9WkKz4o3hOnagOq50EjRKdVbp35y2225Mz9kzk8ugrG9R10urpQePrrIleksAvE
+
+PRIVATE KEY (use ONLY in server):
+aqIKgcAHifC8NCDYZFE_IrVhKYw1zsAEkEg_R_BSiJU
+
+===========================================
+STEP-BY-STEP INSTRUCTIONS:
+===========================================
+
+STEP 1: Add to server/.env
+---------------------------
+1. Open: prevent-main-update/server/.env
+2. If file doesn't exist, create it
+3. Add these lines:
+
+VAPID_PUBLIC_KEY=BAlnjq4lKihBZN-rnZoB9gJd9WkKz4o3hOnagOq50EjRKdVbp35y2225Mz9kzk8ugrG9R10urpQePrrIleksAvE
+VAPID_PRIVATE_KEY=aqIKgcAHifC8NCDYZFE_IrVhKYw1zsAEkEg_R_BSiJU
+
+STEP 2: Add to client/.env
+---------------------------
+1. Open: prevent-main-update/client/.env
+2. If file doesn't exist, create it
+3. Add this line:
+
+VITE_VAPID_PUBLIC_KEY=BAlnjq4lKihBZN-rnZoB9gJd9WkKz4o3hOnagOq50EjRKdVbp35y2225Mz9kzk8ugrG9R10urpQePrrIleksAvE
+
+STEP 3: Restart Servers
+------------------------
+1. Stop backend server (Ctrl+C)
+2. Stop frontend server (Ctrl+C)
+3. Start backend: cd server && npm run dev
+4. Start frontend: cd client && npm run dev
+
+STEP 4: Test
+------------
+1. Open website
+2. Login
+3. Enable notifications when prompted
+4. Place test order
+5. Check for push notification!
+
+===========================================
+IMPORTANT NOTES:
+===========================================
+- Copy keys EXACTLY (no spaces, no quotes)
+- Private key is SECRET (never share)
+- Public key can be in both files
+- Restart servers after adding keys
+- HTTPS required in production
+
+===========================================
+

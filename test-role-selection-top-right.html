@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - Registration (Top Right Outside Box)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #F9FAFB 0%, #FFFFFF 50%, #F9FAFB 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .page-container {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(220, 38, 38, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 191, 0, 0.03) 0%, transparent 50%);
+        }
+
+        .registration-container {
+            width: 100%;
+            max-width: 540px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 
+                0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                0 10px 10px -5px rgba(0, 0, 0, 0.04),
+                0 0 0 1px rgba(220, 38, 38, 0.05);
+            border: 1px solid rgba(220, 38, 38, 0.1);
+            margin: 0 auto;
+        }
+
+        .accent-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #DC2626 0%, #ffbf00 50%, #DC2626 100%);
+            border-radius: 20px 20px 0 0;
+        }
+
+        /* Top Right Role Selection - Fixed at Page Top-Right Corner */
+        .role-selection-top-right {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 220px;
+        }
+
+        .role-badge-container {
+            background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+            border: 1.5px solid #FECACA;
+            border-radius: 12px;
+            padding: 14px 16px;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .role-badge-container.vendor-mode {
+            background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+            border-color: #BFDBFE;
+        }
+
+        .role-current {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .role-current-text {
+            font-size: 0.75rem;
+            color: #6B7280;
+            font-weight: 500;
+        }
+
+        .role-current-name {
+            font-size: 0.75rem;
+            color: #DC2626;
+            font-weight: 700;
+        }
+
+        .role-badge-container.vendor-mode .role-current-name {
+            color: #2563EB;
+        }
+
+        .role-toggle-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            color: #DC2626;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            background: rgba(220, 38, 38, 0.08);
+        }
+
+        .role-badge-container.vendor-mode .role-toggle-link {
+            color: #2563EB;
+            background: rgba(37, 99, 235, 0.08);
+        }
+
+        .role-toggle-link:hover {
+            background: rgba(220, 38, 38, 0.15);
+            transform: translateX(2px);
+        }
+
+        .role-badge-container.vendor-mode .role-toggle-link:hover {
+            background: rgba(37, 99, 235, 0.15);
+        }
+
+        .role-toggle-link i {
+            font-size: 0.65rem;
+            transition: transform 0.3s ease;
+        }
+
+        .role-toggle-link:hover i {
+            transform: translateX(2px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-top: 10px;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 0.875rem;
+            color: #6B7280;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+        }
+
+        .form-label i {
+            color: #DC2626;
+            opacity: 0.7;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #111827;
+            background: #F3F4F6;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #ffbf00;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.15);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6B7280;
+            font-size: 0.875rem;
+            pointer-events: none;
+        }
+
+        .form-input.has-icon {
+            padding-left: 44px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            margin-top: 24px;
+            box-shadow: 0 4px 14px 0 rgba(220, 38, 38, 0.3);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            background: #9CA3AF;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .login-link p {
+            font-size: 0.875rem;
+            color: #6B7280;
+        }
+
+        .login-link a {
+            font-weight: 700;
+            color: #00b050;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #008040;
+            background: rgba(0, 176, 0, 0.1);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 640px) {
+            .registration-container {
+                padding: 24px;
+            }
+
+            .role-selection-top-right {
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                max-width: 180px;
+            }
+
+            .role-badge-container {
+                padding: 10px 12px;
+            }
+
+            .header {
+                padding-top: 0;
+            }
+        }
+
+        /* Animation */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .role-badge-container {
+            animation: slideIn 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Right Role Selection - Fixed at Page Top-Right Corner -->
+    <div class="role-selection-top-right">
+        <div class="role-badge-container" id="roleBadge">
+            <div class="role-current">
+                <span class="role-current-text">Registering as a</span>
+                <span class="role-current-name" id="currentRoleName">Customer</span>
+            </div>
+            <a href="#" class="role-toggle-link" onclick="toggleVendorMode(event)">
+                <i class="fas fa-arrow-right"></i>
+                <span id="toggleText">Register as Vendor</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="page-container">
+        <div class="registration-container">
+            <div class="accent-bar"></div>
+            
+            <div class="header">
+                <h1>Welcome to PreEvent</h1>
+                <p>Create your account to get started</p>
+            </div>
+
+            <form id="registerForm" onsubmit="handleSubmit(event)">
+            <input type="hidden" name="role" id="roleInput" value="USER">
+
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-user"></i> Name</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" class="form-input has-icon" name="name" placeholder="Enter your name" required autofocus>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-envelope"></i> Email</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" class="form-input has-icon" name="email" placeholder="Enter your email" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-phone"></i> Mobile Number</label>
+                <div style="display: flex;">
+                    <div style="padding: 12px 14px; background: #F3F4F6; border: 2px solid #E5E7EB; border-right: 0; border-radius: 8px 0 0 8px; font-weight: 600; color: #111827; font-size: 0.9rem;">
+                        +91
+                    </div>
+                    <div class="input-wrapper" style="flex: 1;">
+                        <i class="fas fa-phone input-icon" style="left: 14px;"></i>
+                        <input type="text" class="form-input has-icon" name="mobile" placeholder="10-digit mobile number" maxlength="10" required style="border-left: 0; border-radius: 0 8px 8px 0;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-lock"></i> Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" class="form-input has-icon" name="password" placeholder="Enter your password" required minlength="6">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-lock"></i> Confirm Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" class="form-input has-icon" name="confirmPassword" placeholder="Confirm your password" required minlength="6">
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Register</button>
+        </form>
+
+            <div class="login-link">
+                <p>Already have account? <a href="#login">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isVendorMode = false;
+
+        function toggleVendorMode(event) {
+            event.preventDefault();
+            isVendorMode = !isVendorMode;
+            
+            const roleInput = document.getElementById('roleInput');
+            const roleBadge = document.getElementById('roleBadge');
+            const currentRoleName = document.getElementById('currentRoleName');
+            const toggleText = document.getElementById('toggleText');
+            
+            if (isVendorMode) {
+                roleInput.value = 'ADMIN';
+                currentRoleName.textContent = 'Vendor';
+                toggleText.textContent = 'Register as Customer';
+                roleBadge.classList.add('vendor-mode');
+            } else {
+                roleInput.value = 'USER';
+                currentRoleName.textContent = 'Customer';
+                toggleText.textContent = 'Register as Vendor';
+                roleBadge.classList.remove('vendor-mode');
+            }
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {
+                role: formData.get('role'),
+                name: formData.get('name'),
+                email: formData.get('email'),
+                mobile: formData.get('mobile'),
+                password: formData.get('password')
+            };
+            console.log('Registration Data:', data);
+            alert(`Registration Data:\n\nRole: ${data.role === 'USER' ? 'Customer' : 'Vendor'}\nName: ${data.name}\nEmail: ${data.email}\nMobile: ${data.mobile}\n\n(Check console for full data)`);
+        }
+
+        document.querySelector('input[name="mobile"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+        });
+
+        document.querySelector('input[name="confirmPassword"]').addEventListener('blur', function(e) {
+            const password = document.querySelector('input[name="password"]').value;
+            const confirmPassword = this.value;
+            
+            if (password && confirmPassword && password !== confirmPassword) {
+                this.setCustomValidity('Passwords do not match');
+                this.style.borderColor = '#DC2626';
+            } else {
+                this.setCustomValidity('');
+                this.style.borderColor = '#E5E7EB';
+            }
+        });
+    </script>
+</body>
+</html>
+

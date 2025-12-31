@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - Product Details</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== CSS VARIABLES - BRAND COLORS ===== */
+        :root {
+            --primary-red: #DC2626;
+            --primary-red-dark: #991B1B;
+            --primary-red-light: #FEE2E2;
+            --accent-yellow: #ffbf00;
+            --accent-yellow-light: #ffc929;
+            --success-green: #00b050;
+            --success-green-dark: #008040;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F5F5;
+            --bg-input: #F3F4F6;
+            --border-color: #E5E7EB;
+            --border-focus: #ffbf00;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-red: 0 4px 14px 0 rgba(220, 38, 38, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ===== HEADER STYLES ===== */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1.25rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container:hover .logo-icon {
+            transform: scale(1.05);
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            letter-spacing: -0.5px;
+            text-shadow: 0 1px 2px rgba(220, 38, 38, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-red);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-red);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .cart-icon,
+        .login-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .cart-icon:hover,
+        .login-link:hover {
+            color: var(--primary-red);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .product-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+        }
+
+        /* ===== SIDEBAR - CATEGORIES ===== */
+        .sidebar {
+            position: sticky;
+            top: 100px;
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+            background: var(--bg-white);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--bg-input);
+            border-radius: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--primary-red);
+            border-radius: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-red-dark);
+        }
+
+        .category-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            border: 2px solid transparent;
+        }
+
+        .category-item:hover {
+            background: var(--primary-red-light);
+            border-color: var(--primary-red);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .category-item.active {
+            background: rgba(0, 176, 80, 0.1);
+            border-color: var(--success-green);
+        }
+
+        .category-image {
+            width: 100%;
+            max-width: 200px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .category-badge {
+            background: var(--accent-yellow);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-align: center;
+            width: 100%;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ===== PRODUCT DISPLAY AREA ===== */
+        .product-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        /* ===== GALLERY SECTION ===== */
+        .gallery-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .gallery-card {
+            background: var(--bg-white);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            position: sticky;
+            top: 100px;
+        }
+
+        .main-image-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--bg-input);
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .main-image-container:hover {
+            box-shadow: var(--shadow-xl);
+        }
+
+        .main-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .main-image-container:hover .main-image {
+            transform: scale(1.05);
+        }
+
+        .expand-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            box-shadow: var(--shadow-md);
+        }
+
+        .main-image-container:hover .expand-button {
+            opacity: 1;
+        }
+
+        .expand-button:hover {
+            background: var(--bg-white);
+            transform: scale(1.1);
+            color: var(--primary-red);
+        }
+
+        .thumbnail-container {
+            display: flex;
+            gap: 0.75rem;
+            overflow-x: auto;
+            padding: 0.5rem 0;
+            scroll-behavior: smooth;
+        }
+
+        .thumbnail-container::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .thumbnail-container::-webkit-scrollbar-track {
+            background: var(--bg-input);
+            border-radius: 10px;
+        }
+
+        .thumbnail-container::-webkit-scrollbar-thumb {
+            background: var(--primary-red);
+            border-radius: 10px;
+        }
+
+        .thumbnail {
+            flex-shrink: 0;
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+            background: var(--bg-input);
+        }
+
+        .thumbnail:hover {
+            border-color: var(--primary-red);
+            transform: scale(1.05);
+        }
+
+        .thumbnail.active {
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 3px var(--primary-red-light);
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: var(--primary-red);
+            transform: scale(1.3);
+        }
+
+        /* ===== PRODUCT INFO SECTION ===== */
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background: var(--bg-white);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            position: sticky;
+            top: 100px;
+        }
+
+        .product-badge {
+            display: inline-block;
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+        }
+
+        .product-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .price-section {
+            display: flex;
+            align-items: flex-end;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .current-price {
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+            color: var(--bg-white);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-size: 2rem;
+            font-weight: 700;
+            box-shadow: var(--shadow-red);
+        }
+
+        .original-price {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            text-decoration: line-through;
+        }
+
+        .discount-badge {
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .add-to-cart-button {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+            color: var(--bg-white);
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-red);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            font-family: 'DM Sans', 'Inter', sans-serif;
+        }
+
+        .add-to-cart-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .add-to-cart-button:hover::before {
+            left: 100%;
+        }
+
+        .add-to-cart-button:hover {
+            background: linear-gradient(135deg, #EF4444 0%, var(--primary-red) 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.4);
+        }
+
+        .add-to-cart-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* ===== TABS SECTION ===== */
+        .tabs-container {
+            background: var(--bg-white);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            margin-top: 1.5rem;
+        }
+
+        .tabs-header {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            font-family: 'DM Sans', 'Inter', sans-serif;
+        }
+
+        .tab-button:hover {
+            color: var(--primary-red);
+        }
+
+        .tab-button.active {
+            color: var(--primary-red);
+            border-bottom-color: var(--primary-red);
+        }
+
+        .tab-content {
+            min-height: 200px;
+        }
+
+        .tab-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .tab-content p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .details-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-key {
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 150px;
+        }
+
+        .detail-value {
+            color: var(--text-secondary);
+        }
+
+        .why-book-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--bg-light);
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .why-book-item:hover {
+            background: var(--primary-red-light);
+            transform: translateX(5px);
+        }
+
+        .why-book-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-md);
+        }
+
+        .why-book-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .why-book-content h4 {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .why-book-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ===== SOCIAL LINKS ===== */
+        .social-links {
+            background: var(--bg-white);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            margin-top: 1.5rem;
+        }
+
+        .social-links h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .social-icon.facebook {
+            color: #1877F2;
+            background: rgba(24, 119, 242, 0.1);
+        }
+
+        .social-icon.facebook:hover {
+            background: #1877F2;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .social-icon.youtube {
+            color: #FF0000;
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        .social-icon.youtube:hover {
+            background: #FF0000;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .social-icon.instagram {
+            color: #E4405F;
+            background: rgba(228, 64, 95, 0.1);
+        }
+
+        .social-icon.instagram:hover {
+            background: #E4405F;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 1024px) {
+            .product-layout {
+                grid-template-columns: 220px 1fr;
+            }
+
+            .product-container {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-card,
+            .product-card {
+                position: relative;
+                top: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .product-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: relative;
+                top: 0;
+                height: auto;
+                max-height: 400px;
+                display: flex;
+                flex-direction: row;
+                overflow-x: auto;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .category-item {
+                min-width: 150px;
+                margin-bottom: 0;
+            }
+
+            .category-image {
+                height: 100px;
+            }
+
+            .product-title {
+                font-size: 2rem;
+            }
+
+            .current-price {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 1rem 0.5rem;
+            }
+
+            .product-card,
+            .gallery-card,
+            .tabs-container {
+                padding: 1.5rem;
+            }
+
+            .product-title {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .gallery-card,
+        .product-card {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Smooth transitions */
+        * {
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <!-- Logo -->
+            <a href="/" class="logo-container">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="6" y="8" width="28" height="26" rx="2" stroke="#0b1a78" stroke-width="2.5" fill="none"/>
+                        <line x1="6" y1="16" x2="34" y2="16" stroke="#0b1a78" stroke-width="2.5"/>
+                        <rect x="12" y="4" width="4" height="6" rx="1" fill="#0b1a78"/>
+                        <rect x="24" y="4" width="4" height="6" rx="1" fill="#0b1a78"/>
+                        <rect x="20" y="20" width="8" height="8" rx="1.5" fill="#ffbf00" stroke="#ffc929" stroke-width="0.5"/>
+                        <circle cx="24" cy="24" r="2.5" fill="#DC2626"/>
+                    </svg>
+                </div>
+                <span class="logo-text">PreEvent</span>
+            </a>
+
+            <!-- Navigation Links -->
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="#categories">Categories</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+
+            <!-- Nav Actions -->
+            <div class="nav-actions">
+                <a href="#" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                <a href="/login" class="login-link">
+                    <span>Login</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="product-layout">
+            <!-- Sidebar - Categories -->
+            <aside class="sidebar">
+                <a href="#" class="category-item active">
+                    <img src="https://via.placeholder.com/200x140/DC2626/FFFFFF?text=Reception" alt="Reception Planner" class="category-image">
+                    <div class="category-badge">Reception Planner</div>
+                </a>
+                <a href="#" class="category-item">
+                    <img src="https://via.placeholder.com/200x140/00b050/FFFFFF?text=Full+Service" alt="Full-Service Wedding Planners" class="category-image">
+                    <div class="category-badge">Full-Service Wedding Planners</div>
+                </a>
+                <a href="#" class="category-item">
+                    <img src="https://via.placeholder.com/200x140/ffbf00/000000?text=Destination" alt="Destination Wedding Planners" class="category-image">
+                    <div class="category-badge">Destination Wedding Planners</div>
+                </a>
+            </aside>
+
+            <!-- Product Display Area -->
+            <div class="product-container">
+                <!-- Gallery Section -->
+                <div class="gallery-section">
+                    <div class="gallery-card">
+                        <div class="main-image-container">
+                            <img src="https://via.placeholder.com/600x600/DC2626/FFFFFF?text=Product+Image" alt="Demo Reception Wedding" class="main-image" id="mainImage">
+                            <button class="expand-button" aria-label="Expand Image">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                        <div class="thumbnail-container">
+                            <div class="thumbnail active">
+                                <img src="https://via.placeholder.com/80x80/DC2626/FFFFFF?text=1" alt="Thumbnail 1">
+                            </div>
+                            <div class="thumbnail">
+                                <img src="https://via.placeholder.com/80x80/00b050/FFFFFF?text=2" alt="Thumbnail 2">
+                            </div>
+                            <div class="thumbnail">
+                                <img src="https://via.placeholder.com/80x80/ffbf00/000000?text=3" alt="Thumbnail 3">
+                            </div>
+                            <div class="thumbnail">
+                                <img src="https://via.placeholder.com/80x80/DC2626/FFFFFF?text=4" alt="Thumbnail 4">
+                            </div>
+                        </div>
+                        <div class="image-dots">
+                            <span class="dot active"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Info Section -->
+                <div class="product-info">
+                    <div class="product-card">
+                        <span class="product-badge">Booking Now For Your Special Day</span>
+                        <h1 class="product-title">Demo Reception Wedding</h1>
+                        
+                        <div class="price-section">
+                            <div class="current-price">₹9,000.00</div>
+                            <div class="original-price">₹10,000.00</div>
+                            <div class="discount-badge">10% Off</div>
+                        </div>
+
+                        <button class="add-to-cart-button">
+                            Add to Cart
+                        </button>
+                    </div>
+
+                    <!-- Tabs Section -->
+                    <div class="tabs-container">
+                        <div class="tabs-header">
+                            <button class="tab-button active" data-tab="description">Description</button>
+                            <button class="tab-button" data-tab="details">Details</button>
+                            <button class="tab-button" data-tab="why">Why Book With Us?</button>
+                        </div>
+                        <div class="tab-content">
+                            <div id="description-tab" class="tab-panel active">
+                                <h3>Description</h3>
+                                <p>Experience the perfect wedding reception with our comprehensive planning services. We handle every detail from venue decoration to catering, ensuring your special day is unforgettable. Our team of experienced planners works closely with you to create a celebration that reflects your unique style and vision.</p>
+                            </div>
+                            <div id="details-tab" class="tab-panel" style="display: none;">
+                                <h3>Product Details</h3>
+                                <div class="details-list">
+                                    <div class="detail-item">
+                                        <span class="detail-key">Service Type:</span>
+                                        <span class="detail-value">Full Reception Planning</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-key">Duration:</span>
+                                        <span class="detail-value">Full Day Event</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-key">Capacity:</span>
+                                        <span class="detail-value">Up to 500 Guests</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-key">Includes:</span>
+                                        <span class="detail-value">Decoration, Catering, Music, Photography</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="why-tab" class="tab-panel" style="display: none;">
+                                <h3>Why Book From Our Platform?</h3>
+                                <div class="why-book-item">
+                                    <div class="why-book-icon">
+                                        <img src="https://via.placeholder.com/56x56/DC2626/FFFFFF?text=✓" alt="Superfast Delivery">
+                                    </div>
+                                    <div class="why-book-content">
+                                        <h4>Superfast Delivery</h4>
+                                        <p>Our service team will reach your exact location and carry out their duties in harmony with you.</p>
+                                    </div>
+                                </div>
+                                <div class="why-book-item">
+                                    <div class="why-book-icon">
+                                        <img src="https://via.placeholder.com/56x56/00b050/FFFFFF?text=₹" alt="Best Prices">
+                                    </div>
+                                    <div class="why-book-content">
+                                        <h4>Best Prices & Offers</h4>
+                                        <p>Get the best price with our service—affordable, transparent, and competitive rates tailored to meet your needs and budget.</p>
+                                    </div>
+                                </div>
+                                <div class="why-book-item">
+                                    <div class="why-book-icon">
+                                        <img src="https://via.placeholder.com/56x56/ffbf00/000000?text=★" alt="Wide Variety">
+                                    </div>
+                                    <div class="why-book-content">
+                                        <h4>Wide Variety</h4>
+                                        <p>We offer a wide variety of services, ensuring tailored solutions to meet diverse customer needs across multiple industries and preferences.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Social Links -->
+                    <div class="social-links">
+                        <h3>Connect with Vendor</h3>
+                        <div class="social-icons">
+                            <a href="#" class="social-icon facebook" aria-label="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="social-icon youtube" aria-label="YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                            <a href="#" class="social-icon instagram" aria-label="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        // Tab Switching
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabPanels = document.querySelectorAll('.tab-panel');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetTab = button.getAttribute('data-tab');
+                
+                // Remove active class from all buttons and panels
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabPanels.forEach(panel => {
+                    panel.style.display = 'none';
+                    panel.classList.remove('active');
+                });
+                
+                // Add active class to clicked button and corresponding panel
+                button.classList.add('active');
+                const targetPanel = document.getElementById(targetTab + '-tab');
+                if (targetPanel) {
+                    targetPanel.style.display = 'block';
+                    targetPanel.classList.add('active');
+                }
+            });
+        });
+
+        // Thumbnail Click
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        const mainImage = document.getElementById('mainImage');
+        const dots = document.querySelectorAll('.dot');
+
+        thumbnails.forEach((thumbnail, index) => {
+            thumbnail.addEventListener('click', () => {
+                // Remove active class from all thumbnails and dots
+                thumbnails.forEach(t => t.classList.remove('active'));
+                dots.forEach(d => d.classList.remove('active'));
+                
+                // Add active class to clicked thumbnail and corresponding dot
+                thumbnail.classList.add('active');
+                if (dots[index]) {
+                    dots[index].classList.add('active');
+                }
+                
+                // Update main image (in real implementation, change src)
+                const thumbnailImg = thumbnail.querySelector('img');
+                if (thumbnailImg && mainImage) {
+                    mainImage.src = thumbnailImg.src.replace('80x80', '600x600');
+                }
+            });
+        });
+
+        // Dot Navigation
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                dots.forEach(d => d.classList.remove('active'));
+                thumbnails.forEach(t => t.classList.remove('active'));
+                
+                dot.classList.add('active');
+                if (thumbnails[index]) {
+                    thumbnails[index].classList.add('active');
+                    thumbnails[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+            });
+        });
+
+        // Category Item Click
+        const categoryItems = document.querySelectorAll('.category-item');
+        categoryItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                categoryItems.forEach(cat => cat.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - Social Features Design Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #DC2626;
+            --primary-red-dark: #991B1B;
+            --primary-red-light: #FEE2E2;
+            --accent-yellow: #ffbf00;
+            --success-green: #00b050;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F5F5;
+            --border-color: #E5E7EB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'DM Sans', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Share Product */
+        .share-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .product-card {
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .product-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 0.5rem;
+            object-fit: cover;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .share-btn.facebook {
+            background: #1877F2;
+            color: white;
+            border-color: #1877F2;
+        }
+
+        .share-btn.whatsapp {
+            background: #25D366;
+            color: white;
+            border-color: #25D366;
+        }
+
+        .share-btn.twitter {
+            background: #1DA1F2;
+            color: white;
+            border-color: #1DA1F2;
+        }
+
+        .share-btn.instagram {
+            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+            color: white;
+            border: none;
+        }
+
+        .share-btn.email {
+            background: var(--text-secondary);
+            color: white;
+            border-color: var(--text-secondary);
+        }
+
+        .share-link-box {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            align-items: center;
+        }
+
+        .share-link-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .copy-link-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        /* Referral Program */
+        .referral-section {
+            background: linear-gradient(135deg, var(--primary-red-light), white);
+            border: 2px solid var(--primary-red);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .referral-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .referral-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+
+        .referral-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .referral-benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .benefit-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .benefit-icon {
+            font-size: 3rem;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+        }
+
+        .benefit-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .benefit-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .referral-code-box {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-label {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .referral-code {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            letter-spacing: 0.25rem;
+            margin-bottom: 1rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .referral-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-item {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-red);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Social Login */
+        .social-login-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .social-login-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .social-login-btn {
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .social-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-login-btn.google {
+            background: white;
+            color: var(--text-primary);
+        }
+
+        .social-login-btn.google:hover {
+            border-color: #4285F4;
+        }
+
+        .social-login-btn.facebook {
+            background: #1877F2;
+            color: white;
+            border-color: #1877F2;
+        }
+
+        .social-login-btn.apple {
+            background: #000;
+            color: white;
+            border-color: #000;
+        }
+
+        /* Product Comparison */
+        .comparison-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table th {
+            background: var(--bg-light);
+            font-weight: 700;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--bg-light);
+        }
+
+        .compare-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .remove-compare {
+            color: var(--primary-red);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .product-card {
+                flex-direction: column;
+            }
+
+            .product-image {
+                width: 100%;
+            }
+
+            .referral-benefits {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-table {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔗 Social Features</h1>
+            <p>Design Preview - Share, refer, and connect socially</p>
+        </div>
+
+        <!-- Share Product -->
+        <div class="share-section">
+            <h2 class="section-title">
+                <i class="fas fa-share-alt"></i>
+                Share Product
+            </h2>
+            <div class="product-card">
+                <img src="https://via.placeholder.com/150x150/DC2626/FFFFFF?text=Service" alt="Service" class="product-image">
+                <div class="product-info">
+                    <div class="product-name">Premium Wedding Photography</div>
+                    <div class="product-price">₹25,000</div>
+                    <div class="share-buttons">
+                        <button class="share-btn facebook">
+                            <i class="fab fa-facebook-f"></i> Facebook
+                        </button>
+                        <button class="share-btn whatsapp">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </button>
+                        <button class="share-btn twitter">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </button>
+                        <button class="share-btn instagram">
+                            <i class="fab fa-instagram"></i> Instagram
+                        </button>
+                        <button class="share-btn email">
+                            <i class="fas fa-envelope"></i> Email
+                        </button>
+                    </div>
+                    <div class="share-link-box">
+                        <input type="text" class="share-link-input" value="https://preevent.in/product/wedding-photography-123" readonly>
+                        <button class="copy-link-btn" onclick="copyLink()">
+                            <i class="fas fa-copy"></i> Copy Link
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Referral Program -->
+        <div class="referral-section">
+            <div class="referral-header">
+                <div class="referral-title">Refer & Earn</div>
+                <div class="referral-subtitle">Invite friends and get rewards!</div>
+            </div>
+
+            <div class="referral-benefits">
+                <div class="benefit-card">
+                    <div class="benefit-icon"><i class="fas fa-gift"></i></div>
+                    <div class="benefit-title">You Get</div>
+                    <div class="benefit-description">₹500 credit for each successful referral</div>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon"><i class="fas fa-user-plus"></i></div>
+                    <div class="benefit-title">Friend Gets</div>
+                    <div class="benefit-description">₹300 discount on first booking</div>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon"><i class="fas fa-infinity"></i></div>
+                    <div class="benefit-title">Unlimited</div>
+                    <div class="benefit-description">Refer as many friends as you want</div>
+                </div>
+            </div>
+
+            <div class="referral-code-box">
+                <div class="code-label">Your Referral Code</div>
+                <div class="referral-code">REF-RK2024</div>
+                <button class="copy-link-btn" onclick="copyReferralCode()">
+                    <i class="fas fa-copy"></i> Copy Code
+                </button>
+            </div>
+
+            <div class="referral-stats">
+                <div class="stat-item">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Total Referrals</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Successful Referrals</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">₹4,000</div>
+                    <div class="stat-label">Total Earnings</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">₹2,500</div>
+                    <div class="stat-label">Available Credit</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Login -->
+        <div class="social-login-section">
+            <h2 class="section-title">
+                <i class="fas fa-sign-in-alt"></i>
+                Social Login
+            </h2>
+            <div class="social-login-buttons">
+                <button class="social-login-btn google">
+                    <i class="fab fa-google" style="font-size: 1.5rem; color: #4285F4;"></i>
+                    Continue with Google
+                </button>
+                <button class="social-login-btn facebook">
+                    <i class="fab fa-facebook-f" style="font-size: 1.5rem;"></i>
+                    Continue with Facebook
+                </button>
+                <button class="social-login-btn apple">
+                    <i class="fab fa-apple" style="font-size: 1.5rem;"></i>
+                    Continue with Apple
+                </button>
+            </div>
+        </div>
+
+        <!-- Product Comparison -->
+        <div class="comparison-section">
+            <h2 class="section-title">
+                <i class="fas fa-balance-scale"></i>
+                Compare Products
+            </h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Features</th>
+                        <th>
+                            Premium Photography
+                            <span class="remove-compare" onclick="removeCompare(1)">×</span>
+                        </th>
+                        <th>
+                            Professional Photography
+                            <span class="remove-compare" onclick="removeCompare(2)">×</span>
+                        </th>
+                        <th>
+                            <input type="checkbox" class="compare-checkbox"> Add to Compare
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Price</strong></td>
+                        <td>₹25,000</td>
+                        <td>₹18,000</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Duration</strong></td>
+                        <td>8 Hours</td>
+                        <td>6 Hours</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Photos</strong></td>
+                        <td>500+</td>
+                        <td>300+</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Videos</strong></td>
+                        <td>Yes</td>
+                        <td>No</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Rating</strong></td>
+                        <td>4.8 ⭐</td>
+                        <td>4.5 ⭐</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Action</strong></td>
+                        <td><button class="action-btn primary">Book Now</button></td>
+                        <td><button class="action-btn primary">Book Now</button></td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function copyLink() {
+            const input = document.querySelector('.share-link-input');
+            input.select();
+            document.execCommand('copy');
+            alert('Link copied to clipboard!');
+        }
+
+        function copyReferralCode() {
+            const code = 'REF-RK2024';
+            navigator.clipboard.writeText(code);
+            alert('Referral code copied!');
+        }
+
+        function removeCompare(id) {
+            if (confirm('Remove from comparison?')) {
+                alert('Product removed from comparison');
+            }
+        }
+    </script>
+</body>
+</html>
+

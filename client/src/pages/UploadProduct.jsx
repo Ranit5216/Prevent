@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { FaCloudUploadAlt } from "react-icons/fa";
+import { FaCloudUploadAlt, FaPlus } from "react-icons/fa";
 import uploadImage from '../utils/UploadImage';
 import Loading from '../components/Loading';
 import ViewImage from '../components/ViewImage';
@@ -11,14 +11,13 @@ import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
 import AxiosToastError from '../utils/AxiosToastError';
 import successAlert from '../utils/SuccessAlert';
-import { useEffect } from 'react';
 import uploadFile from '../utils/UploadImage';
 
 const UploadProduct = () => {
   const [data,setData] = useState({
       name : "",
       image : [],
-      video : [], // new state for videos
+      video : [],
       category : [],
       subCategory : [],
       stock : "",
@@ -37,7 +36,8 @@ const UploadProduct = () => {
   const [openAddField,setOpenAddField] = useState(false)
   const [fieldName,setFieldName] = useState("")
   const [videoLoading,setVideoLoading] = useState(false)
-
+  const [dragoverImage, setDragoverImage] = useState(false)
+  const [dragoverVideo, setDragoverVideo] = useState(false)
 
   const handleChange = (e)=>{
     const { name, value} = e.target 
@@ -51,7 +51,7 @@ const UploadProduct = () => {
   }
 
   const handleUploadImage = async(e)=>{
-    const file = e.target.files[0]
+    const file = e.target.files?.[0] || e.dataTransfer?.files?.[0]
 
     if(!file){
       return 
@@ -68,7 +68,7 @@ const UploadProduct = () => {
       }
     })
     setImageLoading(false)
-
+    setDragoverImage(false)
   }
 
   const handleDeleteImage = async(index)=>{
@@ -81,7 +81,7 @@ const UploadProduct = () => {
   }
 
   const handleUploadVideo = async(e)=>{
-    const file = e.target.files[0]
+    const file = e.target.files?.[0] || e.dataTransfer?.files?.[0]
     if(!file){
       return 
     }
@@ -96,7 +96,8 @@ const UploadProduct = () => {
       }
     })
     setVideoLoading(false)
-}
+    setDragoverVideo(false)
+  }
 
   const handleRemoveCategory = async(index)=>{
     data.category.splice(index,1)
@@ -106,6 +107,7 @@ const UploadProduct = () => {
       }
     })
   }
+  
   const handleRemoveSubCategory = async(index)=>{
       data.subCategory.splice(index,1)
       setData((preve)=>{
@@ -144,6 +146,7 @@ const UploadProduct = () => {
           setData({
             name : "",
             image : [],
+            video : [],
             category : [],
             subCategory : [],
             stock : "",
@@ -152,342 +155,375 @@ const UploadProduct = () => {
             description : "",
             more_details : {},
           })
-
       }
     } catch (error) {
         AxiosToastError(error)
     }
-
-
   }
 
-  // useEffect(()=>{
-  //   successAlert("Upload successfully")
-  // },[])
   return (
-    <section className=''>
-        <div className='p-2   bg-white shadow-md flex items-center justify-between'>
-            <h2 className='font-semibold'>Upload Product</h2>
-        </div>
-        <div className='grid p-3'>
-            <form className='grid gap-4' onSubmit={handleSubmit}>
-                <div className='grid gap-1'>
-                  <label htmlFor='name' className='font-medium'>Name</label>
-                  <input 
-                    id='name'
-                    type='text'
-                    placeholder='Enter product name'
-                    name='name'
-                    value={data.name}
-                    onChange={handleChange}
-                    required
-                    className='bg-blue-50 p-2 outline-none border focus-within:border-amber-200 rounded'
-                  />
-                </div>
-                <div className='grid gap-1'>
-                  <label htmlFor='description' className='font-medium'>Description</label>
-                  <textarea 
-                    id='description'
-                    type='text'
-                    placeholder='Enter product description'
-                    name='description'
-                    value={data.description}
-                    onChange={handleChange}
-                    required
-                    multiple 
-                    rows={3}
-                    className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded resize-none'
-                  />
-                </div>
-                <div>
-                    <p className='font-medium'>Image</p>
-                    <div>
-                      <label htmlFor='productImage' className='bg-blue-50 h-24 border rounded flex justify-center items-center cursor-pointer'>
-                          <div className='text-center flex justify-center items-center flex-col'>
-                            {
-                              imageLoading ?  <Loading/> : (
-                                <>
-                                   <FaCloudUploadAlt size={35}/>
-                                   <p>Upload Image</p>
-                                   <p>Image size will be 2600*1900</p>
-                                   
-                                </>
-                              )
-                            }
-                          </div>
-                          <input 
-                            type='file'
-                            id='productImage'
-                            className='hidden'
-                            accept='image/*'
-                            onChange={handleUploadImage}
-                          />
-                      </label>
-                      {/**display uploded image*/}
-                      <div className='flex flex-wrap gap-4'>
-                        {
-                          data.image.map((img,index) =>{
-                              return(
-                                <div key={img+index} className='h-20 mt-1 w-20 min-w-20 bg-blue-50 border relative group'>
-                                  <img
-                                    src={img}
-                                    alt={img}
-                                    className='w-full h-full object-scale-down cursor-pointer' 
-                                    onClick={()=>setViewImageURL(img)}
-                                  />
-                                  <div onClick={()=>handleDeleteImage(index)} className='absolute bottom-0 right-0 p-1 bg-red-600 hover:bg-red-600 rounded text-white hidden group-hover:block cursor-pointer'>
-                                    <MdDelete/>
-                                  </div>
-                                </div>
-                              )
-                          })
-                        }
-                      </div>
-                    </div>
+    <div className="p-4 sm:p-5 lg:p-6">
+      <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] mb-5 sm:mb-6">Upload Product</h1>
 
-                </div>
-                {/* Video upload section */}
-                <div>
-                  <p className='font-medium'>Video</p>
-                  <div>
-                    <label htmlFor='productVideo' className='bg-blue-50 h-24 border rounded flex justify-center items-center cursor-pointer'>
-                      <div className='text-center flex justify-center items-center flex-col'>
-                        {
-                          videoLoading ?  <Loading/> : (
-                            <>
-                              <FaCloudUploadAlt size={35}/>
-                              <p>Upload Video</p>
-                              <p>Video size up to 50MB</p>
-                            </>
-                          )
-                        }
-                      </div>
-                      <input 
-                        type='file'
-                        id='productVideo'
-                        className='hidden'
-                        accept='video/*'
-                        onChange={handleUploadVideo}
-                      />
-                    </label>
-                    {/* display uploaded videos */}
-                    <div className='flex flex-wrap gap-4'>
-                      {
-                        data.video && data.video.map((vid,index) =>{
-                            return(
-                              <div key={vid+index} className='h-20 mt-1 w-32 min-w-32 bg-blue-50 border relative group'>
-                                <video
-                                  src={vid}
-                                  controls
-                                  className='w-full h-full object-scale-down cursor-pointer'
-                                  style={{maxHeight:'80px'}}
-                                />
-                                <div onClick={()=>{
-                                  data.video.splice(index,1)
-                                  setData((preve)=>({ ...preve, video: [...preve.video] }))
-                                }} className='absolute bottom-0 right-0 p-1 bg-red-600 hover:bg-red-600 rounded text-white hidden group-hover:block cursor-pointer'>
-                                  <MdDelete/>
-                                </div>
-                              </div>
-                            )
-                        })
-                      }
-                    </div>
-                  </div>
-                </div>
-                <div className='grid gap-1'>
-                  <label className='font-medium'>Category</label>
-                  <div>
-                    <select
-                      className='bg-blue-50 border w-full p-2 rounded'
-                      value={selectCategory}
-                      onChange={(e)=>{
-                        const value = e.target.value 
-                        const category = allCategory.find(el => el._id === value )
-                        
-                        setData((preve)=>{
-                          return{
-                            ...preve,
-                            category : [...preve.category,category],
-                          }
-                        })
-                        setSelectCategory("")
-                      }}
-                    >
-                      <option value={""}>Select Category</option>
-                      {
-                        allCategory.map((c,index)=>{
-                          return(
-                            <option key={index} value={c?._id}>{c.name}</option>
-                          )
-                        })
-                      }
-                    </select>
-                    <div className='flex flex-wrap gap-3'>
-                      {
-                        data.category.map((c,index)=>{
-                          return(
-                            <div key={c._id+index+"productsection"} className='text-sm flex items-center gap-1 bg-blue-50 mt-2'>
-                              <p>{c.name}</p>
-                              <div className='hover:text-red-500 cursor-pointer' onClick={()=>handleRemoveCategory(index)}>
-                                <IoClose size={20}/>
-                              </div>
-                            </div>
-                          )
-                        })
-                      }
-                    </div>
-                  </div>
-                </div>
-                <div className='grid gap-1'>
-                  <label className='font-medium'>Sub Category</label>
-                  <div>
-                    <select
-                      className='bg-blue-50 border w-full p-2 rounded'
-                      value={selectSubCategory}
-                      onChange={(e)=>{
-                        const value = e.target.value 
-                        const subCategory = allSubCategory.find(el => el._id === value )
-
-                        setData((preve)=>{
-                          return{
-                            ...preve,
-                            subCategory : [...preve.subCategory,subCategory]
-                          }
-                        })
-                        setSelectSubCategory("")
-                      }}
-                    >
-                      <option value={""} className='text-neutral-600'>Select Sub Category</option>
-                      {
-                        allSubCategory.map((c,index)=>{
-                          return(
-                            <option key={index} value={c?._id}>{c.name}</option>
-                          )
-                        })
-                      }
-                    </select>
-                    <div className='flex flex-wrap gap-3'>
-                      {
-                        data.subCategory.map((c,index)=>{
-                          return(
-                            <div key={c._id+index+"productsection"} className='text-sm flex items-center gap-1 bg-blue-50 mt-2'>
-                              <p>{c.name}</p>
-                              <div className='hover:text-red-500 cursor-pointer' onClick={()=>handleRemoveSubCategory(index)}>
-                                <IoClose size={20}/>
-                              </div>
-                            </div>
-                          )
-                        })
-                      }
-                    </div>
-                  </div>
-                </div>
-
-                {/* REMOVED: Unit input field */}
-
-                <div className='grid gap-1'>
-                  <label htmlFor='stock' className='font-medium'>Number of Stock</label>
-                  <input 
-                    id='stock'
-                    type='number'
-                    placeholder='Enter product stock'
-                    name='stock'
-                    value={data.stock}
-                    onChange={handleChange}
-                    required
-                    className='bg-blue-50 p-2 outline-none border focus-within:border-amber-300 rounded'
-                  />
-                </div>
-
-                <div className='grid gap-1'>
-                  <label htmlFor='price' className='font-medium'>Price</label>
-                  <input 
-                    id='price'
-                    type='number'
-                    placeholder='Enter product price'
-                    name='price'
-                    value={data.price}
-                    onChange={handleChange}
-                    required
-                    className='bg-blue-50 p-2 outline-none border focus-within:border-amber-300 rounded'
-                  />
-                </div>
-
-                <div className='grid gap-1'>
-                  <label htmlFor='discount' className='font-medium'>Discount</label>
-                  <input 
-                    id='discount'
-                    type='number'
-                    placeholder='Enter product discount'
-                    name='discount'
-                    value={data.discount}
-                    onChange={handleChange}
-                    required
-                    className='bg-blue-50 p-2 outline-none border focus-within:border-amber-300 rounded'
-                  />
-                </div>
-
-
-                {/**add more field**/}
-                  {
-                    Object?.keys(data?.more_details)?.map((k,index)=>{
-                        return(
-                          <div key={index} className='grid gap-1'>
-                            <label htmlFor={k} className='font-medium'>{k}</label>
-                            <input 
-                              id={k}
-                              type='text'
-                              value={data?.more_details[k]}
-                              onChange={(e)=>{
-                                  const value = e.target.value 
-                                  setData((preve)=>{
-                                    return{
-                                        ...preve,
-                                        more_details : {
-                                          ...preve.more_details,
-                                          [k] : value
-                                        }
-                                    }
-                                  })
-                              }}
-                              required
-                              className='bg-blue-50 p-2 outline-none border focus-within:border-amber-300 rounded'
-                            />
-                          </div>
-                        )
-                    })
-                  }
-
-                <div onClick={()=>setOpenAddField(true)} className=' hover:bg-amber-300 bg-white py-1 px-3 w-32 text-center font-semibold border border-amber-300 hover:text-neutral-900 cursor-pointer rounded'>
-                  Add Fields
-                </div>
-
-                <button
-                  className='bg-amber-200 hover:bg-amber-300 py-2 rounded font-semibold cursor-pointer'
-                >
-                  Submit
-                </button>
-            </form>
+      <form className="max-w-4xl" onSubmit={handleSubmit}>
+        {/* Name Field */}
+        <div className="mb-4 sm:mb-5">
+          <label htmlFor='name' className="block text-sm font-semibold text-[#0F172A] mb-2">Name</label>
+          <input 
+            id='name'
+            type='text'
+            placeholder='Enter product name'
+            name='name'
+            value={data.name}
+            onChange={handleChange}
+            required
+            className="w-full px-3.5 py-2.5 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] bg-white transition-all duration-150 hover:border-[#94A3B8] focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2]"
+          />
         </div>
 
-        {
-          ViewImageURL && (
-            <ViewImage url={ViewImageURL} close={()=>setViewImageURL("")}/>
-          )
-        }
+        {/* Description Field */}
+        <div className="mb-4 sm:mb-5">
+          <label htmlFor='description' className="block text-sm font-semibold text-[#0F172A] mb-2">Description</label>
+          <textarea 
+            id='description'
+            placeholder='Enter product description'
+            name='description'
+            value={data.description}
+            onChange={handleChange}
+            required
+            rows={4}
+            className="w-full px-3.5 py-2.5 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] bg-white transition-all duration-150 hover:border-[#94A3B8] focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2] resize-y min-h-[100px]"
+          />
+        </div>
 
-        {
-          openAddField && (
-            <AddFieldComponent 
-              value={fieldName}
-              onChange={(e)=>setFieldName(e.target.value)}
-              submit={handleAddField}
-              close={()=>setOpenAddField(false)} 
+        {/* Image Upload */}
+        <div className="mb-4 sm:mb-5">
+          <label className="block text-sm font-semibold text-[#0F172A] mb-2">Image</label>
+          <div
+            className={`border-2 border-dashed rounded-lg p-6 sm:p-5 text-center bg-[#F1F5F9] transition-all duration-150 cursor-pointer ${
+              dragoverImage ? 'border-[#DC2626] bg-[#FEF2F2]' : 'border-[#E2E8F0] hover:border-[#DC2626] hover:bg-[#FEF2F2]'
+            }`}
+            onDragOver={(e) => {
+              e.preventDefault()
+              setDragoverImage(true)
+            }}
+            onDragLeave={() => setDragoverImage(false)}
+            onDrop={(e) => {
+              e.preventDefault()
+              handleUploadImage(e)
+            }}
+            onClick={() => document.getElementById('productImage').click()}
+          >
+            {imageLoading ? (
+              <Loading/>
+            ) : (
+              <>
+                <FaCloudUploadAlt className="mx-auto text-2xl sm:text-3xl text-[#94A3B8] mb-2" />
+                <div className="text-sm font-semibold text-[#0F172A] mb-1">Upload Image</div>
+                <div className="text-xs text-[#94A3B8]">Image size will be 2600*1900</div>
+              </>
+            )}
+            <input 
+              type='file'
+              id='productImage'
+              className='hidden'
+              accept='image/*'
+              onChange={handleUploadImage}
             />
+          </div>
+          
+          {/* Display uploaded images */}
+          {data.image.length > 0 && (
+            <div className='flex flex-wrap gap-3 mt-3'>
+              {data.image.map((img,index) => (
+                <div key={img+index} className='h-20 w-20 min-w-20 bg-[#F1F5F9] border border-[#E2E8F0] rounded-lg relative group'>
+                  <img
+                    src={img}
+                    alt={img}
+                    className='w-full h-full object-cover rounded-lg cursor-pointer' 
+                    onClick={()=>setViewImageURL(img)}
+                  />
+                  <div 
+                    onClick={()=>handleDeleteImage(index)} 
+                    className='absolute -top-2 -right-2 p-1.5 bg-[#DC2626] hover:bg-[#991B1B] rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-md'
+                  >
+                    <MdDelete size={14}/>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Video Upload */}
+        <div className="mb-4 sm:mb-5">
+          <label className="block text-sm font-semibold text-[#0F172A] mb-2">Video</label>
+          <div
+            className={`border-2 border-dashed rounded-lg p-6 sm:p-5 text-center bg-[#F1F5F9] transition-all duration-150 cursor-pointer ${
+              dragoverVideo ? 'border-[#DC2626] bg-[#FEF2F2]' : 'border-[#E2E8F0] hover:border-[#DC2626] hover:bg-[#FEF2F2]'
+            }`}
+            onDragOver={(e) => {
+              e.preventDefault()
+              setDragoverVideo(true)
+            }}
+            onDragLeave={() => setDragoverVideo(false)}
+            onDrop={(e) => {
+              e.preventDefault()
+              handleUploadVideo(e)
+            }}
+            onClick={() => document.getElementById('productVideo').click()}
+          >
+            {videoLoading ? (
+              <Loading/>
+            ) : (
+              <>
+                <FaCloudUploadAlt className="mx-auto text-2xl sm:text-3xl text-[#94A3B8] mb-2" />
+                <div className="text-sm font-semibold text-[#0F172A] mb-1">Upload Video</div>
+                <div className="text-xs text-[#94A3B8]">Video size up to 50MB</div>
+              </>
+            )}
+            <input 
+              type='file'
+              id='productVideo'
+              className='hidden'
+              accept='video/*'
+              onChange={handleUploadVideo}
+            />
+          </div>
+          
+          {/* Display uploaded videos */}
+          {data.video && data.video.length > 0 && (
+            <div className='flex flex-wrap gap-3 mt-3'>
+              {data.video.map((vid,index) => (
+                <div key={vid+index} className='h-20 w-32 min-w-32 bg-[#F1F5F9] border border-[#E2E8F0] rounded-lg relative group'>
+                  <video
+                    src={vid}
+                    controls
+                    className='w-full h-full object-cover rounded-lg'
+                    style={{maxHeight:'80px'}}
+                  />
+                  <div 
+                    onClick={()=>{
+                      data.video.splice(index,1)
+                      setData((preve)=>({ ...preve, video: [...preve.video] }))
+                    }} 
+                    className='absolute -top-2 -right-2 p-1.5 bg-[#DC2626] hover:bg-[#991B1B] rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-md'
+                  >
+                    <MdDelete size={14}/>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Category and Sub Category Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 sm:mb-5">
+          {/* Category */}
+          <div>
+            <label className="block text-sm font-semibold text-[#0F172A] mb-2">Category</label>
+            <select
+              className="w-full px-3.5 py-2.5 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] bg-white transition-all duration-150 hover:border-[#94A3B8] focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2] cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23475569%22%20d%3D%22M6%209L1%204h10z%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_14px_center] pr-10"
+              value={selectCategory}
+              onChange={(e)=>{
+                const value = e.target.value 
+                const category = allCategory.find(el => el._id === value )
+                
+                setData((preve)=>{
+                  return{
+                    ...preve,
+                    category : [...preve.category,category],
+                  }
+                })
+                setSelectCategory("")
+              }}
+            >
+              <option value={""}>Select Category</option>
+              {allCategory.map((c,index)=>{
+                return(
+                  <option key={index} value={c?._id}>{c.name}</option>
+                )
+              })}
+            </select>
+            
+            {/* Display selected categories */}
+            {data.category.length > 0 && (
+              <div className='flex flex-wrap gap-2 mt-2'>
+                {data.category.map((c,index)=>{
+                  return(
+                    <div key={c._id+index+"productsection"} className='text-xs sm:text-sm flex items-center gap-1.5 bg-[#FEF2F2] text-[#DC2626] px-2.5 py-1.5 rounded-md border border-[#DC2626]/20'>
+                      <span className="font-medium">{c.name}</span>
+                      <button 
+                        type="button"
+                        className='hover:text-[#991B1B] cursor-pointer transition-colors' 
+                        onClick={()=>handleRemoveCategory(index)}
+                      >
+                        <IoClose size={16}/>
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Sub Category */}
+          <div>
+            <label className="block text-sm font-semibold text-[#0F172A] mb-2">Sub Category</label>
+            <select
+              className="w-full px-3.5 py-2.5 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] bg-white transition-all duration-150 hover:border-[#94A3B8] focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2] cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23475569%22%20d%3D%22M6%209L1%204h10z%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_14px_center] pr-10"
+              value={selectSubCategory}
+              onChange={(e)=>{
+                const value = e.target.value 
+                const subCategory = allSubCategory.find(el => el._id === value )
+
+                setData((preve)=>{
+                  return{
+                    ...preve,
+                    subCategory : [...preve.subCategory,subCategory]
+                  }
+                })
+                setSelectSubCategory("")
+              }}
+            >
+              <option value={""}>Select Sub Category</option>
+              {allSubCategory.map((c,index)=>{
+                return(
+                  <option key={index} value={c?._id}>{c.name}</option>
+                )
+              })}
+            </select>
+            
+            {/* Display selected sub categories */}
+            {data.subCategory.length > 0 && (
+              <div className='flex flex-wrap gap-2 mt-2'>
+                {data.subCategory.map((c,index)=>{
+                  return(
+                    <div key={c._id+index+"productsection"} className='text-xs sm:text-sm flex items-center gap-1.5 bg-[#FEF2F2] text-[#DC2626] px-2.5 py-1.5 rounded-md border border-[#DC2626]/20'>
+                      <span className="font-medium">{c.name}</span>
+                      <button 
+                        type="button"
+                        className='hover:text-[#991B1B] cursor-pointer transition-colors' 
+                        onClick={()=>handleRemoveSubCategory(index)}
+                      >
+                        <IoClose size={16}/>
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Stock, Price, Discount Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4 sm:mb-5">
+          <div>
+            <label htmlFor='stock' className="block text-sm font-semibold text-[#0F172A] mb-2">Number of Stock</label>
+            <input 
+              id='stock'
+              type='number'
+              placeholder='Enter product stock'
+              name='stock'
+              value={data.stock}
+              onChange={handleChange}
+              required
+              className="w-full px-3.5 py-2.5 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] bg-white transition-all duration-150 hover:border-[#94A3B8] focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2]"
+            />
+          </div>
+
+          <div>
+            <label htmlFor='price' className="block text-sm font-semibold text-[#0F172A] mb-2">Price</label>
+            <input 
+              id='price'
+              type='number'
+              placeholder='Enter product price'
+              name='price'
+              value={data.price}
+              onChange={handleChange}
+              required
+              className="w-full px-3.5 py-2.5 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] bg-white transition-all duration-150 hover:border-[#94A3B8] focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2]"
+            />
+          </div>
+
+          <div>
+            <label htmlFor='discount' className="block text-sm font-semibold text-[#0F172A] mb-2">Discount</label>
+            <input 
+              id='discount'
+              type='number'
+              placeholder='Enter product discount'
+              name='discount'
+              value={data.discount}
+              onChange={handleChange}
+              required
+              className="w-full px-3.5 py-2.5 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] bg-white transition-all duration-150 hover:border-[#94A3B8] focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2]"
+            />
+          </div>
+        </div>
+
+        {/* Additional Fields */}
+        {Object?.keys(data?.more_details)?.map((k,index)=>{
+          return(
+            <div key={index} className="mb-4 sm:mb-5">
+              <label htmlFor={k} className="block text-sm font-semibold text-[#0F172A] mb-2">{k}</label>
+              <input 
+                id={k}
+                type='text'
+                value={data?.more_details[k]}
+                onChange={(e)=>{
+                  const value = e.target.value 
+                  setData((preve)=>{
+                    return{
+                      ...preve,
+                      more_details : {
+                        ...preve.more_details,
+                        [k] : value
+                      }
+                    }
+                  })
+                }}
+                required
+                className="w-full px-3.5 py-2.5 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] bg-white transition-all duration-150 hover:border-[#94A3B8] focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2]"
+              />
+            </div>
           )
-        }
-    </section>
+        })}
+
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 mt-5 sm:mt-6">
+          <button
+            type="button"
+            onClick={()=>setOpenAddField(true)}
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#DC2626] hover:bg-[#991B1B] text-white font-semibold rounded-lg transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 text-sm"
+          >
+            <FaPlus size={14}/>
+            <span>Add Fields</span>
+          </button>
+          
+          <button
+            type="submit"
+            className="flex-1 sm:flex-initial sm:min-w-[120px] inline-flex items-center justify-center px-5 py-2.5 bg-[#DC2626] hover:bg-[#991B1B] text-white font-semibold rounded-lg transition-all duration-150 hover:-translate-y-0.5 active:translate-y-0 text-sm"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+
+      {/* View Image Modal */}
+      {ViewImageURL && (
+        <ViewImage url={ViewImageURL} close={()=>setViewImageURL("")}/>
+      )}
+
+      {/* Add Field Modal */}
+      {openAddField && (
+        <AddFieldComponent 
+          value={fieldName}
+          onChange={(e)=>setFieldName(e.target.value)}
+          submit={handleAddField}
+          close={()=>setOpenAddField(false)} 
+        />
+      )}
+    </div>
   )
 }
 

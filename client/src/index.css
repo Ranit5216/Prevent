@@ -3,16 +3,24 @@
 /* Custom animations for success page */
 @keyframes blob {
   0% {
-    transform: translate(0px, 0px) scale(1);
+    transform: translate(0, 0) scale(1);
   }
   33% {
-    transform: translate(30px, -50px) scale(1.1);
+    transform: translate(
+        clamp(12px, 4vw, 48px),
+        clamp(-72px, -6vh, -36px)
+      )
+      scale(clamp(1.02, 1.06, 1.1));
   }
   66% {
-    transform: translate(-20px, 20px) scale(0.9);
+    transform: translate(
+        clamp(-48px, -5vw, -18px),
+        clamp(24px, 5vh, 60px)
+      )
+      scale(clamp(0.9, 0.96, 0.99));
   }
   100% {
-    transform: translate(0px, 0px) scale(1);
+    transform: translate(0, 0) scale(1);
   }
 }
 
@@ -49,5 +57,95 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Image Quality Improvements */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: auto;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* High quality image rendering */
+img[loading="eager"],
+img[fetchpriority="high"] {
+  image-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent image blur on scale */
+img {
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+/* Role selection badge animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Scale up animation for notification modal */
+@keyframes scale-up {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-scale-up {
+  animation: scale-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Safe area insets for mobile devices (notch support) */
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Touch-friendly minimum sizes */
+button, 
+a[role="button"],
+input[type="submit"],
+input[type="button"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Mobile form optimizations */
+input, textarea, select {
+  font-size: 16px; /* Prevents zoom on iOS */
+}
+
+@media (max-width: 640px) {
+  input, textarea, select {
+    font-size: 16px !important; /* Force 16px to prevent iOS zoom */
+  }
 }
 

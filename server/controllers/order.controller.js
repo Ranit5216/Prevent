@@ -6,6 +6,7 @@ import UserModel from "../models/user.model.js";
 import mongoose from "mongoose";
 import sendEmail from '../config/sendEmail.js';
 import { sendPushNotification } from './notification.controller.js';
+import logger from '../utils/logger.js';
 
 export async function CashOnDeliveryOrderController(request, response) {
     try {
@@ -287,7 +288,7 @@ export async function CashOnDeliveryOrderController(request, response) {
         })
 
     } catch (error) {
-        console.error("Cash on delivery error:", error)
+        logger.error("Cash on delivery error:", error)
         return response.status(500).json({
             message: error.message || "Failed to place order",
             error: true,
@@ -306,42 +307,11 @@ export async function getOrderDetailsController(request,response){
     try {
         const userId = request.userId // order id
 
-        const orderlist = await OrderModel.find({ userId : userId })
-            .sort({ createdAt : -1 })
-            .populate('delivery_address')
-            .lean({ defaults: true }) // Use lean() with defaults to ensure all fields are included
+        const orderlist = await OrderModel.find({ userId : userId }).sort({ createdAt : -1 }).populate('delivery_address')
 
-        // Ensure cancelled_by field is always included in response
-        const ordersWithCancelledBy = orderlist.map((order) => {
-            // Explicitly ensure cancelled_by is included - always set it explicitly
-            // Check if property exists in the object, if not, query it separately
-            let cancelledByValue = null
-            if ('cancelled_by' in order) {
-                cancelledByValue = order.cancelled_by
-            } else {
-                // Field doesn't exist, set to null (for old orders)
-                cancelledByValue = null
-            }
-            
-            // Debug log for cancelled orders
-            if (order.order_status === 'CANCELLED') {
-                console.log(`🔍 Order ${order.orderId}: cancelled_by = ${cancelledByValue} (exists: ${'cancelled_by' in order})`)
-            }
-            
-            // Always explicitly include cancelled_by in the response
-            const result = { ...order }
-            result.cancelled_by = cancelledByValue
-            return result
-        })
-
-        // Set cache-control headers to prevent caching
-        response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
-        response.setHeader('Pragma', 'no-cache')
-        response.setHeader('Expires', '0')
-        
         return response.json({
             message : "order list",
-            data : ordersWithCancelledBy,
+            data : orderlist,
             error : false,
             success : true
         })
@@ -361,38 +331,10 @@ export async function getAllOrdersController(request, response) {
             .sort({ createdAt: -1 })
             .populate('delivery_address')
             .populate('userId', 'name email mobile')
-            .lean({ defaults: true }) // Use lean() with defaults to ensure all fields are included
 
-        // Ensure cancelled_by field is always included in response
-        const ordersWithCancelledBy = orders.map(order => {
-            // Explicitly ensure cancelled_by is included - always set it explicitly
-            let cancelledByValue = null
-            if ('cancelled_by' in order) {
-                cancelledByValue = order.cancelled_by
-            } else {
-                // Field doesn't exist, set to null (for old orders)
-                cancelledByValue = null
-            }
-            
-            // Debug log for cancelled orders
-            if (order.order_status === 'CANCELLED') {
-                console.log(`🔍 Admin Order ${order.orderId}: cancelled_by = ${cancelledByValue} (exists: ${'cancelled_by' in order})`)
-            }
-            
-            // Always explicitly include cancelled_by in the response
-            const result = { ...order }
-            result.cancelled_by = cancelledByValue
-            return result
-        })
-
-        // Set cache-control headers to prevent caching
-        response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
-        response.setHeader('Pragma', 'no-cache')
-        response.setHeader('Expires', '0')
-        
         return response.json({
             message: "All orders retrieved successfully",
-            data: ordersWithCancelledBy,
+            data: orders,
             error: false,
             success: true
         })
@@ -446,25 +388,14 @@ export async function updateOrderStatusController(request, response) {
             updateData.cancelled_by = 'ADMIN' // Admin is cancelling
         }
 
-        let order = await OrderModel.findOneAndUpdate(
+        const order = await OrderModel.findOneAndUpdate(
             { orderId, admin_id },
             updateData,
-            { new: true, runValidators: true }
+            { new: true }
         )
-        
 
         if (!order) {
             throw new Error("Order not found")
-        }
-        
-        // Convert to plain object and ensure cancelled_by is explicitly included for cancelled orders
-        order = order.toObject ? order.toObject() : order
-        if (status === 'CANCELLED') {
-            // Verify the field was saved to database
-            const verifyOrder = await OrderModel.findOne({ orderId, admin_id }).lean()
-            console.log(`✅ Admin cancellation saved - Order ${orderId}: cancelled_by = ${verifyOrder?.cancelled_by}`)
-            order.cancelled_by = verifyOrder?.cancelled_by || 'ADMIN'
-            console.log(`📤 Admin cancellation response - Order ${orderId}: cancelled_by = ${order.cancelled_by}`)
         }
 
         // Send email notification to user about order status update
@@ -672,7 +603,7 @@ export async function cancelOrderController(request, response) {
                 cancellation_reason: cancellation_reason,
                 cancelled_by: 'USER' // User is cancelling
             },
-            { new: true, runValidators: true }
+            { new: true }
         )
         
         if (!updatedOrder) {
@@ -681,15 +612,6 @@ export async function cancelOrderController(request, response) {
                 error: true,
                 success: false
             })
-        }
-        
-        // Verify the field was saved to database
-        const verifyOrder = await OrderModel.findOne({ orderId, userId }).lean()
-        
-        // Convert to plain object and ensure cancelled_by is explicitly included
-        const orderResponse = {
-            ...(updatedOrder.toObject ? updatedOrder.toObject() : updatedOrder),
-            cancelled_by: verifyOrder?.cancelled_by || 'USER'
         }
 
         // Send email notification to user about cancellation
@@ -773,7 +695,7 @@ export async function cancelOrderController(request, response) {
 
         return response.json({
             message: "Order cancelled successfully",
-            data: orderResponse,
+            data: updatedOrder,
             error: false,
             success: true
         })

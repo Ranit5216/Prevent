@@ -8,6 +8,7 @@ import uploadImageClodinary from '../utils/uploadImageClodinary.js'
 import generatedOtp from '../utils/generatedOtp.js'
 import forgotPasswordTemplate from '../utils/forgotPasswordTemplate.js'
 import jwt from 'jsonwebtoken'
+import logger from '../utils/logger.js'
 
 
 export async function registerUserController(request, response) {
@@ -137,7 +138,7 @@ export async function registerUserController(request, response) {
                 data: { _id: save._id, email: save.email }
             })
         } catch (emailError) {
-            console.error("Email sending failed:", emailError)
+            logger.error("Email sending failed:", emailError)
             return response.json({
                 message: "User registered, but OTP email failed to send.",
                 error: true,
@@ -146,7 +147,7 @@ export async function registerUserController(request, response) {
             })
         }
     } catch (error) {
-        console.error("Registration error:", error)
+        logger.error("Registration error:", error)
         return response.status(500).json({
             message: "Internal server error. Please try again later.",
             error: true,
@@ -515,7 +516,7 @@ export async function forgotPasswordController(request,response) {
                 success: true
             })
         } catch (emailError) {
-            console.error("Failed to send OTP email:", emailError)
+            logger.error("Failed to send OTP email:", emailError)
             return response.status(500).json({
                 message: "Failed to send OTP. Please try again later.",
                 error: true,
@@ -524,7 +525,7 @@ export async function forgotPasswordController(request,response) {
         }
 
     } catch (error) {
-        console.error("Forgot password error:", error)
+        logger.error("Forgot password error:", error)
         return response.status(500).json({
             message: error.message || "Something went wrong",
             error: true,
@@ -722,143 +723,4 @@ export async function userDetails(request,response){
         })
     }
 }
-
-// Update user role (Admin only)
-export async function updateUserRole(request, response) {
-    try {
-        const adminId = request.userId // Current admin making the request
-        const { userId, role } = request.body
-
-        // Validate inputs
-        if (!userId || !role) {
-            return response.status(400).json({
-                message: "Provide userId and role",
-                error: true,
-                success: false
-            })
-        }
-
-        // Validate role if provided
-        if (selectedRole && !['ADMIN', 'USER'].includes(selectedRole)) {
-            return response.status(400).json({
-                message: "Invalid role. Must be ADMIN or USER",
-                error: true,
-                success: false
-            })
-        }
-
-        // Check if admin exists and is actually an admin
-        const admin = await UserModel.findById(adminId)
-        if (!admin || admin.role !== 'ADMIN') {
-            return response.status(403).json({
-                message: "Permission denied. Admin access required",
-                error: true,
-                success: false
-            })
-        }
-
-        // Prevent admin from changing their own role
-        if (adminId === userId) {
-            return response.status(400).json({
-                message: "You cannot change your own role",
-                error: true,
-                success: false
-            })
-        }
-
-        // Find the user to update
-        const userToUpdate = await UserModel.findById(userId)
-        if (!userToUpdate) {
-            return response.status(404).json({
-                message: "User not found",
-                error: true,
-                success: false
-            })
-        }
-
-        // Update user role
-        userToUpdate.role = role
-        await userToUpdate.save()
-
-        return response.json({
-            message: `User role updated to ${role} successfully`,
-            error: false,
-            success: true,
-            data: {
-                _id: userToUpdate._id,
-                name: userToUpdate.name,
-                email: userToUpdate.email,
-                role: userToUpdate.role
-            }
-        })
-
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        })
-    }
-}
-
-// Get all users (Admin only)
-export async function getAllUsers(request, response) {
-    try {
-        const adminId = request.userId
-
-        // Check if admin exists and is actually an admin
-        const admin = await UserModel.findById(adminId)
-        if (!admin || admin.role !== 'ADMIN') {
-            return response.status(403).json({
-                message: "Permission denied. Admin access required",
-                error: true,
-                success: false
-            })
-        }
-
-        const { page = 1, limit = 20, search = '', role = '' } = request.query
-        const skip = (page - 1) * limit
-
-        // Build query
-        let query = {}
-        if (search) {
-            query.$or = [
-                { name: { $regex: search, $options: 'i' } },
-                { email: { $regex: search, $options: 'i' } },
-                { mobile: { $regex: search, $options: 'i' } }
-            ]
-        }
-        if (role) {
-            query.role = role
-        }
-
-        const [users, totalCount] = await Promise.all([
-            UserModel.find(query)
-                .select('-password -refresh_token -otp -forgot_password_otp')
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(parseInt(limit)),
-            UserModel.countDocuments(query)
-        ])
-
-        return response.json({
-            message: "Users fetched successfully",
-            error: false,
-            success: true,
-            data: users,
-            totalCount,
-            totalPages: Math.ceil(totalCount / limit),
-            currentPage: parseInt(page)
-        })
-
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        })
-    }
-}
-
-
 

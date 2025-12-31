@@ -1,7 +1,10 @@
 import toast from "react-hot-toast"
 
 const AxiosToastError = (error)=>{
-    console.error("Axios Error:", error)
+    // Log error to Sentry in production
+    if (import.meta.env.PROD && window.Sentry) {
+      window.Sentry.captureException(error)
+    }
     
     if (error?.response?.data?.message) {
         toast.error(error.response.data.message)

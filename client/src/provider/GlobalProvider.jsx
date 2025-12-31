@@ -122,6 +122,15 @@ const GlobalProvider = ({children}) => {
         const { data : responseData } = response
 
         if(responseData.success){
+            // Debug: Log cancelled orders to verify cancelled_by field
+            const cancelledOrders = responseData.data.filter(order => order.order_status === 'CANCELLED')
+            if (cancelledOrders.length > 0) {
+              console.log('🔍 Frontend - Cancelled orders received:', cancelledOrders.map(o => ({
+                orderId: o.orderId,
+                cancelled_by: o.cancelled_by,
+                hasCancelledBy: 'cancelled_by' in o
+              })))
+            }
             dispatch(setOrder(responseData.data))
         }
       } catch (error) {

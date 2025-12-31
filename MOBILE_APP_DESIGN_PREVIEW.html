@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PreEvent - Mobile App Design</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #F5F5F5;
+            color: #1F2937;
+            padding-bottom: 70px;
+        }
+
+        /* Top Bar - App Style */
+        .top-bar {
+            background: #DC2626;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .top-icons {
+            display: flex;
+            gap: 16px;
+            font-size: 1.25rem;
+        }
+
+        /* Compact Hero - App Style */
+        .hero-compact {
+            background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+            color: white;
+            padding: 24px 16px;
+            text-align: center;
+        }
+
+        .hero-compact h1 {
+            font-size: 1.75rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .hero-compact p {
+            font-size: 0.9rem;
+            opacity: 0.95;
+            margin-bottom: 16px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-compact {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-primary-compact {
+            background: white;
+            color: #DC2626;
+        }
+
+        .btn-secondary-compact {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid white;
+        }
+
+        /* Quick Stats - Compact Row */
+        .quick-stats {
+            background: white;
+            padding: 16px;
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .quick-stats::-webkit-scrollbar {
+            display: none;
+        }
+
+        .stat-mini {
+            min-width: 80px;
+            text-align: center;
+            padding: 12px;
+            background: #F9FAFB;
+            border-radius: 12px;
+        }
+
+        .stat-mini-number {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #DC2626;
+        }
+
+        .stat-mini-label {
+            font-size: 0.7rem;
+            color: #6B7280;
+            margin-top: 4px;
+        }
+
+        /* Search Bar - App Style */
+        .search-section {
+            padding: 16px;
+            background: white;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 16px;
+            background: #F5F5F5;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+
+        /* Categories - Compact Grid */
+        .categories-compact {
+            padding: 16px;
+            background: white;
+            margin-top: 8px;
+        }
+
+        .section-title-compact {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #1F2937;
+        }
+
+        .section-title-compact span {
+            color: #DC2626;
+        }
+
+        .categories-grid-compact {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .category-mini {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #E5E7EB;
+            text-align: center;
+        }
+
+        .category-mini-image {
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(135deg, #FEE2E2 0%, #FCA5A5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .category-mini-name {
+            padding: 8px 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        /* Products - App Style Cards */
+        .products-compact {
+            margin-top: 8px;
+        }
+
+        .product-header-compact {
+            background: #DC2626;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-header-compact h3 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .product-scroll-compact {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            background: white;
+            scrollbar-width: none;
+        }
+
+        .product-scroll-compact::-webkit-scrollbar {
+            display: none;
+        }
+
+        .product-card-compact {
+            min-width: 160px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #E5E7EB;
+        }
+
+        .product-image-compact {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, #FEE2E2 0%, #FCA5A5 100%);
+        }
+
+        .product-info-compact {
+            padding: 12px;
+        }
+
+        .product-title-compact {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1F2937;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-price-compact {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #DC2626;
+            margin-bottom: 8px;
+        }
+
+        .product-btn-compact {
+            width: 100%;
+            background: #DC2626;
+            color: white;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Benefits - Compact List */
+        .benefits-compact {
+            background: white;
+            margin-top: 8px;
+            padding: 16px;
+        }
+
+        .benefit-item-compact {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #F9FAFB;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .benefit-icon-compact {
+            width: 40px;
+            height: 40px;
+            background: #FEE2E2;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .benefit-content-compact h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+            color: #1F2937;
+        }
+
+        .benefit-content-compact p {
+            font-size: 0.75rem;
+            color: #6B7280;
+        }
+
+        /* CTA - Compact */
+        .cta-compact {
+            background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+            color: white;
+            padding: 24px 16px;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .cta-compact h2 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .cta-compact p {
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            opacity: 0.95;
+        }
+
+        .cta-btn-compact {
+            background: white;
+            color: #DC2626;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Bottom Navigation - App Style */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #E5E7EB;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 100;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            color: #6B7280;
+            font-size: 0.7rem;
+            text-decoration: none;
+        }
+
+        .nav-item.active {
+            color: #DC2626;
+        }
+
+        .nav-icon {
+            font-size: 1.25rem;
+        }
+
+        /* Compact Spacing */
+        .section-spacing {
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="logo">PreEvent</div>
+        <div class="top-icons">
+            <span>🛒</span>
+            <span>👤</span>
+        </div>
+    </div>
+
+    <!-- Compact Hero -->
+    <div class="hero-compact">
+        <h1>Your Dream Event,<br>Perfectly Planned</h1>
+        <p>Find trusted vendors & book instantly</p>
+        <div class="hero-buttons">
+            <button class="btn-compact btn-primary-compact">Explore</button>
+            <button class="btn-compact btn-secondary-compact">Search</button>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="quick-stats">
+        <div class="stat-mini">
+            <div class="stat-mini-number">1K+</div>
+            <div class="stat-mini-label">Customers</div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-number">500+</div>
+            <div class="stat-mini-label">Vendors</div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-number">50+</div>
+            <div class="stat-mini-label">Categories</div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-number">4.8★</div>
+            <div class="stat-mini-label">Rating</div>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-section">
+        <input type="text" class="search-box" placeholder="🔍 Search services...">
+    </div>
+
+    <!-- Categories -->
+    <div class="categories-compact">
+        <div class="section-title-compact">Explore <span>Categories</span></div>
+        <div class="categories-grid-compact">
+            <div class="category-mini">
+                <div class="category-mini-image">💒</div>
+                <div class="category-mini-name">Weddings</div>
+            </div>
+            <div class="category-mini">
+                <div class="category-mini-image">🏢</div>
+                <div class="category-mini-name">Corporate</div>
+            </div>
+            <div class="category-mini">
+                <div class="category-mini-image">🎂</div>
+                <div class="category-mini-name">Birthdays</div>
+            </div>
+            <div class="category-mini">
+                <div class="category-mini-image">📸</div>
+                <div class="category-mini-name">Photo</div>
+            </div>
+            <div class="category-mini">
+                <div class="category-mini-image">💄</div>
+                <div class="category-mini-name">Makeup</div>
+            </div>
+            <div class="category-mini">
+                <div class="category-mini-image">🍽️</div>
+                <div class="category-mini-name">Catering</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Section 1 -->
+    <div class="products-compact section-spacing">
+        <div class="product-header-compact">
+            <h3>Wedding Services</h3>
+            <span style="font-size: 0.85rem;">See All →</span>
+        </div>
+        <div class="product-scroll-compact">
+            <div class="product-card-compact">
+                <div class="product-image-compact"></div>
+                <div class="product-info-compact">
+                    <div class="product-title-compact">Wedding Photographer</div>
+                    <div class="product-price-compact">₹15K</div>
+                    <button class="product-btn-compact">Add</button>
+                </div>
+            </div>
+            <div class="product-card-compact">
+                <div class="product-image-compact"></div>
+                <div class="product-info-compact">
+                    <div class="product-title-compact">Makeup Artist</div>
+                    <div class="product-price-compact">₹8K</div>
+                    <button class="product-btn-compact">Add</button>
+                </div>
+            </div>
+            <div class="product-card-compact">
+                <div class="product-image-compact"></div>
+                <div class="product-info-compact">
+                    <div class="product-title-compact">Event Decorator</div>
+                    <div class="product-price-compact">₹25K</div>
+                    <button class="product-btn-compact">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Section 2 -->
+    <div class="products-compact section-spacing">
+        <div class="product-header-compact">
+            <h3>Photography</h3>
+            <span style="font-size: 0.85rem;">See All →</span>
+        </div>
+        <div class="product-scroll-compact">
+            <div class="product-card-compact">
+                <div class="product-image-compact"></div>
+                <div class="product-info-compact">
+                    <div class="product-title-compact">Event Photography</div>
+                    <div class="product-price-compact">₹12K</div>
+                    <button class="product-btn-compact">Add</button>
+                </div>
+            </div>
+            <div class="product-card-compact">
+                <div class="product-image-compact"></div>
+                <div class="product-info-compact">
+                    <div class="product-title-compact">Video Shooting</div>
+                    <div class="product-price-compact">₹18K</div>
+                    <button class="product-btn-compact">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Benefits - Compact -->
+    <div class="benefits-compact section-spacing">
+        <div class="section-title-compact">Why <span>PreEvent</span></div>
+        <div class="benefit-item-compact">
+            <div class="benefit-icon-compact">💰</div>
+            <div class="benefit-content-compact">
+                <h3>Best Prices</h3>
+                <p>Affordable rates tailored to your budget</p>
+            </div>
+        </div>
+        <div class="benefit-item-compact">
+            <div class="benefit-icon-compact">📦</div>
+            <div class="benefit-content-compact">
+                <h3>Wide Assortment</h3>
+                <p>Extensive collection of services</p>
+            </div>
+        </div>
+        <div class="benefit-item-compact">
+            <div class="benefit-icon-compact">⚡</div>
+            <div class="benefit-content-compact">
+                <h3>Fast Service</h3>
+                <p>Quick booking & seamless experience</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Compact -->
+    <div class="cta-compact">
+        <h2>Ready to Plan?</h2>
+        <p>Join thousands of happy customers</p>
+        <button class="cta-btn-compact">Start Planning</button>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <div class="nav-icon">🏠</div>
+            <div>Home</div>
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">🔍</div>
+            <div>Search</div>
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">🛒</div>
+            <div>Cart</div>
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">👤</div>
+            <div>Profile</div>
+        </a>
+    </div>
+</body>
+</html>
+

@@ -1,7 +1,8 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { FaFacebook, FaInstagram } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa6";
-import logo from '../assets/until-logo-1.png';
+import logo from '../assets/logo-designs/preevent-logo-main.svg';
 
 const Footer = () => {
   return (
@@ -11,8 +12,7 @@ const Footer = () => {
         <div className="md:hidden space-y-4">
           {/* Logo & Brand */}
           <div className="text-center">
-            <img src={logo} alt="PreEvent" className="w-14 mx-auto mb-2" />
-            <h2 className="text-base font-bold text-gray-800 mb-1">PreEvent</h2>
+            <img src={logo} alt="PreEvent" className="h-12 w-auto mx-auto mb-3" />
             <p className="text-gray-600 text-xs leading-relaxed max-w-xs mx-auto">
               Professional event planning services for all occasions.
             </p>
@@ -32,7 +32,7 @@ const Footer = () => {
               <h3 className="font-semibold text-gray-800 text-xs mb-1">Links</h3>
               <div className="space-y-0.5">
                 <a href="#about" className="block text-gray-600 hover:text-red-500 transition text-xs">About</a>
-                <a href="#contact" className="block text-gray-600 hover:text-red-500 transition text-xs">Contact</a>
+                <Link to="/support" className="block text-gray-600 hover:text-red-500 transition text-xs">Contact</Link>
                 <a href="#privacy" className="block text-gray-600 hover:text-red-500 transition text-xs">Privacy</a>
               </div>
             </div>
@@ -71,8 +71,7 @@ const Footer = () => {
         <div className="hidden md:flex md:flex-row md:justify-between gap-8">
           {/* Logo & Description */}
           <div className="flex flex-col items-start gap-2 max-w-xs text-left">
-            <img src={logo} alt="PreEvent - Professional Event Planning Services" className="w-32 mb-2" />
-            <h2 className="text-lg font-semibold text-gray-800 mb-2">PreEvent</h2>
+            <img src={logo} alt="PreEvent - Professional Event Planning Services" className="h-14 w-auto mb-3" />
             <p className="text-gray-600 text-sm">
               PreEvent is your premier event planning partner, offering comprehensive services for weddings, corporate events, birthday parties, and special occasions. Our expert team of event planners, photographers, makeup artists, and caterers ensure your Pre-Event coordination is flawless.
             </p>
@@ -92,7 +91,7 @@ const Footer = () => {
           <div className="flex flex-col items-start gap-2">
             <h3 className="font-semibold text-gray-800 mb-1">Useful Links</h3>
             <a href="#about" className="text-gray-600 hover:text-red-500 transition text-base">About PreEvent</a>
-            <a href="#contact" className="text-gray-600 hover:text-red-500 transition text-base">Contact Us</a>
+            <Link to="/support" className="text-gray-600 hover:text-red-500 transition text-base">Contact Us</Link>
             <a href="#privacy" className="text-gray-600 hover:text-red-500 transition text-base">Privacy Policy</a>
             <a href="#terms" className="text-gray-600 hover:text-red-500 transition text-base">Terms of Service</a>
           </div>

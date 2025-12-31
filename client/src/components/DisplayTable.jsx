@@ -17,14 +17,16 @@ const DisplayTable = ({ data, column }) => {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full">
+      <table className="w-full border-collapse">
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id} className="bg-gray-50 border-b border-gray-200">
-              {headerGroup.headers.map(header => (
+            <tr key={headerGroup.id} className="bg-[#F1F5F9]">
+              {headerGroup.headers.map((header, index) => (
                 <th
                   key={header.id}
-                  className="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider"
+                  className={`px-3 sm:px-4 py-2.5 sm:py-3 text-left text-[10px] sm:text-xs font-semibold text-[#475569] uppercase tracking-wide border-b border-[#E2E8F0] ${
+                    index === 1 ? 'w-32 min-w-[120px]' : ''
+                  }`}
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -39,14 +41,14 @@ const DisplayTable = ({ data, column }) => {
           {table.getRowModel().rows.map((row, index) => (
             <tr 
               key={row.id}
-              className={`${
-                index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-              } hover:bg-gray-100 transition-colors duration-200`}
+              className="bg-white hover:bg-[#F1F5F9] transition-colors border-b border-[#E2E8F0] last:border-b-0"
             >
-              {row.getVisibleCells().map(cell => (
+              {row.getVisibleCells().map((cell, cellIndex) => (
                 <td
                   key={cell.id}
-                  className="px-6 py-4 text-sm text-gray-700 whitespace-nowrap"
+                  className={`px-3 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm text-[#0F172A] ${
+                    cellIndex === 1 ? 'w-32 min-w-[120px]' : ''
+                  }`}
                 >
                   {flexRender(
                     cell.column.columnDef.cell,

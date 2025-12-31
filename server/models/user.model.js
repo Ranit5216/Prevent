@@ -21,7 +21,8 @@ const userSchema = new mongoose.Schema({
     },
     mobile : {
         type : Number,
-        default : ""
+        required : [true, "Provide mobile number"],
+        unique : true
     },
     facebookLink: {
         type: String,
@@ -32,6 +33,10 @@ const userSchema = new mongoose.Schema({
         default: ""
     },
     instagramLink: {
+        type: String,
+        default: ""
+    },
+    location: {
         type: String,
         default: ""
     },

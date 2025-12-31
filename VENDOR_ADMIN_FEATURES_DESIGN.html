@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - Vendor/Admin Features Design Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #DC2626;
+            --primary-red-dark: #991B1B;
+            --primary-red-light: #FEE2E2;
+            --accent-yellow: #ffbf00;
+            --success-green: #00b050;
+            --info-blue: #3B82F6;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F5F5;
+            --border-color: #E5E7EB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'DM Sans', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+            color: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Dashboard Overview */
+        .dashboard-overview {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .section-title i {
+            color: var(--primary-red);
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .overview-card {
+            background: linear-gradient(135deg, var(--primary-red-light), white);
+            border: 2px solid var(--primary-red);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .overview-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(220, 38, 38, 0.2);
+        }
+
+        .overview-icon {
+            font-size: 2.5rem;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+        }
+
+        .overview-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .overview-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .overview-change {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+
+        .change-positive {
+            color: var(--success-green);
+        }
+
+        .change-negative {
+            color: var(--primary-red);
+        }
+
+        /* Sales Reports */
+        .reports-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .report-filters {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        .chart-container {
+            background: var(--bg-light);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            min-height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--border-color);
+        }
+
+        .chart-placeholder {
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .chart-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--primary-red);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-light);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-red);
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .export-btn:hover {
+            background: var(--primary-red-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+        }
+
+        /* Inventory Management */
+        .inventory-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .inventory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            background: white;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        .search-box i {
+            color: var(--text-secondary);
+        }
+
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        .inventory-table thead,
+        .inventory-table tbody {
+            display: block;
+        }
+
+        .inventory-table thead {
+            width: 100%;
+        }
+
+        .inventory-table tbody {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .inventory-table tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .inventory-table th,
+        .inventory-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .inventory-table th {
+            background: var(--bg-light);
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .inventory-table tr:hover {
+            background: var(--bg-light);
+        }
+
+        .stock-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .stock-high {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .stock-medium {
+            background: var(--accent-yellow);
+            color: white;
+        }
+
+        .stock-low {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        .action-btn.edit {
+            border-color: var(--info-blue);
+            color: var(--info-blue);
+        }
+
+        .action-btn.edit:hover {
+            background: var(--info-blue);
+            color: white;
+        }
+
+        /* Vendor Ratings */
+        .ratings-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .rating-summary {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-red-light), white);
+            border: 2px solid var(--primary-red);
+            border-radius: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .rating-overall {
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .rating-number {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .rating-stars {
+            font-size: 1.5rem;
+            color: var(--accent-yellow);
+            margin: 0.5rem 0;
+        }
+
+        .rating-breakdown {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .rating-bar-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .rating-bar-item span:first-child {
+            min-width: 60px;
+            font-weight: 600;
+        }
+
+        .rating-bar {
+            flex: 1;
+            height: 10px;
+            background: var(--border-color);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .rating-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-yellow), var(--primary-red));
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        .recent-reviews {
+            margin-top: 2rem;
+        }
+
+        .review-item {
+            padding: 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            background: var(--bg-light);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .review-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .review-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-red);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .review-stars {
+            color: var(--accent-yellow);
+        }
+
+        /* Commission Tracking */
+        .commission-section {
+            background: linear-gradient(135deg, var(--primary-red-light), white);
+            border: 2px solid var(--primary-red);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .commission-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .commission-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .commission-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .commission-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .commission-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .commission-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            background: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+
+        .commission-table th,
+        .commission-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .commission-table th {
+            background: var(--bg-light);
+            font-weight: 700;
+        }
+
+        .commission-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .commission-table tr:hover {
+            background: var(--bg-light);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rating-summary {
+                flex-direction: column;
+                gap: 2rem;
+            }
+
+            .report-filters {
+                flex-direction: column;
+            }
+
+            .filter-btn {
+                width: 100%;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .inventory-table {
+                font-size: 0.85rem;
+            }
+
+            .inventory-table th,
+            .inventory-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👨‍💼 Vendor/Admin Dashboard</h1>
+            <p>Comprehensive analytics, reports, inventory, ratings & commission tracking</p>
+        </div>
+
+        <!-- Dashboard Overview -->
+        <div class="dashboard-overview">
+            <h2 class="section-title">
+                <i class="fas fa-chart-line"></i>
+                Dashboard Analytics
+            </h2>
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <div class="overview-icon"><i class="fas fa-rupee-sign"></i></div>
+                    <div class="overview-number">₹2,45,000</div>
+                    <div class="overview-label">Total Revenue</div>
+                    <div class="overview-change change-positive">
+                        <i class="fas fa-arrow-up"></i> +15% from last month
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-icon"><i class="fas fa-shopping-cart"></i></div>
+                    <div class="overview-number">127</div>
+                    <div class="overview-label">Total Orders</div>
+                    <div class="overview-change change-positive">
+                        <i class="fas fa-arrow-up"></i> +8% from last month
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-icon"><i class="fas fa-users"></i></div>
+                    <div class="overview-number">89</div>
+                    <div class="overview-label">Active Customers</div>
+                    <div class="overview-change change-positive">
+                        <i class="fas fa-arrow-up"></i> +12% from last month
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-icon"><i class="fas fa-star"></i></div>
+                    <div class="overview-number">4.8</div>
+                    <div class="overview-label">Average Rating</div>
+                    <div class="overview-change change-positive">
+                        <i class="fas fa-arrow-up"></i> +0.2 from last month
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-icon"><i class="fas fa-box"></i></div>
+                    <div class="overview-number">45</div>
+                    <div class="overview-label">Total Products</div>
+                    <div class="overview-change change-positive">
+                        <i class="fas fa-arrow-up"></i> +5 new products
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-icon"><i class="fas fa-money-bill-wave"></i></div>
+                    <div class="overview-number">₹24,500</div>
+                    <div class="overview-label">Total Commission</div>
+                    <div class="overview-change change-positive">
+                        <i class="fas fa-arrow-up"></i> +18% from last month
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Reports -->
+        <div class="reports-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Sales Reports
+                </h2>
+                <div class="export-buttons">
+                    <button class="export-btn">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </button>
+                    <button class="export-btn">
+                        <i class="fas fa-file-pdf"></i> Export PDF
+                    </button>
+                </div>
+            </div>
+            <div class="report-filters">
+                <button class="filter-btn active">Today</button>
+                <button class="filter-btn">This Week</button>
+                <button class="filter-btn">This Month</button>
+                <button class="filter-btn">This Year</button>
+                <button class="filter-btn">Custom Range</button>
+            </div>
+            <div class="chart-container">
+                <div class="chart-placeholder">
+                    <i class="fas fa-chart-line"></i>
+                    <div style="font-weight: 600; margin-top: 0.5rem;">Sales Chart Visualization</div>
+                    <div style="font-size: 0.9rem; margin-top: 0.5rem; color: var(--text-secondary);">
+                        Revenue trends, order statistics, and performance metrics will be displayed here
+                    </div>
+                </div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Sales</div>
+                    <div class="stat-value">₹2,45,000</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Orders Completed</div>
+                    <div class="stat-value">127</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Average Order Value</div>
+                    <div class="stat-value">₹1,929</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Conversion Rate</div>
+                    <div class="stat-value">12.5%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Management -->
+        <div class="inventory-section">
+            <div class="inventory-header">
+                <h2 class="section-title">
+                    <i class="fas fa-boxes"></i>
+                    Inventory Management
+                </h2>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search products...">
+                </div>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Product Name</th>
+                            <th style="width: 15%;">Category</th>
+                            <th style="width: 10%;">Stock</th>
+                            <th style="width: 12%;">Price</th>
+                            <th style="width: 10%;">Status</th>
+                            <th style="width: 28%;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Premium Wedding Photography</td>
+                            <td>Photography</td>
+                            <td>15</td>
+                            <td>₹25,000</td>
+                            <td><span class="stock-badge stock-high">In Stock</span></td>
+                            <td>
+                                <button class="action-btn edit">Edit</button>
+                                <button class="action-btn">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Professional Makeup Artist</td>
+                            <td>Beauty</td>
+                            <td>8</td>
+                            <td>₹15,000</td>
+                            <td><span class="stock-badge stock-medium">Low Stock</span></td>
+                            <td>
+                                <button class="action-btn edit">Edit</button>
+                                <button class="action-btn">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Luxury Catering Service</td>
+                            <td>Catering</td>
+                            <td>3</td>
+                            <td>₹35,000</td>
+                            <td><span class="stock-badge stock-low">Very Low</span></td>
+                            <td>
+                                <button class="action-btn edit">Edit</button>
+                                <button class="action-btn">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Event Decoration Package</td>
+                            <td>Decoration</td>
+                            <td>22</td>
+                            <td>₹18,500</td>
+                            <td><span class="stock-badge stock-high">In Stock</span></td>
+                            <td>
+                                <button class="action-btn edit">Edit</button>
+                                <button class="action-btn">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>DJ & Sound System</td>
+                            <td>Entertainment</td>
+                            <td>5</td>
+                            <td>₹12,000</td>
+                            <td><span class="stock-badge stock-medium">Low Stock</span></td>
+                            <td>
+                                <button class="action-btn edit">Edit</button>
+                                <button class="action-btn">View</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Vendor Ratings -->
+        <div class="ratings-section">
+            <h2 class="section-title">
+                <i class="fas fa-star"></i>
+                Vendor Ratings & Reviews
+            </h2>
+            <div class="rating-summary">
+                <div class="rating-overall">
+                    <div class="rating-number">4.8</div>
+                    <div class="rating-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <div style="color: var(--text-secondary); font-weight: 600;">Based on 247 reviews</div>
+                </div>
+                <div class="rating-breakdown">
+                    <div class="rating-bar-item">
+                        <span>5 Stars</span>
+                        <div class="rating-bar">
+                            <div class="rating-bar-fill" style="width: 75%;"></div>
+                        </div>
+                        <span style="font-weight: 600; min-width: 40px;">185</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span>4 Stars</span>
+                        <div class="rating-bar">
+                            <div class="rating-bar-fill" style="width: 18%;"></div>
+                        </div>
+                        <span style="font-weight: 600; min-width: 40px;">44</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span>3 Stars</span>
+                        <div class="rating-bar">
+                            <div class="rating-bar-fill" style="width: 5%;"></div>
+                        </div>
+                        <span style="font-weight: 600; min-width: 40px;">12</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span>2 Stars</span>
+                        <div class="rating-bar">
+                            <div class="rating-bar-fill" style="width: 1%;"></div>
+                        </div>
+                        <span style="font-weight: 600; min-width: 40px;">3</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span>1 Star</span>
+                        <div class="rating-bar">
+                            <div class="rating-bar-fill" style="width: 1%;"></div>
+                        </div>
+                        <span style="font-weight: 600; min-width: 40px;">3</span>
+                    </div>
+                </div>
+            </div>
+            <div class="recent-reviews">
+                <h3 style="font-weight: 700; margin-bottom: 1rem; color: var(--text-primary);">Recent Reviews</h3>
+                <div class="review-item">
+                    <div class="review-header">
+                        <div class="review-user">
+                            <div class="review-avatar">RK</div>
+                            <div>
+                                <div style="font-weight: 700;">Rahul Kumar</div>
+                                <div class="review-stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">2 days ago</div>
+                    </div>
+                    <div style="color: var(--text-primary); margin-top: 0.5rem;">
+                        Excellent service! The photography team was professional and captured all the special moments perfectly. Highly recommended!
+                    </div>
+                </div>
+                <div class="review-item">
+                    <div class="review-header">
+                        <div class="review-user">
+                            <div class="review-avatar">PS</div>
+                            <div>
+                                <div style="font-weight: 700;">Priya Sharma</div>
+                                <div class="review-stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">5 days ago</div>
+                    </div>
+                    <div style="color: var(--text-primary); margin-top: 0.5rem;">
+                        Great makeup artist! Very skilled and professional. The only reason for 4 stars is the slight delay in arrival time.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Commission Tracking -->
+        <div class="commission-section">
+            <h2 class="section-title">
+                <i class="fas fa-money-bill-wave"></i>
+                Commission Tracking
+            </h2>
+            <div class="commission-grid">
+                <div class="commission-card">
+                    <div class="commission-label">Total Commission</div>
+                    <div class="commission-amount">₹24,500</div>
+                    <div style="color: var(--success-green); font-size: 0.85rem; margin-top: 0.5rem; font-weight: 600;">
+                        <i class="fas fa-arrow-up"></i> +18% this month
+                    </div>
+                </div>
+                <div class="commission-card">
+                    <div class="commission-label">This Month</div>
+                    <div class="commission-amount">₹8,200</div>
+                    <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">
+                        From 45 orders
+                    </div>
+                </div>
+                <div class="commission-card">
+                    <div class="commission-label">Pending</div>
+                    <div class="commission-amount">₹3,500</div>
+                    <div style="color: var(--accent-yellow); font-size: 0.85rem; margin-top: 0.5rem; font-weight: 600;">
+                        Awaiting payment
+                    </div>
+                </div>
+                <div class="commission-card">
+                    <div class="commission-label">Commission Rate</div>
+                    <div class="commission-amount">10%</div>
+                    <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">
+                        Per order
+                    </div>
+                </div>
+            </div>
+            <div style="background: white; border-radius: 0.75rem; padding: 1.5rem;">
+                <h3 style="font-weight: 700; margin-bottom: 1rem; color: var(--text-primary);">Commission History</h3>
+                <table class="commission-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Order Amount</th>
+                            <th>Commission (10%)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#ORD-2024-001234</td>
+                            <td>Dec 15, 2024</td>
+                            <td>₹25,000</td>
+                            <td>₹2,500</td>
+                            <td><span class="stock-badge stock-high">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>#ORD-2024-001189</td>
+                            <td>Dec 12, 2024</td>
+                            <td>₹15,000</td>
+                            <td>₹1,500</td>
+                            <td><span class="stock-badge stock-high">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>#ORD-2024-001156</td>
+                            <td>Dec 10, 2024</td>
+                            <td>₹35,000</td>
+                            <td>₹3,500</td>
+                            <td><span class="stock-badge stock-medium">Pending</span></td>
+                        </tr>
+                        <tr>
+                            <td>#ORD-2024-001098</td>
+                            <td>Dec 8, 2024</td>
+                            <td>₹18,500</td>
+                            <td>₹1,850</td>
+                            <td><span class="stock-badge stock-high">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>#ORD-2024-001045</td>
+                            <td>Dec 5, 2024</td>
+                            <td>₹22,000</td>
+                            <td>₹2,200</td>
+                            <td><span class="stock-badge stock-high">Paid</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Animate rating bars on load
+        window.addEventListener('load', function() {
+            const bars = document.querySelectorAll('.rating-bar-fill');
+            bars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

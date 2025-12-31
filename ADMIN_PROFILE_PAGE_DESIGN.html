@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - Admin Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== CSS VARIABLES - PROFESSIONAL COLOR PALETTE ===== */
+        :root {
+            --primary-red: #DC2626;
+            --primary-red-dark: #991B1B;
+            --primary-red-light: #FEF2F2;
+            --primary-red-hover: #B91C1C;
+            --text-primary: #0F172A;
+            --text-secondary: #475569;
+            --text-tertiary: #94A3B8;
+            --bg-white: #FFFFFF;
+            --bg-surface: #F8FAFC;
+            --bg-subtle: #F1F5F9;
+            --border-default: #E2E8F0;
+            --border-subtle: #F1F5F9;
+            --success: #10B981;
+            --success-dark: #059669;
+            --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-surface);
+            color: var(--text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-size: 14px;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: var(--bg-white);
+            box-shadow: var(--shadow-xs);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        .header-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #3B82F6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            position: relative;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 2px;
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-red);
+            letter-spacing: -0.3px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: color 0.15s ease;
+            position: relative;
+            padding: 4px 0;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-red);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .cart-btn {
+            position: relative;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: background-color 0.15s ease;
+        }
+
+        .cart-btn:hover {
+            background: var(--bg-subtle);
+            color: var(--primary-red);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: var(--primary-red);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 5px;
+            border-radius: 8px;
+            min-width: 16px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .account-dropdown-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background-color 0.15s ease;
+        }
+
+        .account-dropdown-btn:hover {
+            background: var(--bg-subtle);
+            color: var(--primary-red);
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-default);
+            height: fit-content;
+            position: sticky;
+            top: 90px;
+            max-height: calc(100vh - 110px);
+            overflow-y: auto;
+        }
+
+        .profile-card {
+            text-align: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-default);
+            margin-bottom: 16px;
+        }
+
+        .profile-avatar-sidebar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            background: var(--bg-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px solid var(--border-default);
+        }
+
+        .profile-avatar-sidebar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name-sidebar {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .admin-badge-sidebar {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .profile-subtitle-sidebar {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-weight: 400;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            margin: 1px 0;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-menu-item:hover {
+            background: var(--bg-subtle);
+            color: var(--primary-red);
+        }
+
+        .sidebar-menu-item.active {
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            font-weight: 600;
+        }
+
+        .sidebar-menu-icon {
+            width: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-menu-item:hover .sidebar-menu-icon,
+        .sidebar-menu-item.active .sidebar-menu-icon {
+            color: var(--primary-red);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-default);
+            width: 100%;
+        }
+
+        .profile-header-main {
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        .profile-avatar-main {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            background: var(--bg-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px solid var(--border-default);
+            position: relative;
+        }
+
+        .profile-avatar-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-edit-icon {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 24px;
+            height: 24px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+
+        .profile-edit-icon:hover {
+            background: var(--success-dark);
+        }
+
+        .profile-name-main {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .profile-role-main {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            font-weight: 400;
+        }
+
+        /* ===== FORM SECTION ===== */
+        .form-section {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .form-label-icon {
+            color: var(--text-tertiary);
+            font-size: 14px;
+            width: 16px;
+            text-align: center;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            background: var(--bg-white);
+            transition: all 0.15s ease;
+        }
+
+        .form-input:hover {
+            border-color: var(--text-tertiary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 3px var(--primary-red-light);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-light);
+        }
+
+        .update-btn {
+            width: 100%;
+            padding: 10px 20px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+            margin-top: 4px;
+        }
+
+        .update-btn:hover {
+            background: var(--success-dark);
+        }
+
+        .update-btn:active {
+            background: var(--success-dark);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .main-container {
+                gap: 24px;
+            }
+
+            .sidebar {
+                width: 260px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+                max-height: none;
+                padding: 16px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 10px 12px;
+            }
+
+            .logo-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+
+            .logo-text {
+                font-size: 18px;
+            }
+
+            .cart-btn {
+                font-size: 14px;
+                padding: 5px;
+            }
+
+            .account-dropdown-btn {
+                font-size: 12px;
+                padding: 5px 8px;
+            }
+
+            .main-container {
+                padding: 12px;
+                gap: 12px;
+            }
+
+            .sidebar {
+                padding: 12px;
+                border-radius: 8px;
+            }
+
+            .profile-card {
+                padding-bottom: 12px;
+                margin-bottom: 12px;
+            }
+
+            .profile-avatar-sidebar {
+                width: 56px;
+                height: 56px;
+                margin-bottom: 10px;
+            }
+
+            .profile-name-sidebar {
+                font-size: 13px;
+                margin-bottom: 4px;
+            }
+
+            .admin-badge-sidebar {
+                font-size: 8px;
+                padding: 2px 6px;
+                margin-bottom: 4px;
+            }
+
+            .profile-subtitle-sidebar {
+                font-size: 10px;
+            }
+
+            .sidebar-menu-item {
+                padding: 6px 10px;
+                font-size: 12px;
+                gap: 8px;
+            }
+
+            .main-content {
+                padding: 16px;
+                border-radius: 8px;
+            }
+
+            .profile-header-main {
+                margin-bottom: 16px;
+                padding-bottom: 16px;
+            }
+
+            .profile-avatar-main {
+                width: 70px;
+                height: 70px;
+                margin-bottom: 10px;
+            }
+
+            .profile-edit-icon {
+                width: 20px;
+                height: 20px;
+                font-size: 10px;
+                bottom: 2px;
+                right: 2px;
+            }
+
+            .profile-name-main {
+                font-size: 18px;
+                margin-bottom: 3px;
+            }
+
+            .profile-role-main {
+                font-size: 12px;
+            }
+
+            .form-section {
+                max-width: 100%;
+            }
+
+            .form-group {
+                margin-bottom: 14px;
+            }
+
+            .form-label {
+                font-size: 11px;
+                margin-bottom: 5px;
+                gap: 5px;
+            }
+
+            .form-label-icon {
+                font-size: 12px;
+                width: 14px;
+            }
+
+            .form-input {
+                padding: 7px 10px;
+                font-size: 12px;
+            }
+
+            .update-btn {
+                padding: 9px 16px;
+                font-size: 12px;
+                margin-top: 2px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-container {
+                padding: 8px 10px;
+            }
+
+            .logo-icon {
+                width: 24px;
+                height: 24px;
+                font-size: 12px;
+            }
+
+            .logo-text {
+                font-size: 16px;
+            }
+
+            .main-container {
+                padding: 10px;
+            }
+
+            .sidebar {
+                padding: 10px;
+            }
+
+            .main-content {
+                padding: 12px;
+            }
+
+            .profile-avatar-main {
+                width: 60px;
+                height: 60px;
+            }
+
+            .profile-name-main {
+                font-size: 16px;
+            }
+
+            .form-group {
+                margin-bottom: 12px;
+            }
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-subtle);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-default);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-tertiary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <span class="logo-text">PreEvent</span>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Categories</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+
+            <div class="header-actions">
+                <button class="cart-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge">1</span>
+                </button>
+                <button class="account-dropdown-btn">
+                    Account
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="profile-card">
+                <div class="profile-avatar-sidebar">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop" alt="Profile">
+                </div>
+                <h3 class="profile-name-sidebar">Trade</h3>
+                <div class="admin-badge-sidebar">
+                    <span>Admin</span>
+                    <i class="fas fa-external-link-alt" style="font-size: 10px;"></i>
+                </div>
+                <p class="profile-subtitle-sidebar">My Account</p>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#" class="sidebar-menu-item">
+                        <i class="fas fa-tag sidebar-menu-icon"></i>
+                        <span>Category</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-menu-item">
+                        <i class="fas fa-briefcase sidebar-menu-icon"></i>
+                        <span>Sub Category</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-menu-item">
+                        <i class="fas fa-arrow-up sidebar-menu-icon"></i>
+                        <span>Upload Service</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-menu-item">
+                        <i class="fas fa-th sidebar-menu-icon"></i>
+                        <span>My Services</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-menu-item">
+                        <i class="fas fa-clipboard-list sidebar-menu-icon"></i>
+                        <span>My Orders</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-menu-item">
+                        <i class="far fa-calendar-alt sidebar-menu-icon"></i>
+                        <span>Booking Orders</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-menu-item">
+                        <i class="fas fa-user sidebar-menu-icon"></i>
+                        <span>Save Address</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="profile-header-main">
+                <div class="profile-avatar-main">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop" alt="Profile">
+                    <div class="profile-edit-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                <h1 class="profile-name-main">Trade</h1>
+                <p class="profile-role-main">Administrator</p>
+            </div>
+
+            <div class="form-section">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user form-label-icon"></i>
+                        <span>Name</span>
+                    </label>
+                    <input type="text" class="form-input" value="Trade" placeholder="Enter your name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-envelope form-label-icon"></i>
+                        <span>Email</span>
+                    </label>
+                    <input type="email" class="form-input" value="tradeoxford123@gmail.com" placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-phone form-label-icon"></i>
+                        <span>Phone Number</span>
+                        <span style="color: var(--primary-red); margin-left: 4px;">*</span>
+                    </label>
+                    <input type="tel" class="form-input" value="9907895013" placeholder="Enter your phone number">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fab fa-facebook-f form-label-icon"></i>
+                        <span>Facebook Link</span>
+                    </label>
+                    <input type="url" class="form-input" value="https://m.facebook.com/" placeholder="Enter Facebook link">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fab fa-youtube form-label-icon"></i>
+                        <span>YouTube Link</span>
+                    </label>
+                    <input type="url" class="form-input" value="https://www.youtube.com/watch?v=LSuG-N07dGc" placeholder="Enter YouTube link">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fab fa-instagram form-label-icon"></i>
+                        <span>Instagram Link</span>
+                    </label>
+                    <input type="url" class="form-input" value="https://www.instagram.com/accounts/login/?hl=en" placeholder="Enter Instagram link">
+                </div>
+
+                <button class="update-btn">
+                    Update Profile
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Add active state to menu items
+        document.querySelectorAll('.sidebar-menu-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.sidebar-menu-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        // Update button functionality
+        document.querySelector('.update-btn').addEventListener('click', () => {
+            alert('Profile updated successfully!');
+        });
+
+        // Form input interactions
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.01)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
+

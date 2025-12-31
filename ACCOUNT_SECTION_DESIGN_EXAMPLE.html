@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - Account Section Design Example</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== CSS VARIABLES - BRAND COLORS ===== */
+        :root {
+            --primary-red: #DC2626;
+            --primary-red-dark: #991B1B;
+            --primary-red-light: #FEE2E2;
+            --primary-red-hover: #B91C1C;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --text-light: #9CA3AF;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F5F5;
+            --bg-hover: #F9FAFB;
+            --border-color: #E5E7EB;
+            --border-light: #F3F4F6;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-red: 0 4px 14px 0 rgba(220, 38, 38, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #F5F5F5 0%, #E5E7EB 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ===== ACCOUNT DROPDOWN CONTAINER ===== */
+        .account-dropdown {
+            position: relative;
+            background: var(--bg-white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-xl);
+            width: 320px;
+            max-width: 100%;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== PROFILE HEADER SECTION ===== */
+        .profile-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #FFFFFF 0%, #F9FAFB 100%);
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .profile-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+        }
+
+        .profile-content {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .profile-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            flex-shrink: 0;
+            border: 3px solid var(--primary-red-light);
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .profile-name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+        }
+
+        .profile-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+        }
+
+        .profile-edit-btn {
+            color: var(--text-secondary);
+            font-size: 16px;
+            transition: all 0.2s ease;
+            padding: 4px;
+            border-radius: 6px;
+            margin-left: auto;
+        }
+
+        .profile-edit-btn:hover {
+            color: var(--primary-red);
+            background: var(--primary-red-light);
+            transform: scale(1.1);
+        }
+
+        .profile-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin: 0;
+        }
+
+        /* ===== MENU ITEMS SECTION ===== */
+        .menu-section {
+            padding: 12px 8px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin: 4px 0;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: var(--primary-red);
+            border-radius: 0 3px 3px 0;
+            transition: height 0.2s ease;
+        }
+
+        .menu-item:hover {
+            background: var(--bg-hover);
+            color: var(--primary-red);
+            padding-left: 20px;
+        }
+
+        .menu-item:hover::before {
+            height: 70%;
+        }
+
+        .menu-item.active {
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            font-weight: 600;
+        }
+
+        .menu-item.active::before {
+            height: 70%;
+        }
+
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .menu-item:hover .menu-icon,
+        .menu-item.active .menu-icon {
+            color: var(--primary-red);
+            transform: scale(1.1);
+        }
+
+        .menu-label {
+            flex: 1;
+        }
+
+        /* ===== DIVIDER ===== */
+        .menu-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 8px 16px;
+        }
+
+        /* ===== LOGOUT BUTTON ===== */
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin: 8px;
+            border-radius: 10px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--primary-red);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: calc(100% - 16px);
+        }
+
+        .logout-btn:hover {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-red);
+        }
+
+        .logout-btn:hover .menu-icon {
+            color: white;
+            transform: rotate(-15deg) scale(1.1);
+        }
+
+        /* ===== DEMO SECTION ===== */
+        .demo-container {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .demo-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .demo-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .demo-note {
+            margin-top: 40px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--primary-red);
+        }
+
+        .demo-note h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .demo-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .demo-note code {
+            background: var(--bg-light);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: var(--primary-red);
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 640px) {
+            .account-dropdown {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .demo-title {
+                font-size: 24px;
+            }
+        }
+
+        /* ===== SCROLLBAR STYLING ===== */
+        .account-dropdown::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .account-dropdown::-webkit-scrollbar-track {
+            background: var(--bg-light);
+        }
+
+        .account-dropdown::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .account-dropdown::-webkit-scrollbar-thumb:hover {
+            background: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1 class="demo-title">PreEvent Account Section</h1>
+        <p class="demo-subtitle">Professional Design Matching Your Brand Colors</p>
+        
+        <!-- Account Dropdown -->
+        <div class="account-dropdown">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="profile-content">
+                    <div class="profile-avatar">
+                        <!-- Replace with user avatar or initials -->
+                        <span>TR</span>
+                        <!-- <img src="user-avatar.jpg" alt="Profile"> -->
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-name-row">
+                            <h3 class="profile-name">Trade</h3>
+                            <span class="admin-badge">Admin</span>
+                            <a href="#" class="profile-edit-btn" title="Edit Profile">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </div>
+                        <p class="profile-subtitle">My Account</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu Items -->
+            <div class="menu-section">
+                <a href="#" class="menu-item">
+                    <div class="menu-icon">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <span class="menu-label">Category</span>
+                </a>
+
+                <a href="#" class="menu-item">
+                    <div class="menu-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <span class="menu-label">Sub Category</span>
+                </a>
+
+                <a href="#" class="menu-item">
+                    <div class="menu-icon">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                    <span class="menu-label">Upload Service</span>
+                </a>
+
+                <a href="#" class="menu-item">
+                    <div class="menu-icon">
+                        <i class="fas fa-th"></i>
+                    </div>
+                    <span class="menu-label">My Services</span>
+                </a>
+
+                <a href="#" class="menu-item">
+                    <div class="menu-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <span class="menu-label">My Orders</span>
+                </a>
+
+                <a href="#" class="menu-item">
+                    <div class="menu-icon">
+                        <i class="far fa-calendar-alt"></i>
+                    </div>
+                    <span class="menu-label">Booking Orders</span>
+                </a>
+
+                <a href="#" class="menu-item">
+                    <div class="menu-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="menu-label">Save Address</span>
+                </a>
+            </div>
+
+            <!-- Divider -->
+            <div class="menu-divider"></div>
+
+            <!-- Logout Button -->
+            <button class="logout-btn">
+                <div class="menu-icon">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <span class="menu-label">Log Out</span>
+            </button>
+        </div>
+
+        <!-- Documentation Note -->
+        <div class="demo-note">
+            <h3>📝 Design Implementation Guide</h3>
+            <p>
+                This is a standalone HTML/CSS example matching your PreEvent brand colors. 
+                The design uses your primary red color (<code>#DC2626</code>) with professional styling.
+                You can integrate this design into your existing React component by converting the CSS classes to Tailwind CSS or styled-components.
+            </p>
+            <p style="margin-top: 12px;">
+                <strong>Key Features:</strong> Smooth animations, hover effects, responsive design, 
+                and a clean professional look that matches your brand identity.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Demo interactivity
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        document.querySelector('.logout-btn').addEventListener('click', () => {
+            alert('Logout functionality would be implemented here');
+        });
+    </script>
+</body>
+</html>
+

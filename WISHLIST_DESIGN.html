@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - Wishlist Design Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #DC2626;
+            --primary-red-dark: #991B1B;
+            --primary-red-light: #FEE2E2;
+            --accent-yellow: #ffbf00;
+            --success-green: #00b050;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F5F5;
+            --border-color: #E5E7EB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'DM Sans', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Wishlist Header */
+        .wishlist-header {
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .wishlist-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .wishlist-title h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .wishlist-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+        }
+
+        .wishlist-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.5rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .action-btn:hover {
+            background: white;
+            color: var(--primary-red);
+        }
+
+        /* Wishlist Items */
+        .wishlist-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .wishlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .wishlist-item {
+            border: 2px solid var(--border-color);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: white;
+            position: relative;
+        }
+
+        .wishlist-item:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+            border-color: var(--primary-red);
+        }
+
+        .item-image-container {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            background: var(--bg-light);
+        }
+
+        .item-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .wishlist-item:hover .item-image {
+            transform: scale(1.05);
+        }
+
+        .remove-wishlist-btn {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .remove-wishlist-btn:hover {
+            background: var(--primary-red);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .wishlist-badge {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            background: var(--primary-red);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .item-info {
+            padding: 1.25rem;
+        }
+
+        .item-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .item-category {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .item-price-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .item-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-red);
+        }
+
+        .item-original-price {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            text-decoration: line-through;
+        }
+
+        .item-discount {
+            background: var(--success-green);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .item-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .item-stars {
+            color: var(--accent-yellow);
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .add-to-cart-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .add-to-cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        .view-btn {
+            padding: 0.75rem 1rem;
+            background: var(--bg-light);
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn:hover {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        /* Empty Wishlist */
+        .empty-wishlist {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-icon {
+            font-size: 5rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-text {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .browse-btn {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .browse-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-btn {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        /* Share Wishlist */
+        .share-wishlist {
+            background: var(--primary-red-light);
+            border: 2px solid var(--primary-red);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .share-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .share-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .share-btn.facebook {
+            color: #1877F2;
+        }
+
+        .share-btn.whatsapp {
+            color: #25D366;
+        }
+
+        .share-btn.twitter {
+            color: #1DA1F2;
+        }
+
+        .share-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .share-link input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn {
+            padding: 0.5rem 1rem;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .wishlist-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .wishlist-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+            }
+
+            .wishlist-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>❤️ Wishlist / Favorites</h1>
+            <p>Design Preview - Save your favorite services for later</p>
+        </div>
+
+        <!-- Wishlist Header -->
+        <div class="wishlist-header">
+            <div class="wishlist-title">
+                <i class="fas fa-heart" style="font-size: 2rem;"></i>
+                <div>
+                    <h2>My Wishlist</h2>
+                    <p style="opacity: 0.9; font-size: 0.9rem;">Save services you love</p>
+                </div>
+            </div>
+            <div class="wishlist-count">
+                <i class="fas fa-heart"></i> 8 Items
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <button class="quick-action-btn">
+                <i class="fas fa-shopping-cart"></i>
+                Add All to Cart
+            </button>
+            <button class="quick-action-btn">
+                <i class="fas fa-share-alt"></i>
+                Share Wishlist
+            </button>
+            <button class="quick-action-btn">
+                <i class="fas fa-trash"></i>
+                Clear Wishlist
+            </button>
+        </div>
+
+        <!-- Share Wishlist -->
+        <div class="share-wishlist">
+            <div class="share-title">
+                <i class="fas fa-link"></i>
+                Share Your Wishlist
+            </div>
+            <div class="share-options">
+                <div class="share-link">
+                    <input type="text" value="https://preevent.in/wishlist/abc123" readonly>
+                    <button class="copy-btn">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+                <button class="share-btn facebook">
+                    <i class="fab fa-facebook-f"></i>
+                    Facebook
+                </button>
+                <button class="share-btn whatsapp">
+                    <i class="fab fa-whatsapp"></i>
+                    WhatsApp
+                </button>
+                <button class="share-btn twitter">
+                    <i class="fab fa-twitter"></i>
+                    Twitter
+                </button>
+            </div>
+        </div>
+
+        <!-- Wishlist Items -->
+        <div class="wishlist-section">
+            <div class="wishlist-grid">
+                <!-- Wishlist Item 1 -->
+                <div class="wishlist-item">
+                    <div class="wishlist-badge">
+                        <i class="fas fa-heart"></i>
+                        Saved
+                    </div>
+                    <button class="remove-wishlist-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="item-image-container">
+                        <img src="https://via.placeholder.com/280x220/DC2626/FFFFFF?text=Wedding+Photo" alt="Service" class="item-image">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">Premium Wedding Photography</div>
+                        <div class="item-category">Photography Services</div>
+                        <div class="item-price-section">
+                            <div class="item-price">₹25,000</div>
+                            <div class="item-original-price">₹30,000</div>
+                            <div class="item-discount">17% OFF</div>
+                        </div>
+                        <div class="item-rating">
+                            <span class="item-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </span>
+                            <span>(4.8)</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-to-cart-btn">
+                                <i class="fas fa-shopping-cart"></i>
+                                Add to Cart
+                            </button>
+                            <button class="view-btn">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wishlist Item 2 -->
+                <div class="wishlist-item">
+                    <div class="wishlist-badge">
+                        <i class="fas fa-heart"></i>
+                        Saved
+                    </div>
+                    <button class="remove-wishlist-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="item-image-container">
+                        <img src="https://via.placeholder.com/280x220/DC2626/FFFFFF?text=Makeup+Artist" alt="Service" class="item-image">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">Professional Makeup Artist</div>
+                        <div class="item-category">Beauty Services</div>
+                        <div class="item-price-section">
+                            <div class="item-price">₹15,000</div>
+                        </div>
+                        <div class="item-rating">
+                            <span class="item-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </span>
+                            <span>(4.2)</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-to-cart-btn">
+                                <i class="fas fa-shopping-cart"></i>
+                                Add to Cart
+                            </button>
+                            <button class="view-btn">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wishlist Item 3 -->
+                <div class="wishlist-item">
+                    <div class="wishlist-badge">
+                        <i class="fas fa-heart"></i>
+                        Saved
+                    </div>
+                    <button class="remove-wishlist-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="item-image-container">
+                        <img src="https://via.placeholder.com/280x220/DC2626/FFFFFF?text=Catering" alt="Service" class="item-image">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">Luxury Catering Service</div>
+                        <div class="item-category">Catering Services</div>
+                        <div class="item-price-section">
+                            <div class="item-price">₹35,000</div>
+                            <div class="item-original-price">₹40,000</div>
+                            <div class="item-discount">13% OFF</div>
+                        </div>
+                        <div class="item-rating">
+                            <span class="item-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </span>
+                            <span>(4.9)</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="add-to-cart-btn">
+                                <i class="fas fa-shopping-cart"></i>
+                                Add to Cart
+                            </button>
+                            <button class="view-btn">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty Wishlist Example (Hidden by default) -->
+        <div class="wishlist-section" style="display: none;" id="emptyWishlist">
+            <div class="empty-wishlist">
+                <div class="empty-icon">
+                    <i class="far fa-heart"></i>
+                </div>
+                <div class="empty-title">Your Wishlist is Empty</div>
+                <div class="empty-text">Start adding services you love to your wishlist!</div>
+                <button class="browse-btn">
+                    <i class="fas fa-search"></i>
+                    Browse Services
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Remove from wishlist
+        document.querySelectorAll('.remove-wishlist-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (confirm('Remove this item from wishlist?')) {
+                    this.closest('.wishlist-item').style.opacity = '0';
+                    setTimeout(() => {
+                        this.closest('.wishlist-item').remove();
+                    }, 300);
+                }
+            });
+        });
+
+        // Copy link
+        document.querySelector('.copy-btn')?.addEventListener('click', function() {
+            const input = this.previousElementSibling;
+            input.select();
+            document.execCommand('copy');
+            this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-copy"></i> Copy';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
+

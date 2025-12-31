@@ -26,7 +26,7 @@ const BookingOrders = () => {
         setAllOrders(responseData.data);
       }
     } catch (error) {
-      console.error(error);
+      // Error handled
     } finally {
       setLoading(false);
     }
@@ -65,7 +65,7 @@ const BookingOrders = () => {
         fetchAllOrders();
       }
     } catch (error) {
-      console.error(error);
+      // Error handled
       toast.error(error.response?.data?.message || "Failed to update order status");
     }
   };
@@ -90,7 +90,7 @@ const BookingOrders = () => {
     try {
       await handleUpdateStatus(orderId, status, cancellation_reason);
     } catch (error) {
-      console.error('Error in cancellation confirmation:', error);
+      // Error in cancellation confirmation;
       toast.error('Failed to cancel order. Please try again.');
     }
   };

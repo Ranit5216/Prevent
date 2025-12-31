@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux'
 import { FaMinus, FaPlus } from "react-icons/fa6";
 import PropTypes from 'prop-types'
 
-const AddToCartButton = ({ data }) => {
+const AddToCartButton = ({ data, customButtonClass, icon }) => {
     const { fetchCartItem, updateCartItem, deleteCartItem } = useGlobalContext()
     const [loading, setLoading] = useState(false)
     const cartItem = useSelector(state => state.cartItem.cart)
@@ -82,20 +82,29 @@ const AddToCartButton = ({ data }) => {
             }
         }
     }
+    const defaultButtonClass = 'bg-green-600 hover:bg-green-700 text-white px-2 lg:px-4 py-1 rounded'
+    
+    // If customButtonClass is provided, use it; otherwise use default
+    const buttonClassName = customButtonClass || defaultButtonClass
+
     return (
-        <div className='w-full max-w-[150px]'>
+        <div className={customButtonClass ? 'w-full' : 'w-full max-w-[150px]'}>
             {
                 isAvailableCart ? (
                     <div className='flex w-full h-full'>
-                        <button onClick={decreaseQty} className='bg-green-600 cursor-pointer hover:bg-green-700 text-white flex-1 w-full p-1 rounded flex items-center justify-center'><FaMinus /></button>
+                        <button onClick={decreaseQty} className='bg-[#DC2626] cursor-pointer hover:bg-[#991B1B] text-white flex-1 w-full p-1 rounded flex items-center justify-center'><FaMinus /></button>
 
                         <p className='flex-1 w-full font-semibold px-1 flex items-center justify-center'>{qty}</p>
 
-                        <button onClick={increaseQty} className='bg-green-600 cursor-pointer hover:bg-green-700 text-white flex-1 w-full p-1 rounded flex items-center justify-center'><FaPlus /></button>
+                        <button onClick={increaseQty} className='bg-[#DC2626] cursor-pointer hover:bg-[#991B1B] text-white flex-1 w-full p-1 rounded flex items-center justify-center'><FaPlus /></button>
                     </div>
                 ) : (
-                    <button onClick={handleADDTocart} className='bg-green-600 hover:bg-green-700 text-white px-2 lg:px-4 py-1 rounded'>
-                        {loading ? <Loading /> : "Add"}
+                    <button 
+                        onClick={handleADDTocart} 
+                        className={`${buttonClassName} inline-flex items-center justify-center`}
+                        type="button"
+                    >
+                        {loading ? <Loading /> : (icon ? <>Add to Cart {icon}</> : "Add to Cart")}
                     </button>
                 )
             }
@@ -104,7 +113,9 @@ const AddToCartButton = ({ data }) => {
     )
 }
 AddToCartButton.propTypes = {
-    data: PropTypes.object
+    data: PropTypes.object,
+    customButtonClass: PropTypes.string,
+    icon: PropTypes.node
 }
 
 export default AddToCartButton

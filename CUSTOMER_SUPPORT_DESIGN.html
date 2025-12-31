@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - Customer Support Design Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #DC2626;
+            --primary-red-dark: #991B1B;
+            --primary-red-light: #FEE2E2;
+            --accent-yellow: #ffbf00;
+            --success-green: #00b050;
+            --info-blue: #3B82F6;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F5F5;
+            --border-color: #E5E7EB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'DM Sans', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Live Chat */
+        .chat-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .chat-container {
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .chat-status {
+            width: 10px;
+            height: 10px;
+            background: var(--success-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            background: var(--bg-light);
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-red);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .message.user .message-content {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .chat-input-area {
+            padding: 1rem 1.5rem;
+            background: white;
+            border-top: 2px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .send-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        /* Support Tickets */
+        .tickets-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .create-ticket-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .create-ticket-btn:hover {
+            background: var(--primary-red-dark);
+            transform: translateY(-2px);
+        }
+
+        .ticket-card {
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .ticket-card:hover {
+            border-color: var(--primary-red);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .ticket-id {
+            font-weight: 700;
+            color: var(--primary-red);
+        }
+
+        .ticket-status {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .status-open {
+            background: var(--accent-yellow);
+            color: white;
+        }
+
+        .status-in-progress {
+            background: var(--info-blue);
+            color: white;
+        }
+
+        .status-resolved {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .ticket-subject {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .ticket-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .ticket-meta {
+            display: flex;
+            gap: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .faq-categories {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .faq-category {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .faq-category:hover,
+        .faq-category.active {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        .faq-item {
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: var(--primary-red-light);
+        }
+
+        .faq-answer {
+            padding: 0 1.5rem 1.5rem;
+            color: var(--text-secondary);
+            display: none;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Help Center */
+        .help-center {
+            background: linear-gradient(135deg, var(--primary-red-light), white);
+            border: 2px solid var(--primary-red);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .help-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .help-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .help-icon {
+            font-size: 3rem;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+        }
+
+        .help-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .help-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Contact Form */
+        .contact-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 400px;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .help-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💬 Customer Support</h1>
+            <p>Design Preview - Live chat, tickets, FAQ, and help center</p>
+        </div>
+
+        <!-- Live Chat -->
+        <div class="chat-section">
+            <h2 class="section-title">
+                <i class="fas fa-comments"></i>
+                Live Chat Support
+            </h2>
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="chat-header-info">
+                        <div class="chat-status"></div>
+                        <div>
+                            <div style="font-weight: 700;">Support Team</div>
+                            <div style="font-size: 0.85rem; opacity: 0.9;">Online - Usually replies in 2 minutes</div>
+                        </div>
+                    </div>
+                    <button style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="chat-messages">
+                    <div class="message">
+                        <div class="message-avatar">ST</div>
+                        <div>
+                            <div class="message-content">
+                                Hello! How can I help you today?
+                            </div>
+                            <div class="message-time">2:30 PM</div>
+                        </div>
+                    </div>
+                    <div class="message user">
+                        <div class="message-avatar">RK</div>
+                        <div>
+                            <div class="message-content">
+                                Hi, I need help with my booking
+                            </div>
+                            <div class="message-time">2:31 PM</div>
+                        </div>
+                    </div>
+                    <div class="message">
+                        <div class="message-avatar">ST</div>
+                        <div>
+                            <div class="message-content">
+                                Sure! I'd be happy to help. Can you please share your order ID?
+                            </div>
+                            <div class="message-time">2:31 PM</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" class="chat-input" placeholder="Type your message...">
+                    <button class="send-btn">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support Tickets -->
+        <div class="tickets-section">
+            <div class="section-title">
+                <span><i class="fas fa-ticket-alt"></i> Support Tickets</span>
+                <button class="create-ticket-btn">
+                    <i class="fas fa-plus"></i> Create Ticket
+                </button>
+            </div>
+            <div class="ticket-card">
+                <div class="ticket-header">
+                    <div class="ticket-id">#TKT-2024-001234</div>
+                    <div class="ticket-status status-open">Open</div>
+                </div>
+                <div class="ticket-subject">Booking Date Change Request</div>
+                <div class="ticket-description">
+                    I need to change my booking date from December 15 to December 20. Please help me with this.
+                </div>
+                <div class="ticket-meta">
+                    <span><i class="fas fa-calendar"></i> Created: Dec 12, 2024</span>
+                    <span><i class="fas fa-clock"></i> Last updated: 2 hours ago</span>
+                </div>
+            </div>
+            <div class="ticket-card">
+                <div class="ticket-header">
+                    <div class="ticket-id">#TKT-2024-001189</div>
+                    <div class="ticket-status status-in-progress">In Progress</div>
+                </div>
+                <div class="ticket-subject">Payment Issue</div>
+                <div class="ticket-description">
+                    I made a payment but it's not reflecting in my order. Please check and resolve.
+                </div>
+                <div class="ticket-meta">
+                    <span><i class="fas fa-calendar"></i> Created: Dec 10, 2024</span>
+                    <span><i class="fas fa-clock"></i> Last updated: 1 day ago</span>
+                </div>
+            </div>
+            <div class="ticket-card">
+                <div class="ticket-header">
+                    <div class="ticket-id">#TKT-2024-001156</div>
+                    <div class="ticket-status status-resolved">Resolved</div>
+                </div>
+                <div class="ticket-subject">Refund Request</div>
+                <div class="ticket-description">
+                    I cancelled my order and need a refund. The issue has been resolved.
+                </div>
+                <div class="ticket-meta">
+                    <span><i class="fas fa-calendar"></i> Created: Dec 5, 2024</span>
+                    <span><i class="fas fa-check"></i> Resolved: Dec 7, 2024</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section">
+            <h2 class="section-title">
+                <i class="fas fa-question-circle"></i>
+                Frequently Asked Questions
+            </h2>
+            <div class="faq-categories">
+                <div class="faq-category active">All</div>
+                <div class="faq-category">Booking</div>
+                <div class="faq-category">Payment</div>
+                <div class="faq-category">Cancellation</div>
+                <div class="faq-category">Account</div>
+            </div>
+            <div class="faq-item active" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span>How do I book a service?</span>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    To book a service, browse our categories, select the service you need, choose your preferred date and time slot, add it to cart, and proceed to checkout. You can pay via cash on booking or online payment.
+                </div>
+            </div>
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span>Can I cancel my booking?</span>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes, you can cancel your booking if it's still pending. Go to "My Orders" and click on "Cancel Order". For accepted orders, please contact our support team.
+                </div>
+            </div>
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    <span>What payment methods are accepted?</span>
+                    <i class="fas fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    We accept cash on booking and online payments through various payment gateways. Online payment options include credit/debit cards, UPI, net banking, and digital wallets.
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Center -->
+        <div class="help-center">
+            <h2 class="section-title">
+                <i class="fas fa-life-ring"></i>
+                Help Center
+            </h2>
+            <div class="help-grid">
+                <div class="help-card">
+                    <div class="help-icon"><i class="fas fa-book"></i></div>
+                    <div class="help-title">User Guide</div>
+                    <div class="help-description">Learn how to use our platform</div>
+                </div>
+                <div class="help-card">
+                    <div class="help-icon"><i class="fas fa-video"></i></div>
+                    <div class="help-title">Video Tutorials</div>
+                    <div class="help-description">Watch step-by-step guides</div>
+                </div>
+                <div class="help-card">
+                    <div class="help-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="help-title">Documentation</div>
+                    <div class="help-description">Read detailed documentation</div>
+                </div>
+                <div class="help-card">
+                    <div class="help-icon"><i class="fas fa-headset"></i></div>
+                    <div class="help-title">24/7 Support</div>
+                    <div class="help-description">Get help anytime you need</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="contact-section">
+            <h2 class="section-title">
+                <i class="fas fa-envelope"></i>
+                Contact Us
+            </h2>
+            <form class="contact-form">
+                <div class="form-group">
+                    <label class="form-label">Name *</label>
+                    <input type="text" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email *</label>
+                    <input type="email" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subject *</label>
+                    <select class="form-select" required>
+                        <option>General Inquiry</option>
+                        <option>Booking Issue</option>
+                        <option>Payment Problem</option>
+                        <option>Technical Support</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Message *</label>
+                    <textarea class="form-textarea" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleFAQ(item) {
+            document.querySelectorAll('.faq-item').forEach(faq => {
+                if (faq !== item) {
+                    faq.classList.remove('active');
+                }
+            });
+            item.classList.toggle('active');
+        }
+
+        // FAQ categories
+        document.querySelectorAll('.faq-category').forEach(cat => {
+            cat.addEventListener('click', function() {
+                document.querySelectorAll('.faq-category').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,42 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF8C42;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF6B35;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DC2626;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.25"/>
+    </filter>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Stylized "P" Icon -->
+  <g id="icon">
+    <!-- Main P shape -->
+    <path d="M 12 12 L 44 12 Q 50 12 50 18 L 50 28 Q 50 34 44 34 L 28 34 L 28 52 L 12 52 Z" 
+          fill="url(#iconGrad)" 
+          filter="url(#glow)"/>
+    
+    <!-- Inner circle cutout -->
+    <circle cx="42" cy="23" r="6" fill="white"/>
+    
+    <!-- Light highlight -->
+    <circle cx="46" cy="16" r="3" fill="#FFB84D" opacity="0.6"/>
+    
+    <!-- Yellow star -->
+    <path d="M 54 20 L 54.5 21.5 L 56 21.5 L 54.8 22.5 L 55.3 24 L 54 23 L 52.7 24 L 53.2 22.5 L 52 21.5 L 53.5 21.5 Z" 
+          fill="#FFD700" 
+          opacity="0.95"/>
+    
+    <!-- Sparkle dots -->
+    <circle cx="58" cy="24" r="2" fill="#FF6B35" opacity="0.9"/>
+    <circle cx="56" cy="28" r="1.5" fill="#DC2626" opacity="0.9"/>
+  </g>
+</svg>

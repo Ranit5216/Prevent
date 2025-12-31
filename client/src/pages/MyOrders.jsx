@@ -41,6 +41,15 @@ const MyOrders = () => {
       const { data: responseData } = response
 
       if (responseData.success) {
+        // Debug: Log cancelled orders to verify cancelled_by field
+        const cancelledOrders = responseData.data.filter(order => order.order_status === 'CANCELLED')
+        if (cancelledOrders.length > 0) {
+          console.log('🔍 Frontend Admin - Cancelled orders received:', cancelledOrders.map(o => ({
+            orderId: o.orderId,
+            cancelled_by: o.cancelled_by,
+            hasCancelledBy: 'cancelled_by' in o
+          })))
+        }
         setAllOrders(responseData.data)
         setLastUpdateTime(new Date())
         // Clear notification count when orders are refreshed
@@ -281,6 +290,15 @@ const MyOrders = () => {
   }
 
   const getProgressSteps = (order) => {
+    // Debug: Log cancelled orders to see if cancelled_by field exists
+    if (order.order_status === 'CANCELLED') {
+      console.log('🔍 Cancelled order data:', {
+        orderId: order.orderId,
+        cancelled_by: order.cancelled_by,
+        cancellation_reason: order.cancellation_reason,
+        fullOrder: order
+      })
+    }
     const steps = [
       {
         id: 'placed',
@@ -299,12 +317,12 @@ const MyOrders = () => {
                  order.order_status === 'ACCEPTED' ? 'Processing started' : 
                  order.order_status === 'CANCELLED' 
                    ? (() => {
-                       const cancelledByText = order.cancelled_by 
-                         ? (user.role === 'ADMIN' 
-                           ? (order.cancelled_by === 'USER' ? 'by Customer' : 'by Admin')
-                           : (order.cancelled_by === 'USER' ? 'by You' : 'by Admin'))
+                       const whoCancelled = order.cancelled_by === 'USER' 
+                         ? 'by User' 
+                         : order.cancelled_by === 'ADMIN'
+                         ? 'by Admin'
                          : '';
-                       return `Order cancelled${cancelledByText ? ` ${cancelledByText}` : ''}. Reason: ${order.cancellation_reason || 'No reason provided'}`;
+                       return `Booking cancelled${whoCancelled ? ` ${whoCancelled}` : ''}. Reason: ${order.cancellation_reason || 'No reason provided'}`;
                      })()
                    : 'Admin reviewing your order',
         icon: order.order_status === 'PENDING' ? <FaSpinner /> : 
@@ -402,7 +420,7 @@ const MyOrders = () => {
                 }`}>
                   {step.subtitle}
                 </p>
-                {step.cancelled && order.cancellation_reason && (
+                {step.cancelled && (
                   <div className="mt-3 p-4 bg-gradient-to-br from-red-50 to-red-100/50 border-l-4 border-red-500 rounded-r-lg shadow-sm">
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
@@ -410,23 +428,27 @@ const MyOrders = () => {
                           <FaTimes className="text-red-600 text-sm" />
                         </div>
                         <div className="flex-1">
-                          <h5 className="text-sm font-bold text-red-800">Cancellation Details</h5>
-                          {order.cancelled_by && (
-                            <p className="text-xs text-red-600 mt-0.5">
-                              {user.role === 'ADMIN' 
-                                ? (order.cancelled_by === 'USER' ? 'Cancelled by Customer' : 'Cancelled by Admin')
-                                : (order.cancelled_by === 'USER' ? 'Cancelled by You' : 'Cancelled by Admin')
+                          <h5 className="text-sm font-bold text-red-800 mb-2">Cancellation Details</h5>
+                          <div className="bg-red-100 px-3 py-2 rounded-md border border-red-300">
+                            <p className="text-sm font-bold text-red-800">
+                              {order.cancelled_by === 'USER' 
+                                ? 'Booking cancelled by User' 
+                                : order.cancelled_by === 'ADMIN'
+                                ? 'Booking cancelled by Admin'
+                                : 'Booking cancelled (Cancelled by information not available)'
                               }
                             </p>
-                          )}
+                          </div>
                         </div>
                       </div>
-                      <div className="pl-10 border-t border-red-200 pt-3">
-                        <p className="text-xs font-semibold text-red-700 uppercase tracking-wide mb-1.5">Reason</p>
-                        <p className="text-sm text-red-800 leading-relaxed bg-white/60 px-3 py-2 rounded-md border border-red-200">
-                          {order.cancellation_reason}
-                        </p>
-                      </div>
+                      {order.cancellation_reason && (
+                        <div className="pl-10 border-t border-red-200 pt-3">
+                          <p className="text-xs font-semibold text-red-700 uppercase tracking-wide mb-1.5">Reason</p>
+                          <p className="text-sm text-red-800 leading-relaxed bg-white/60 px-3 py-2 rounded-md border border-red-200">
+                            {order.cancellation_reason}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -576,13 +598,18 @@ const MyOrders = () => {
                       <FaTimes className="text-red-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h5 className="text-sm font-bold text-red-800">Order Cancelled</h5>
-                        {order.cancelled_by && (
-                          <span className="text-xs bg-red-200 text-red-800 px-2.5 py-1 rounded-full font-semibold border border-red-300 whitespace-nowrap">
-                            {order.cancelled_by === 'USER' ? 'By You' : 'By Admin'}
-                          </span>
-                        )}
+                      <div className="mb-3">
+                        <h5 className="text-sm font-bold text-red-800 mb-2">Order Cancelled</h5>
+                        <div className="bg-red-100 px-3 py-2 rounded-md border border-red-300">
+                          <p className="text-sm font-bold text-red-800">
+                            {order.cancelled_by === 'USER' 
+                              ? 'Booking cancelled by User' 
+                              : order.cancelled_by === 'ADMIN'
+                              ? 'Booking cancelled by Admin'
+                              : 'Booking cancelled (Cancelled by information not available)'
+                            }
+                          </p>
+                        </div>
                       </div>
                       {order.cancellation_reason && (
                         <div className="mt-2 pt-2 border-t border-red-200">

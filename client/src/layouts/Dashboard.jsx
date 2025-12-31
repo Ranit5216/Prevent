@@ -7,18 +7,21 @@ const Dashboard = () => {
   const user = useSelector(state => state.user)
 
   return (
-    <section className='bg-white'>
-        <div className= 'container mx-auto p-4 grid grid-cols-1 lg:grid-cols-2 '>
-                {/**left for menu */}
-                <div className='py-4 sticky top-24 max-h-120 overflow-y-auto hidden lg:block border-r'>
+    <section className='bg-[#F8FAFC] min-h-screen'>
+        <div className='max-w-[1600px] mx-auto px-3 py-3 sm:px-5 sm:py-5 flex flex-col lg:flex-row gap-3 sm:gap-5'>
+            {/**left for menu */}
+            <aside className='w-full lg:w-[260px] flex-shrink-0'>
+                <div className='hidden lg:block sticky top-[90px]'>
                     <UserMenu/>
                 </div>
+            </aside>
 
-
-                {/**right for content */}
-                <div className='bg-white min-h-[75vh]'>
+            {/**right for content */}
+            <main className='flex-1 min-w-0'>
+                <div className='bg-white rounded-lg sm:rounded-xl shadow-sm border border-[#E2E8F0] min-h-[75vh]'>
                     <Outlet/>
                 </div>
+            </main>
         </div>
     </section>
   )

@@ -7,8 +7,8 @@ import SummaryApi from '../common/SummaryApi'
 import { logout } from '../store/userSlice'
 import toast from 'react-hot-toast'
 import AxiosToastError from '../utils/AxiosToastError'
-import { HiOutlineExternalLink, HiOutlineViewGrid, HiOutlineClipboardList, HiOutlineLogout, HiOutlineUser, HiOutlineTag, HiOutlineCollection, HiOutlineUpload } from "react-icons/hi";
-import { FaCalendarAlt } from 'react-icons/fa';
+import { HiOutlineExternalLink, HiOutlineViewGrid, HiOutlineClipboardList, HiOutlineLogout, HiOutlineUser, HiOutlineTag, HiOutlineCollection, HiOutlineUpload, HiOutlineLocationMarker } from "react-icons/hi";
+import { FaComments, FaChartLine } from 'react-icons/fa';
 import isAdmin from '../utils/isAdmin'
 
 // Helper to get initials from name
@@ -47,6 +47,11 @@ const UserMenu = ({ close }) => {
 
   // Navigation items
   const navItems = [
+    {
+      label: 'Profile',
+      to: '/dashboard/profile',
+      icon: <HiOutlineUser className="w-5 h-5" />,
+    },
     ...(isAdmin(user.role)
       ? [
           {
@@ -72,70 +77,86 @@ const UserMenu = ({ close }) => {
         ]
       : []),
     {
-      label: 'My Orders',
+      label: 'My Booking',
       to: '/dashboard/myorders',
       icon: <HiOutlineClipboardList className="w-5 h-5" />,
     },
     ...(isAdmin(user.role)
       ? [
           {
-            label: 'Booking Orders',
-            to: '/dashboard/bookingorders',
-            icon: <FaCalendarAlt className="w-5 h-5" />,
+            label: 'Chat Support',
+            to: '/dashboard/admin-chat',
+            icon: <FaComments className="w-5 h-5" />,
+          },
+          {
+            label: 'Vendor Dashboard',
+            to: '/dashboard/vendor-dashboard',
+            icon: <FaChartLine className="w-5 h-5" />,
           },
         ]
       : []),
-    {
-      label: 'Save Address',
-      to: '/dashboard/address',
-      icon: <HiOutlineUser className="w-5 h-5" />,
-    },
+    ...(!isAdmin(user.role)
+      ? [
+          {
+            label: 'Save Address',
+            to: '/dashboard/address',
+            icon: <HiOutlineLocationMarker className="w-5 h-5" />,
+          },
+        ]
+      : []),
   ]
 
   return (
-    <div className="max-w-xs w-full bg-white rounded-xl shadow-lg p-6 flex flex-col gap-6 border border-gray-100 overflow-auto scrollbar-none">
+    <div className="w-full bg-white rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 border border-[#E2E8F0] max-h-[calc(100vh-110px)] overflow-y-auto">
       {/* User Info */}
-      <div className="flex items-center gap-4">
+      <div className="text-center pb-3 sm:pb-4 border-b border-[#E2E8F0] mb-3 sm:mb-4">
         {/* Avatar */}
-        <div className="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-2xl font-bold">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#F1F5F9] flex items-center justify-center mx-auto mb-2 sm:mb-3 border-2 border-[#E2E8F0] overflow-hidden">
           {user.avatar ? (
             <img src={user.avatar} alt="avatar" className="w-full h-full rounded-full object-cover" />
           ) : (
-            getInitials(user.name || user.mobile)
+            <span className="text-lg sm:text-xl font-semibold text-[#475569]">{getInitials(user.name || user.mobile)}</span>
           )}
         </div>
-        <div className="flex flex-col gap-1">
-          <div className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-            {user.name || user.mobile}
-            {user.role === "ADMIN" && (
-              <span className="ml-1 px-2 py-0.5 text-xs bg-red-100 text-red-600 rounded-full font-medium">Admin</span>
-            )}
+        <h3 className="text-xs sm:text-sm font-semibold text-[#0F172A] mb-1.5 sm:mb-2">{user.name || user.mobile}</h3>
+        {user.role === "ADMIN" && (
+          <div className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#FEF2F2] text-[#DC2626] rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide mb-1.5 sm:mb-2">
+            <span>Admin</span>
             <Link onClick={handleClose} to={"/dashboard/profile"} title="Profile">
-              <HiOutlineExternalLink className="ml-1 text-slate-400 hover:text-indigo-500" size={18} />
+              <HiOutlineExternalLink className="text-[9px] sm:text-[10px]" />
             </Link>
           </div>
-          <span className="text-xs text-slate-500">My Account</span>
-        </div>
+        )}
+        <p className="text-[10px] sm:text-[11px] text-[#94A3B8] font-normal">My Account</p>
       </div>
-      <Divider />
+      
       {/* Navigation */}
-      <nav className="flex flex-col gap-1">
+      <nav className="flex flex-col">
         {navItems.map((item) => (
           <Link
             key={item.label}
             to={item.to}
             onClick={handleClose}
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 font-medium ${location.pathname === item.to ? 'bg-indigo-100 text-indigo-700' : ''}`}
+            className={`flex items-center gap-2 sm:gap-2.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-lg transition-all text-xs sm:text-[13px] font-medium mb-0.5 ${
+              location.pathname === item.to 
+                ? 'bg-[#FEF2F2] text-[#DC2626] font-semibold' 
+                : 'text-[#475569] hover:bg-[#F1F5F9] hover:text-[#DC2626]'
+            }`}
           >
-            {item.icon}
-            {item.label}
+            <span className="w-3.5 sm:w-4 text-center text-[#94A3B8]">
+              {React.cloneElement(item.icon, { 
+                className: `w-3.5 h-3.5 sm:w-4 sm:h-4 ${location.pathname === item.to ? 'text-[#DC2626]' : ''}` 
+              })}
+            </span>
+            <span>{item.label}</span>
           </Link>
         ))}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 font-medium mt-2 transition-colors"
+          className="flex items-center gap-2 sm:gap-2.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-xs sm:text-[13px] text-[#DC2626] hover:bg-[#FEF2F2] font-medium mt-1 transition-all"
         >
-          <HiOutlineLogout className="w-5 h-5" /> Log Out
+          <HiOutlineLogout className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> 
+          <span>Log Out</span>
         </button>
       </nav>
     </div>

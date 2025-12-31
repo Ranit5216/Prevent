@@ -50,7 +50,7 @@ const orderSchema = new mongoose.Schema({
     },
     order_status: {
         type: String,
-        enum: ['PENDING', 'ACCEPTED', 'CANCELLED'],
+        enum: ['PENDING', 'ACCEPTED', 'DELIVERED', 'CANCELLED'],
         default: 'PENDING'
     },
     admin_id: {
@@ -69,6 +69,11 @@ const orderSchema = new mongoose.Schema({
     cancellation_reason: {
         type: String,
         default: ""
+    },
+    cancelled_by: {
+        type: String,
+        enum: ['USER', 'ADMIN'],
+        default: null
     }
 },{
     timestamps : true

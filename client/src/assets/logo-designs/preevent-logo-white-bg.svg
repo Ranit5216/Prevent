@@ -1,0 +1,39 @@
+<svg width="240" height="60" viewBox="0 0 240 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="orangeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF8C42;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF6B35;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DC2626;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FF8C42;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF6B35;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DC2626;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Stylized "P" Icon for white backgrounds -->
+  <g id="icon">
+    <path d="M 8 8 L 30 8 Q 34 8 34 12 L 34 20 Q 34 24 30 24 L 20 24 L 20 44 L 8 44 Z" 
+          fill="url(#orangeGradient)" 
+          filter="url(#glow)"/>
+    <circle cx="27" cy="16" r="5" fill="white"/>
+    <circle cx="30" cy="10" r="2.5" fill="#FFB84D" opacity="0.6"/>
+    <path d="M 38 14 L 38.5 15.5 L 40 15.5 L 38.8 16.5 L 39.3 18 L 38 17 L 36.7 18 L 37.2 16.5 L 36 15.5 L 37.5 15.5 Z" 
+          fill="#FFD700" 
+          opacity="0.95"/>
+    <circle cx="42" cy="18" r="1.5" fill="#FF6B35" opacity="0.9"/>
+    <circle cx="40" cy="22" r="1.2" fill="#DC2626" opacity="0.9"/>
+    <circle cx="44" cy="20" r="1" fill="#FF8C42" opacity="0.8"/>
+  </g>
+  
+  <!-- Text: PreEvent -->
+  <text x="50" y="38" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="600" fill="url(#textGradient)" letter-spacing="0.5px" filter="url(#glow)">PreEvent</text>
+</svg>

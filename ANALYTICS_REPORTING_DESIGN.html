@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - Analytics & Reporting Design Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #DC2626;
+            --primary-red-dark: #991B1B;
+            --primary-red-light: #FEE2E2;
+            --accent-yellow: #ffbf00;
+            --success-green: #00b050;
+            --info-blue: #3B82F6;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F5F5;
+            --border-color: #E5E7EB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'DM Sans', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Analytics Dashboard */
+        .analytics-dashboard {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .date-range-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .date-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .date-btn:hover,
+        .date-btn.active {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        /* Key Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--primary-red-light), white);
+            border: 2px solid var(--primary-red);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .metric-icon {
+            font-size: 1.5rem;
+            color: var(--primary-red);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .change-positive {
+            color: var(--success-green);
+        }
+
+        .change-negative {
+            color: var(--primary-red);
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .chart-container {
+            background: var(--bg-light);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-placeholder {
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .chart-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* User Behavior */
+        .behavior-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .behavior-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .behavior-card {
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .behavior-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .behavior-list {
+            list-style: none;
+        }
+
+        .behavior-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .behavior-item:last-child {
+            border-bottom: none;
+        }
+
+        .behavior-label {
+            color: var(--text-secondary);
+        }
+
+        .behavior-value {
+            font-weight: 700;
+            color: var(--primary-red);
+        }
+
+        /* Popular Products */
+        .products-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .products-table th,
+        .products-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .products-table th {
+            background: var(--bg-light);
+            font-weight: 700;
+        }
+
+        .products-table tr:hover {
+            background: var(--bg-light);
+        }
+
+        .trend-up {
+            color: var(--success-green);
+        }
+
+        .trend-down {
+            color: var(--primary-red);
+        }
+
+        /* Conversion Tracking */
+        .conversion-section {
+            background: linear-gradient(135deg, var(--primary-red-light), white);
+            border: 2px solid var(--primary-red);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .conversion-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .conversion-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .conversion-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .conversion-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+
+        .conversion-percentage {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--success-green);
+        }
+
+        /* Export Options */
+        .export-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .export-btn:hover {
+            background: var(--primary-red-dark);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .behavior-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .date-range-selector {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Analytics & Reporting</h1>
+            <p>Design Preview - Track performance, user behavior, and conversions</p>
+        </div>
+
+        <!-- Analytics Dashboard -->
+        <div class="analytics-dashboard">
+            <div class="dashboard-header">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-line"></i>
+                    Analytics Dashboard
+                </h2>
+                <div class="date-range-selector">
+                    <button class="date-btn">Today</button>
+                    <button class="date-btn">Week</button>
+                    <button class="date-btn active">Month</button>
+                    <button class="date-btn">Year</button>
+                    <button class="date-btn">Custom</button>
+                </div>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-label">Total Revenue</div>
+                        <i class="fas fa-rupee-sign metric-icon"></i>
+                    </div>
+                    <div class="metric-value">₹2,45,000</div>
+                    <div class="metric-change change-positive">
+                        <i class="fas fa-arrow-up"></i> +15.3% from last month
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-label">Total Orders</div>
+                        <i class="fas fa-shopping-cart metric-icon"></i>
+                    </div>
+                    <div class="metric-value">127</div>
+                    <div class="metric-change change-positive">
+                        <i class="fas fa-arrow-up"></i> +8.2% from last month
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-label">Conversion Rate</div>
+                        <i class="fas fa-percentage metric-icon"></i>
+                    </div>
+                    <div class="metric-value">12.5%</div>
+                    <div class="metric-change change-positive">
+                        <i class="fas fa-arrow-up"></i> +2.1% from last month
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-label">Average Order Value</div>
+                        <i class="fas fa-chart-bar metric-icon"></i>
+                    </div>
+                    <div class="metric-value">₹1,929</div>
+                    <div class="metric-change change-positive">
+                        <i class="fas fa-arrow-up"></i> +6.8% from last month
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-section">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Revenue Trend</div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-line"></i>
+                            <div>Revenue Chart</div>
+                            <div style="font-size: 0.9rem; margin-top: 0.5rem;">Line chart showing revenue over time</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Orders by Category</div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-pie"></i>
+                            <div>Category Distribution</div>
+                            <div style="font-size: 0.9rem; margin-top: 0.5rem;">Pie chart showing order distribution</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Behavior -->
+        <div class="behavior-section">
+            <h2 class="section-title">
+                <i class="fas fa-users"></i>
+                User Behavior Analytics
+            </h2>
+            <div class="behavior-grid">
+                <div class="behavior-card">
+                    <div class="behavior-title">
+                        <i class="fas fa-eye"></i> Page Views
+                    </div>
+                    <ul class="behavior-list">
+                        <li class="behavior-item">
+                            <span class="behavior-label">Home Page</span>
+                            <span class="behavior-value">12,450</span>
+                        </li>
+                        <li class="behavior-item">
+                            <span class="behavior-label">Product Pages</span>
+                            <span class="behavior-value">8,920</span>
+                        </li>
+                        <li class="behavior-item">
+                            <span class="behavior-label">Category Pages</span>
+                            <span class="behavior-value">5,340</span>
+                        </li>
+                        <li class="behavior-item">
+                            <span class="behavior-label">Checkout</span>
+                            <span class="behavior-value">1,580</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="behavior-card">
+                    <div class="behavior-title">
+                        <i class="fas fa-mouse-pointer"></i> User Actions
+                    </div>
+                    <ul class="behavior-list">
+                        <li class="behavior-item">
+                            <span class="behavior-label">Searches</span>
+                            <span class="behavior-value">3,240</span>
+                        </li>
+                        <li class="behavior-item">
+                            <span class="behavior-label">Add to Cart</span>
+                            <span class="behavior-value">1,890</span>
+                        </li>
+                        <li class="behavior-item">
+                            <span class="behavior-label">Wishlist Adds</span>
+                            <span class="behavior-value">1,120</span>
+                        </li>
+                        <li class="behavior-item">
+                            <span class="behavior-label">Reviews Posted</span>
+                            <span class="behavior-value">245</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="behavior-card">
+                    <div class="behavior-title">
+                        <i class="fas fa-clock"></i> Engagement Metrics
+                    </div>
+                    <ul class="behavior-list">
+                        <li class="behavior-item">
+                            <span class="behavior-label">Avg. Session Duration</span>
+                            <span class="behavior-value">4m 32s</span>
+                        </li>
+                        <li class="behavior-item">
+                            <span class="behavior-label">Bounce Rate</span>
+                            <span class="behavior-value">28.5%</span>
+                        </li>
+                        <li class="behavior-item">
+                            <span class="behavior-label">Pages per Session</span>
+                            <span class="behavior-value">3.8</span>
+                        </li>
+                        <li class="behavior-item">
+                            <span class="behavior-label">Return Visitors</span>
+                            <span class="behavior-value">42.3%</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popular Products -->
+        <div class="products-section">
+            <h2 class="section-title">
+                <i class="fas fa-fire"></i>
+                Popular Products Analytics
+            </h2>
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Views</th>
+                        <th>Orders</th>
+                        <th>Revenue</th>
+                        <th>Conversion</th>
+                        <th>Trend</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Premium Wedding Photography</td>
+                        <td>2,450</td>
+                        <td>45</td>
+                        <td>₹11,25,000</td>
+                        <td>1.84%</td>
+                        <td class="trend-up"><i class="fas fa-arrow-up"></i> +12%</td>
+                    </tr>
+                    <tr>
+                        <td>Professional Makeup Artist</td>
+                        <td>1,890</td>
+                        <td>32</td>
+                        <td>₹4,80,000</td>
+                        <td>1.69%</td>
+                        <td class="trend-up"><i class="fas fa-arrow-up"></i> +8%</td>
+                    </tr>
+                    <tr>
+                        <td>Luxury Catering Service</td>
+                        <td>1,560</td>
+                        <td>28</td>
+                        <td>₹9,80,000</td>
+                        <td>1.79%</td>
+                        <td class="trend-down"><i class="fas fa-arrow-down"></i> -3%</td>
+                    </tr>
+                    <tr>
+                        <td>Event Decoration Package</td>
+                        <td>1,240</td>
+                        <td>22</td>
+                        <td>₹3,96,000</td>
+                        <td>1.77%</td>
+                        <td class="trend-up"><i class="fas fa-arrow-up"></i> +15%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Conversion Tracking -->
+        <div class="conversion-section">
+            <h2 class="section-title">
+                <i class="fas fa-bullseye"></i>
+                Conversion Funnel
+            </h2>
+            <div class="conversion-grid">
+                <div class="conversion-card">
+                    <div class="conversion-label">Visitors</div>
+                    <div class="conversion-value">12,450</div>
+                    <div class="conversion-percentage">100%</div>
+                </div>
+                <div class="conversion-card">
+                    <div class="conversion-label">Product Views</div>
+                    <div class="conversion-value">8,920</div>
+                    <div class="conversion-percentage">71.6%</div>
+                </div>
+                <div class="conversion-card">
+                    <div class="conversion-label">Add to Cart</div>
+                    <div class="conversion-value">1,890</div>
+                    <div class="conversion-percentage">15.2%</div>
+                </div>
+                <div class="conversion-card">
+                    <div class="conversion-label">Checkout Started</div>
+                    <div class="conversion-value">1,580</div>
+                    <div class="conversion-percentage">12.7%</div>
+                </div>
+                <div class="conversion-card">
+                    <div class="conversion-label">Orders Completed</div>
+                    <div class="conversion-value">127</div>
+                    <div class="conversion-percentage">1.02%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Options -->
+        <div class="export-section">
+            <h2 class="section-title">
+                <i class="fas fa-download"></i>
+                Export Reports
+            </h2>
+            <div class="export-buttons">
+                <button class="export-btn">
+                    <i class="fas fa-file-excel"></i> Export to Excel
+                </button>
+                <button class="export-btn">
+                    <i class="fas fa-file-pdf"></i> Export to PDF
+                </button>
+                <button class="export-btn">
+                    <i class="fas fa-file-csv"></i> Export to CSV
+                </button>
+                <button class="export-btn">
+                    <i class="fas fa-chart-bar"></i> Generate Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Date range selector
+        document.querySelectorAll('.date-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
+

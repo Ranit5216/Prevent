@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { FaRegUserCircle, FaUser, FaEnvelope, FaPhone, FaFacebook, FaYoutube, FaInstagram } from "react-icons/fa";
+import { FaRegUserCircle, FaUser, FaEnvelope, FaPhone, FaFacebook, FaYoutube, FaInstagram, FaMapMarkerAlt } from "react-icons/fa";
 import UserProfileAvatarEdit from '../components/UserProfileAvatarEdit';
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
@@ -16,6 +16,7 @@ const Profile = () => {
         name : user.name,
         email : user.email,
         mobile : user.mobile,
+        location: user.location || '',
         facebookLink: user.facebookLink || '',
         youtubeLink: user.youtubeLink || '',
         instagramLink: user.instagramLink || '',
@@ -28,6 +29,7 @@ const Profile = () => {
             name : user.name,
             email : user.email,
             mobile : user.mobile,
+            location: user.location || '',
             facebookLink: user.facebookLink || '',
             youtubeLink: user.youtubeLink || '',
             instagramLink: user.instagramLink || '',
@@ -59,8 +61,24 @@ const Profile = () => {
 
             if(responseData.success){
                 toast.success(responseData.message)
-                const userData = await fetchUserDetails()
-                dispatch(setUserDetails(userData.data))
+                // Use the updated user data from response if available, otherwise fetch
+                if(responseData.data){
+                    const previousLocation = user.location || ''
+                    const newLocation = responseData.data.location || ''
+                    dispatch(setUserDetails(responseData.data))
+                    // If location was updated for admin, inform user about product cards
+                    if(user.role === "ADMIN" && newLocation && newLocation !== previousLocation){
+                        setTimeout(() => {
+                            toast("Location updated! Product cards will show the new location after refreshing the page.", {
+                                icon: "ℹ️",
+                                duration: 4000
+                            })
+                        }, 500)
+                    }
+                } else {
+                    const userData = await fetchUserDetails()
+                    dispatch(setUserDetails(userData.data))
+                }
             }
 
         } catch (error) {
@@ -71,157 +89,178 @@ const Profile = () => {
     }
   
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-            <div className="max-w-4xl mx-auto">
-                <div className="bg-white rounded-xl shadow-lg p-8">
-                    {/* Profile Header */}
-                    <div className="flex flex-col items-center mb-8">
-                        <div className="relative group">
-                            <div className="w-32 h-32 bg-gradient-to-br from-green-500 to-purple-600 rounded-full overflow-hidden shadow-lg">
-                                {user.avatar ? (
-                                    <img 
-                                        alt={user.name}
-                                        src={user.avatar}
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                                        <FaRegUserCircle size={80} className="text-gray-400"/>
-                                    </div>
-                                )}
-                            </div>
-                            <button 
-                                onClick={()=>setProfileAvatarEdit(true)} 
-                                className="absolute bottom-0 right-0 bg-green-600 text-white p-2 rounded-full shadow-lg hover:bg-green-700 transition-colors"
-                            >
-                                <FaUser size={20}/>
-                            </button>
+        <div className="p-3 sm:p-4 md:p-6">
+            <div className="max-w-[600px] mx-auto">
+                {/* Profile Header */}
+                <div className="text-center mb-4 sm:mb-6 pb-4 sm:pb-5 border-b border-[#E2E8F0]">
+                    <div className="relative inline-block">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#F1F5F9] flex items-center justify-center mx-auto mb-2 sm:mb-3 border-2 border-[#E2E8F0] overflow-hidden">
+                            {user.avatar ? (
+                                <img 
+                                    alt={user.name}
+                                    src={user.avatar}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <FaRegUserCircle size={32} className="sm:w-10 sm:h-10 text-[#94A3B8]"/>
+                            )}
                         </div>
-                        <h2 className="text-2xl font-bold text-gray-800 mt-4">{user.name}</h2>
-                        <p className="text-gray-600">{user.role === "ADMIN" ? "Administrator" : "User"}</p>
+                        <button 
+                            onClick={()=>setProfileAvatarEdit(true)} 
+                            className="absolute bottom-0.5 right-0.5 sm:bottom-1 sm:right-1 bg-[#10B981] text-white w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-[10px] border-2 border-white hover:bg-[#059669] transition-colors"
+                        >
+                            <FaUser size={10} className="sm:w-3 sm:h-3"/>
+                        </button>
+                    </div>
+                    <h1 className="text-lg sm:text-xl font-semibold text-[#0F172A] mb-1">{user.name}</h1>
+                    <p className="text-xs sm:text-[13px] text-[#94A3B8] font-normal">{user.role === "ADMIN" ? "Administrator" : "User"}</p>
+                </div>
+
+                {/* Profile Form */}
+                <form className="space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
+                    {/* Name Field */}
+                    <div>
+                        <label className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-[12px] font-semibold text-[#0F172A] mb-1 sm:mb-1.5">
+                            <FaUser className="text-[#94A3B8] text-xs sm:text-sm w-3.5 sm:w-4 text-center" />
+                            <span>Name</span>
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="Enter your name" 
+                            className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-[13px] border border-[#E2E8F0] rounded-lg focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2] transition-all bg-white"
+                            value={userData.name}
+                            name="name"
+                            onChange={handleOnChange}
+                            required
+                        />
                     </div>
 
-                    {/* Profile Form */}
-                    <form className="space-y-6" onSubmit={handleSubmit}>
-                        <div className="grid gap-6">
-                            {/* Name Field */}
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FaUser className="text-gray-400"/>
-                                </div>
-                                <input
-                                    type="text"
-                                    placeholder="Enter your name" 
-                                    className="pl-10 w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                    value={userData.name}
-                                    name="name"
-                                    onChange={handleOnChange}
-                                    required
-                                />
-                            </div>
+                    {/* Email Field */}
+                    <div>
+                        <label className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-[12px] font-semibold text-[#0F172A] mb-1 sm:mb-1.5">
+                            <FaEnvelope className="text-[#94A3B8] text-xs sm:text-sm w-3.5 sm:w-4 text-center" />
+                            <span>Email</span>
+                        </label>
+                        <input
+                            type="email"
+                            placeholder="Enter your email" 
+                            className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-[13px] border border-[#E2E8F0] rounded-lg focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2] transition-all bg-white"
+                            value={userData.email}
+                            name="email"
+                            onChange={handleOnChange}
+                            required
+                        />
+                    </div>
 
-                            {/* Email Field */}
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FaEnvelope className="text-gray-400"/>
-                                </div>
-                                <input
-                                    type="email"
-                                    placeholder="Enter your email" 
-                                    className="pl-10 w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                    value={userData.email}
-                                    name="email"
-                                    onChange={handleOnChange}
-                                    required
-                                />
-                            </div>
+                    {/* Mobile Field */}
+                    <div>
+                        <label className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-[12px] font-semibold text-[#0F172A] mb-1 sm:mb-1.5">
+                            <FaPhone className="text-[#94A3B8] text-xs sm:text-sm w-3.5 sm:w-4 text-center" />
+                            <span>Phone Number</span>
+                            <span className="text-[#DC2626]">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="Enter your phone number" 
+                            className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-[13px] border border-[#E2E8F0] rounded-lg focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2] transition-all bg-white"
+                            value={userData.mobile}
+                            name="mobile"
+                            onChange={handleOnChange}
+                            required
+                        />
+                    </div>
 
-                            {/* Mobile Field */}
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FaPhone className="text-gray-400"/>
-                                </div>
-                                <input
-                                    type="text"
-                                    placeholder="Enter your mobile" 
-                                    className="pl-10 w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                    value={userData.mobile}
-                                    name="mobile"
-                                    onChange={handleOnChange}
-                                    required
-                                />
-                            </div>
-
-                            {/* Social Media Links - Only for Admin */}
-                            {user.role === "ADMIN" && (
-                                <>
-                                    {/* Facebook Link */}
-                                    <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <FaFacebook className="text-gray-400"/>
-                                        </div>
-                                        <input
-                                            type="url"
-                                            placeholder="Enter your Facebook page link" 
-                                            className="pl-10 w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                            value={userData.facebookLink}
-                                            name="facebookLink"
-                                            onChange={handleOnChange}
-                                        />
-                                    </div>
-
-                                    {/* YouTube Link */}
-                                    <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <FaYoutube className="text-gray-400"/>
-                                        </div>
-                                        <input
-                                            type="url"
-                                            placeholder="Enter your YouTube channel link" 
-                                            className="pl-10 w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                            value={userData.youtubeLink}
-                                            name="youtubeLink"
-                                            onChange={handleOnChange}
-                                        />
-                                    </div>
-
-                                    {/* Instagram Link */}
-                                    <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <FaInstagram className="text-gray-400"/>
-                                        </div>
-                                        <input
-                                            type="url"
-                                            placeholder="Enter your Instagram profile link" 
-                                            className="pl-10 w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                            value={userData.instagramLink}
-                                            name="instagramLink"
-                                            onChange={handleOnChange}
-                                        />
-                                    </div>
-                                </>
-                            )}
+                    {/* City Location Field - Only for Admin (Mandatory) */}
+                    {user.role === "ADMIN" && (
+                        <div>
+                            <label className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-[12px] font-semibold text-[#0F172A] mb-1 sm:mb-1.5">
+                                <FaMapMarkerAlt className="text-[#94A3B8] text-xs sm:text-sm w-3.5 sm:w-4 text-center" />
+                                <span>City</span>
+                                <span className="text-[#DC2626]">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="Enter your city (e.g., Mumbai)" 
+                                className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-[13px] border border-[#E2E8F0] rounded-lg focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2] transition-all bg-white"
+                                value={userData.location}
+                                name="location"
+                                onChange={handleOnChange}
+                                required
+                            />
                         </div>
+                    )}
 
-                        <button 
-                            className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-all ${
-                                loading 
-                                    ? "bg-gray-400 cursor-not-allowed" 
-                                    : "bg-green-600 hover:bg-green-700 cursor-pointer shadow-lg hover:shadow-xl"
-                            }`}
-                            disabled={loading}
-                        >
-                            {loading ? (
-                                <div className="flex items-center justify-center">
-                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                                    Updating...
-                                </div>
-                            ) : (
-                                "Update Profile"
-                            )}
-                        </button>
-                    </form>
-                </div>
+                    {/* Social Media Links - Only for Admin */}
+                    {user.role === "ADMIN" && (
+                        <>
+                            {/* Facebook Link */}
+                            <div>
+                                <label className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-[12px] font-semibold text-[#0F172A] mb-1 sm:mb-1.5">
+                                    <FaFacebook className="text-[#94A3B8] text-xs sm:text-sm w-3.5 sm:w-4 text-center" />
+                                    <span>Facebook Link</span>
+                                </label>
+                                <input
+                                    type="url"
+                                    placeholder="Enter Facebook link" 
+                                    className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-[13px] border border-[#E2E8F0] rounded-lg focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2] transition-all bg-white"
+                                    value={userData.facebookLink}
+                                    name="facebookLink"
+                                    onChange={handleOnChange}
+                                />
+                            </div>
+
+                            {/* YouTube Link */}
+                            <div>
+                                <label className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-[12px] font-semibold text-[#0F172A] mb-1 sm:mb-1.5">
+                                    <FaYoutube className="text-[#94A3B8] text-xs sm:text-sm w-3.5 sm:w-4 text-center" />
+                                    <span>YouTube Link</span>
+                                </label>
+                                <input
+                                    type="url"
+                                    placeholder="Enter YouTube link" 
+                                    className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-[13px] border border-[#E2E8F0] rounded-lg focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2] transition-all bg-white"
+                                    value={userData.youtubeLink}
+                                    name="youtubeLink"
+                                    onChange={handleOnChange}
+                                />
+                            </div>
+
+                            {/* Instagram Link */}
+                            <div>
+                                <label className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-[12px] font-semibold text-[#0F172A] mb-1 sm:mb-1.5">
+                                    <FaInstagram className="text-[#94A3B8] text-xs sm:text-sm w-3.5 sm:w-4 text-center" />
+                                    <span>Instagram Link</span>
+                                </label>
+                                <input
+                                    type="url"
+                                    placeholder="Enter Instagram link" 
+                                    className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-[13px] border border-[#E2E8F0] rounded-lg focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2] transition-all bg-white"
+                                    value={userData.instagramLink}
+                                    name="instagramLink"
+                                    onChange={handleOnChange}
+                                />
+                            </div>
+                        </>
+                    )}
+
+                    <button 
+                        className={`w-full py-2 sm:py-2.5 px-4 sm:px-5 rounded-lg text-xs sm:text-[13px] font-semibold text-white transition-all mt-0.5 sm:mt-1 ${
+                            loading 
+                                ? "bg-gray-400 cursor-not-allowed" 
+                                : "bg-[#10B981] hover:bg-[#059669] cursor-pointer"
+                        }`}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <div className="flex items-center justify-center">
+                                <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-1.5 sm:mr-2"></div>
+                                <span className="text-xs sm:text-[13px]">Updating...</span>
+                            </div>
+                        ) : (
+                            "Update Profile"
+                        )}
+                    </button>
+                </form>
             </div>
 
             {openProfileAvatarEdit && (

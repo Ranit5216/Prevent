@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - Time Slot Booking Design Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #DC2626;
+            --primary-red-dark: #991B1B;
+            --primary-red-light: #FEE2E2;
+            --accent-yellow: #ffbf00;
+            --success-green: #00b050;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F5F5;
+            --border-color: #E5E7EB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'DM Sans', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+
+        .booking-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Date Selection */
+        .date-selection {
+            margin-bottom: 2rem;
+        }
+
+        .date-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        .current-month {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .date-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.75rem;
+        }
+
+        .day-header {
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            padding: 0.5rem;
+        }
+
+        .date-cell {
+            aspect-ratio: 1;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            position: relative;
+        }
+
+        .date-cell:hover {
+            border-color: var(--primary-red);
+            background: var(--primary-red-light);
+        }
+
+        .date-cell.selected {
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        .date-cell.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: var(--bg-light);
+        }
+
+        .date-cell.today {
+            border-color: var(--accent-yellow);
+            background: var(--accent-yellow);
+            color: white;
+        }
+
+        .date-number {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .date-availability {
+            font-size: 0.65rem;
+            margin-top: 0.25rem;
+            opacity: 0.8;
+        }
+
+        /* Time Slot Selection */
+        .time-slot-selection {
+            margin-top: 2rem;
+        }
+
+        .time-slot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .duration-info {
+            background: var(--primary-red-light);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-red);
+        }
+
+        .time-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .time-slot {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .time-slot:hover {
+            border-color: var(--primary-red);
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+        }
+
+        .time-slot.selected {
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        .time-slot.unavailable {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: var(--bg-light);
+        }
+
+        .time-slot.unavailable:hover {
+            border-color: var(--border-color);
+            background: var(--bg-light);
+            color: var(--text-secondary);
+        }
+
+        .slot-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--success-green);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+
+        /* Selected Booking Summary */
+        .booking-summary {
+            background: linear-gradient(135deg, var(--primary-red-light), white);
+            border: 2px solid var(--primary-red);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .summary-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .summary-value {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .confirm-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark));
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .confirm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        .confirm-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Service Duration Options */
+        .duration-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .duration-option {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            font-weight: 600;
+        }
+
+        .duration-option:hover {
+            border-color: var(--primary-red);
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+        }
+
+        .duration-option.selected {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        /* Calendar View */
+        .calendar-view {
+            display: none;
+        }
+
+        .calendar-view.active {
+            display: block;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .view-btn.active {
+            background: var(--primary-red);
+            color: white;
+            border-color: var(--primary-red);
+        }
+
+        @media (max-width: 768px) {
+            .date-grid {
+                gap: 0.5rem;
+            }
+
+            .time-slots-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+
+            .duration-options {
+                flex-direction: column;
+            }
+
+            .duration-option {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Time Slot Booking</h1>
+            <p>Design Preview - Select date and time for your booking</p>
+        </div>
+
+        <div class="booking-section">
+            <h2 class="section-title">
+                <i class="fas fa-calendar-alt"></i>
+                Select Date & Time
+            </h2>
+
+            <!-- View Toggle -->
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="showDateView()">
+                    <i class="fas fa-calendar"></i> Date View
+                </button>
+                <button class="view-btn" onclick="showCalendarView()">
+                    <i class="fas fa-calendar-week"></i> Calendar View
+                </button>
+            </div>
+
+            <!-- Date Selection -->
+            <div class="date-selection" id="dateSelection">
+                <div class="date-navigation">
+                    <button class="nav-btn" onclick="previousMonth()">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="current-month" id="currentMonth">December 2024</div>
+                    <button class="nav-btn" onclick="nextMonth()">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="date-grid">
+                    <div class="day-header">Sun</div>
+                    <div class="day-header">Mon</div>
+                    <div class="day-header">Tue</div>
+                    <div class="day-header">Wed</div>
+                    <div class="day-header">Thu</div>
+                    <div class="day-header">Fri</div>
+                    <div class="day-header">Sat</div>
+
+                    <!-- Date cells will be generated by JavaScript -->
+                    <div class="date-cell today" onclick="selectDate(this, '2024-12-15')">
+                        <div class="date-number">15</div>
+                        <div class="date-availability">Available</div>
+                    </div>
+                    <div class="date-cell" onclick="selectDate(this, '2024-12-16')">
+                        <div class="date-number">16</div>
+                        <div class="date-availability">Available</div>
+                    </div>
+                    <div class="date-cell" onclick="selectDate(this, '2024-12-17')">
+                        <div class="date-number">17</div>
+                        <div class="date-availability">Available</div>
+                    </div>
+                    <div class="date-cell" onclick="selectDate(this, '2024-12-18')">
+                        <div class="date-number">18</div>
+                        <div class="date-availability">Limited</div>
+                    </div>
+                    <div class="date-cell" onclick="selectDate(this, '2024-12-19')">
+                        <div class="date-number">19</div>
+                        <div class="date-availability">Available</div>
+                    </div>
+                    <div class="date-cell disabled">
+                        <div class="date-number">20</div>
+                        <div class="date-availability">Full</div>
+                    </div>
+                    <div class="date-cell" onclick="selectDate(this, '2024-12-21')">
+                        <div class="date-number">21</div>
+                        <div class="date-availability">Available</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Duration -->
+            <div class="time-slot-selection">
+                <div class="time-slot-header">
+                    <h3 style="font-weight: 700;">Service Duration</h3>
+                </div>
+                <div class="duration-options">
+                    <div class="duration-option" onclick="selectDuration(this, '2')">
+                        2 Hours
+                    </div>
+                    <div class="duration-option selected" onclick="selectDuration(this, '4')">
+                        4 Hours
+                    </div>
+                    <div class="duration-option" onclick="selectDuration(this, '6')">
+                        6 Hours
+                    </div>
+                    <div class="duration-option" onclick="selectDuration(this, '8')">
+                        Full Day
+                    </div>
+                </div>
+            </div>
+
+            <!-- Time Slots -->
+            <div class="time-slot-selection">
+                <div class="time-slot-header">
+                    <h3 style="font-weight: 700;">Available Time Slots</h3>
+                    <div class="duration-info">
+                        <i class="fas fa-clock"></i> Selected: 4 Hours
+                    </div>
+                </div>
+                <div class="time-slots-grid">
+                    <div class="time-slot unavailable">
+                        8:00 AM
+                    </div>
+                    <div class="time-slot" onclick="selectTimeSlot(this, '09:00')">
+                        9:00 AM
+                    </div>
+                    <div class="time-slot selected" onclick="selectTimeSlot(this, '10:00')">
+                        10:00 AM
+                        <span class="slot-badge">✓</span>
+                    </div>
+                    <div class="time-slot" onclick="selectTimeSlot(this, '11:00')">
+                        11:00 AM
+                    </div>
+                    <div class="time-slot" onclick="selectTimeSlot(this, '12:00')">
+                        12:00 PM
+                    </div>
+                    <div class="time-slot unavailable">
+                        1:00 PM
+                    </div>
+                    <div class="time-slot" onclick="selectTimeSlot(this, '14:00')">
+                        2:00 PM
+                    </div>
+                    <div class="time-slot" onclick="selectTimeSlot(this, '15:00')">
+                        3:00 PM
+                    </div>
+                    <div class="time-slot" onclick="selectTimeSlot(this, '16:00')">
+                        4:00 PM
+                    </div>
+                    <div class="time-slot" onclick="selectTimeSlot(this, '17:00')">
+                        5:00 PM
+                    </div>
+                    <div class="time-slot unavailable">
+                        6:00 PM
+                    </div>
+                    <div class="time-slot" onclick="selectTimeSlot(this, '19:00')">
+                        7:00 PM
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Summary -->
+            <div class="booking-summary" id="bookingSummary">
+                <div class="summary-title">
+                    <i class="fas fa-check-circle"></i>
+                    Booking Summary
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Selected Date:</span>
+                    <span class="summary-value" id="summaryDate">December 15, 2024</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Time Slot:</span>
+                    <span class="summary-value" id="summaryTime">10:00 AM - 2:00 PM</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Duration:</span>
+                    <span class="summary-value" id="summaryDuration">4 Hours</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Service:</span>
+                    <span class="summary-value">Wedding Photography</span>
+                </div>
+                <button class="confirm-btn" id="confirmBtn" onclick="confirmBooking()">
+                    <i class="fas fa-calendar-check"></i> Confirm Booking
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedDate = '2024-12-15';
+        let selectedTime = '10:00';
+        let selectedDuration = '4';
+
+        function selectDate(element, date) {
+            document.querySelectorAll('.date-cell').forEach(cell => {
+                if (!cell.classList.contains('disabled')) {
+                    cell.classList.remove('selected');
+                }
+            });
+            element.classList.add('selected');
+            selectedDate = date;
+            updateSummary();
+        }
+
+        function selectTimeSlot(element, time) {
+            if (element.classList.contains('unavailable')) return;
+            
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                if (!slot.classList.contains('unavailable')) {
+                    slot.classList.remove('selected');
+                    const badge = slot.querySelector('.slot-badge');
+                    if (badge) badge.remove();
+                }
+            });
+            element.classList.add('selected');
+            const badge = document.createElement('span');
+            badge.className = 'slot-badge';
+            badge.innerHTML = '✓';
+            element.appendChild(badge);
+            selectedTime = time;
+            updateSummary();
+        }
+
+        function selectDuration(element, duration) {
+            document.querySelectorAll('.duration-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            selectedDuration = duration;
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const dateObj = new Date(selectedDate);
+            const dateStr = dateObj.toLocaleDateString('en-US', { 
+                month: 'long', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+            document.getElementById('summaryDate').textContent = dateStr;
+
+            const timeObj = new Date(`2000-01-01T${selectedTime}`);
+            const endTime = new Date(timeObj.getTime() + selectedDuration * 60 * 60 * 1000);
+            const startTimeStr = timeObj.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            });
+            const endTimeStr = endTime.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            });
+            document.getElementById('summaryTime').textContent = `${startTimeStr} - ${endTimeStr}`;
+
+            const durationText = selectedDuration === '8' ? 'Full Day' : `${selectedDuration} Hours`;
+            document.getElementById('summaryDuration').textContent = durationText;
+
+            const confirmBtn = document.getElementById('confirmBtn');
+            if (selectedDate && selectedTime && selectedDuration) {
+                confirmBtn.disabled = false;
+            }
+        }
+
+        function confirmBooking() {
+            alert('Booking confirmed! Date: ' + selectedDate + ', Time: ' + selectedTime + ', Duration: ' + selectedDuration + ' hours');
+        }
+
+        function previousMonth() {
+            // Implementation for previous month
+            console.log('Previous month');
+        }
+
+        function nextMonth() {
+            // Implementation for next month
+            console.log('Next month');
+        }
+
+        function showDateView() {
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.view-btn').classList.add('active');
+            document.getElementById('dateSelection').style.display = 'block';
+        }
+
+        function showCalendarView() {
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.view-btn').classList.add('active');
+            // Calendar view implementation
+        }
+
+        // Initialize
+        updateSummary();
+    </script>
+</body>
+</html>
+

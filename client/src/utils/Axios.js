@@ -15,6 +15,13 @@ Axios.interceptors.request.use(
             config.headers.Authorization = `Bearer ${accessToken}`
         }
 
+        // Prevent caching for GET requests to ensure fresh data
+        if (config.method === 'get' || config.method === 'GET') {
+            config.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            config.headers['Pragma'] = 'no-cache'
+            config.headers['Expires'] = '0'
+        }
+
         return config
     },
     (error)=>{

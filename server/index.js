@@ -16,37 +16,64 @@ import addressRouter from './route/address.route.js'
 import orderRouter from './route/order.route.js'
 import contactRouter from './route/contact.route.js'
 import chatRouter from './route/chat.route.js'
+import reviewRouter from './route/review.route.js'
+import adminRouter from './route/admin.route.js'
+import notificationRouter from './route/notification.route.js'
 import { Server } from 'socket.io'
-import http from 'http';
+import http from 'http'
+import { sanitizeBody, sanitizeQuery } from './middleware/sanitize.js'
+import { errorHandler, notFoundHandler } from './middleware/errorHandler.js'
+import logger from './utils/logger.js'
 
 process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
+  logger.error('Uncaught Exception:', err)
   // Do not exit the process
-});
+})
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason)
   // Do not exit the process
-});
+})
 
 const app = express()
-app.use(cors({
-    credentials : true,
-    origin : process.env.FRONTEND_URL
-}))
-app.use(express.json())
-app.use(cookieParser())
-// app.use(morgan())
+
+// Security middleware
 app.use(helmet({
     crossOriginResourcePolicy : false
 }))
 
-    const PORT = 8080 || process.env.PORT
+// CORS configuration
+app.use(cors({
+    credentials : true,
+    origin : process.env.FRONTEND_URL
+}))
+
+// Body parser with size limit
+app.use(express.json({ limit: '10mb' }))
+app.use(express.urlencoded({ extended: true, limit: '10mb' }))
+app.use(cookieParser())
+
+// Request logging - disabled
+// Uncomment below to enable logging:
+// if (process.env.NODE_ENV === 'production') {
+//     app.use(morgan('combined', {
+//         skip: (req, res) => res.statusCode < 400
+//     }))
+// } else {
+//     app.use(morgan('tiny'))
+// }
+
+// Input sanitization
+app.use(sanitizeBody)
+app.use(sanitizeQuery)
+
+// Fix PORT configuration bug
+const PORT = process.env.PORT || 8080
 
 app.get("/",(request,response)=>{
-    ///server to client
     response.json({
-        message : "Server is running" + PORT
+        message : `Server is running on port ${PORT}`,
+        status: 'ok'
     })
 })
 
@@ -60,6 +87,9 @@ app.use("/api/address",addressRouter)
 app.use("/api/order",orderRouter)
 app.use("/api/contact",contactRouter)
 app.use("/api/chat",chatRouter)
+app.use("/api/review",reviewRouter)
+app.use("/api/admin",adminRouter)
+app.use("/api/notifications",notificationRouter)
 
 const server = http.createServer(app);
 
@@ -73,12 +103,12 @@ const io = new Server(server, {
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
-    console.log('User connected:', socket.id)
+    logger.info('User connected:', socket.id)
 
     // Join user to their chat room
     socket.on('join-chat', (chatSessionId) => {
         socket.join(chatSessionId)
-        console.log(`User ${socket.id} joined chat: ${chatSessionId}`)
+        logger.debug(`User ${socket.id} joined chat: ${chatSessionId}`)
     })
 
     // Handle new message
@@ -93,7 +123,7 @@ io.on('connection', (socket) => {
                 chatSessionId: data.chatSessionId
             })
         } catch (error) {
-            console.error('Error handling message:', error)
+            logger.error('Error handling message:', error)
             socket.emit('error', { message: 'Failed to send message' })
         }
     })
@@ -108,15 +138,22 @@ io.on('connection', (socket) => {
 
     // Handle disconnect
     socket.on('disconnect', () => {
-        console.log('User disconnected:', socket.id)
+        logger.info('User disconnected:', socket.id)
     })
 })
 
+// Error handling middleware (must be last)
+app.use(notFoundHandler)
+app.use(errorHandler)
+
 connectDB().then(()=>{
     server.listen(PORT,()=>{
-        console.log("Server is running on port",PORT)
-        console.log("Socket.io server initialized")
+        logger.info(`Server is running on port ${PORT}`)
+        logger.info('Socket.io server initialized')
     })
+}).catch((error) => {
+    logger.error('Failed to start server:', error)
+    process.exit(1)
 })
 
 

@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PreEvent - Sub Category Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== CSS VARIABLES - BRAND COLORS ===== */
+        :root {
+            --primary-red: #DC2626;
+            --primary-red-dark: #991B1B;
+            --primary-red-light: #FEF2F2;
+            --text-primary: #0F172A;
+            --text-secondary: #475569;
+            --text-tertiary: #94A3B8;
+            --bg-white: #FFFFFF;
+            --bg-surface: #F8FAFC;
+            --bg-subtle: #F1F5F9;
+            --border-default: #E2E8F0;
+            --success: #10B981;
+            --success-dark: #059669;
+            --warning: #F59E0B;
+            --warning-dark: #D97706;
+            --info: #3B82F6;
+            --info-dark: #2563EB;
+            --danger: #EF4444;
+            --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-surface);
+            color: var(--text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-size: 14px;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: var(--bg-white);
+            box-shadow: var(--shadow-xs);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        .header-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #3B82F6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            position: relative;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 2px;
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-red);
+            letter-spacing: -0.3px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: color 0.15s ease;
+            position: relative;
+            padding: 4px 0;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-red);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .cart-btn {
+            position: relative;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: background-color 0.15s ease;
+        }
+
+        .cart-btn:hover {
+            background: var(--bg-subtle);
+            color: var(--primary-red);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: var(--primary-red);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 5px;
+            border-radius: 8px;
+            min-width: 16px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .account-dropdown-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background-color 0.15s ease;
+        }
+
+        .account-dropdown-btn:hover {
+            background: var(--bg-subtle);
+            color: var(--primary-red);
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 16px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-default);
+            height: fit-content;
+            position: sticky;
+            top: 90px;
+            max-height: calc(100vh - 110px);
+            overflow-y: auto;
+        }
+
+        .profile-card {
+            text-align: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-default);
+            margin-bottom: 16px;
+        }
+
+        .profile-avatar-sidebar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            background: var(--bg-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px solid var(--border-default);
+        }
+
+        .profile-avatar-sidebar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name-sidebar {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .admin-badge-sidebar {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .profile-subtitle-sidebar {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-weight: 400;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            margin: 1px 0;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-menu-item:hover {
+            background: var(--bg-subtle);
+            color: var(--primary-red);
+        }
+
+        .sidebar-menu-item.active {
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            font-weight: 600;
+        }
+
+        .sidebar-menu-icon {
+            width: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-menu-item:hover .sidebar-menu-icon,
+        .sidebar-menu-item.active .sidebar-menu-icon {
+            color: var(--primary-red);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+            color: var(--primary-red);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            width: 100%;
+        }
+
+        .logout-btn:hover {
+            background: var(--primary-red-light);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-default);
+            width: 100%;
+        }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            margin-bottom: 16px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .page-description {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            margin-bottom: 0;
+        }
+
+        .header-actions-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .add-subcategory-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+        }
+
+        .add-subcategory-btn:hover {
+            background: var(--success-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .add-subcategory-btn:active {
+            transform: translateY(0);
+        }
+
+        .add-subcategory-btn i {
+            font-size: 16px;
+        }
+
+        /* ===== TABLE ===== */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-default);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-white);
+        }
+
+        .data-table thead {
+            background: var(--bg-subtle);
+        }
+
+        .data-table th {
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        .data-table th:nth-child(2) {
+            width: 120px;
+            min-width: 120px;
+        }
+
+        .data-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-default);
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .data-table td:nth-child(2) {
+            width: 120px;
+            min-width: 120px;
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--bg-subtle);
+        }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .subcategory-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: var(--bg-subtle);
+        }
+
+        .subcategory-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .category-link {
+            color: var(--primary-red);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.15s ease;
+        }
+
+        .category-link:hover {
+            color: var(--primary-red-dark);
+            text-decoration: underline;
+        }
+
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-icon-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            font-size: 12px;
+        }
+
+        .edit-icon-btn {
+            background: var(--success);
+            color: white;
+        }
+
+        .edit-icon-btn:hover {
+            background: var(--success-dark);
+            transform: scale(1.1);
+        }
+
+        .delete-icon-btn {
+            background: var(--danger);
+            color: white;
+        }
+
+        .delete-icon-btn:hover {
+            background: #DC2626;
+            transform: scale(1.1);
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+                max-height: none;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main-container {
+                padding: 12px;
+                gap: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 10px 12px;
+            }
+
+            .main-container {
+                padding: 12px;
+                gap: 12px;
+            }
+
+            .sidebar {
+                padding: 12px;
+                border-radius: 8px;
+            }
+
+            .main-content {
+                padding: 16px;
+                border-radius: 8px;
+            }
+
+            .page-title {
+                font-size: 20px;
+            }
+
+            .add-subcategory-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            .data-table {
+                font-size: 12px;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 10px 12px;
+            }
+
+            .subcategory-image {
+                width: 70px;
+                height: 70px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 18px;
+            }
+
+            .add-subcategory-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 8px;
+                font-size: 11px;
+            }
+
+            .subcategory-image {
+                width: 60px;
+                height: 60px;
+            }
+
+            .action-icon-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-subtle);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-default);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-tertiary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <span class="logo-text">PreEvent</span>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Categories</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+
+            <div class="header-actions">
+                <button class="cart-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge">1</span>
+                </button>
+                <button class="account-dropdown-btn">
+                    Account
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="profile-card">
+                <div class="profile-avatar-sidebar">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop" alt="Profile">
+                </div>
+                <h3 class="profile-name-sidebar">Trade</h3>
+                <div class="admin-badge-sidebar">
+                    <span>Admin</span>
+                    <i class="fas fa-external-link-alt" style="font-size: 8px;"></i>
+                </div>
+                <p class="profile-subtitle-sidebar">My Account</p>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#" class="sidebar-menu-item">
+                        <i class="fas fa-tag sidebar-menu-icon"></i>
+                        <span>Category</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-menu-item active">
+                        <i class="fas fa-tag sidebar-menu-icon"></i>
+                        <span>Sub Category</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-menu-item">
+                        <i class="fas fa-arrow-up sidebar-menu-icon"></i>
+                        <span>Upload Service</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-menu-item">
+                        <i class="fas fa-th sidebar-menu-icon"></i>
+                        <span>My Services</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-menu-item">
+                        <i class="fas fa-clipboard-list sidebar-menu-icon"></i>
+                        <span>My Orders</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-menu-item">
+                        <i class="far fa-calendar-alt sidebar-menu-icon"></i>
+                        <span>Booking Orders</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-menu-item">
+                        <i class="fas fa-user sidebar-menu-icon"></i>
+                        <span>Save Address</span>
+                    </a>
+                </li>
+            </ul>
+
+            <button class="logout-btn">
+                <i class="fas fa-sign-out-alt sidebar-menu-icon"></i>
+                <span>Log Out</span>
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Sub Categories</h1>
+                <p class="page-description">Manage your subcategories here.</p>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="header-actions-row">
+                <div></div>
+                <button class="add-subcategory-btn">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Sub Category</span>
+                </button>
+            </div>
+
+            <!-- Table Container -->
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>NAME</th>
+                            <th>IMAGE</th>
+                            <th>CATEGORY</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span class="subcategory-name">Fashion Makeup Artists</span>
+                            </td>
+                            <td>
+                                <img 
+                                    src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=100&h=100&fit=crop" 
+                                    alt="Fashion Makeup Artists" 
+                                    class="subcategory-image"
+                                />
+                            </td>
+                            <td>
+                                <a href="#" class="category-link">MakeUp Artist</a>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-icon-btn edit-icon-btn" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-icon-btn delete-icon-btn" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="subcategory-name">Bridal Makeup Artists</span>
+                            </td>
+                            <td>
+                                <img 
+                                    src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=100&h=100&fit=crop" 
+                                    alt="Bridal Makeup Artists" 
+                                    class="subcategory-image"
+                                />
+                            </td>
+                            <td>
+                                <a href="#" class="category-link">MakeUp Artist</a>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-icon-btn edit-icon-btn" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-icon-btn delete-icon-btn" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="subcategory-name">Event Photography</span>
+                            </td>
+                            <td>
+                                <img 
+                                    src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=100&h=100&fit=crop" 
+                                    alt="Event Photography" 
+                                    class="subcategory-image"
+                                />
+                            </td>
+                            <td>
+                                <a href="#" class="category-link">Photographer</a>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-icon-btn edit-icon-btn" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-icon-btn delete-icon-btn" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="subcategory-name">Reception Planner</span>
+                            </td>
+                            <td>
+                                <img 
+                                    src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=100&h=100&fit=crop" 
+                                    alt="Reception Planner" 
+                                    class="subcategory-image"
+                                />
+                            </td>
+                            <td>
+                                <a href="#" class="category-link">Wedding Planner</a>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-icon-btn edit-icon-btn" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-icon-btn delete-icon-btn" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="subcategory-name">Full-Service Wedding Planners</span>
+                            </td>
+                            <td>
+                                <img 
+                                    src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=100&h=100&fit=crop" 
+                                    alt="Full-Service Wedding Planners" 
+                                    class="subcategory-image"
+                                />
+                            </td>
+                            <td>
+                                <a href="#" class="category-link">Wedding Planner</a>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-icon-btn edit-icon-btn" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-icon-btn delete-icon-btn" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="subcategory-name">Destination Wedding Planner</span>
+                            </td>
+                            <td>
+                                <img 
+                                    src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=100&h=100&fit=crop" 
+                                    alt="Destination Wedding Planner" 
+                                    class="subcategory-image"
+                                />
+                            </td>
+                            <td>
+                                <a href="#" class="category-link">Wedding Planner</a>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="action-icon-btn edit-icon-btn" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-icon-btn delete-icon-btn" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Demo interactivity
+        document.querySelectorAll('.edit-icon-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const subcategoryName = this.closest('tr').querySelector('.subcategory-name').textContent;
+                alert(`Edit functionality for "${subcategoryName}" would be implemented here`);
+            });
+        });
+
+        document.querySelectorAll('.delete-icon-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const subcategoryName = this.closest('tr').querySelector('.subcategory-name').textContent;
+                if (confirm(`Are you sure you want to delete "${subcategoryName}"?`)) {
+                    alert(`Delete functionality for "${subcategoryName}" would be implemented here`);
+                }
+            });
+        });
+
+        document.querySelector('.add-subcategory-btn').addEventListener('click', function() {
+            alert('Add Sub Category functionality would be implemented here');
+        });
+
+        // Menu item active state
+        document.querySelectorAll('.sidebar-menu-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.sidebar-menu-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        document.querySelector('.logout-btn').addEventListener('click', () => {
+            alert('Logout functionality would be implemented here');
+        });
+    </script>
+</body>
+</html>
+

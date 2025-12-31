@@ -1,12 +1,39 @@
 import React, { useState } from 'react'
 import { FaTimes, FaExclamationTriangle } from 'react-icons/fa'
+import toast from 'react-hot-toast'
+import { useSelector } from 'react-redux'
 
 const CancellationReasonModal = ({ isOpen, onClose, onConfirm, orderId, productName }) => {
   const [reason, setReason] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const user = useSelector((state) => state.user)
+  
+  // Different reasons for users vs admins
+  const isAdmin = user?.role === 'ADMIN'
+  
+  const userReasons = [
+    'Change of plans',
+    'Found another service',
+    'Date conflict',
+    'Budget constraints',
+    'Service not needed anymore',
+    'Other'
+  ]
+  
+  const adminReasons = [
+    'Out of stock',
+    'Booking area not covered',
+    'Customer request',
+    'Not enough time available',
+    'Technical problem',
+    'Other'
+  ]
+  
+  const quickReasons = isAdmin ? adminReasons : userReasons
 
   const handleSubmit = async () => {
     if (!reason.trim()) {
+      toast.error('Please provide a cancellation reason')
       return
     }
 
@@ -16,7 +43,7 @@ const CancellationReasonModal = ({ isOpen, onClose, onConfirm, orderId, productN
       setReason('')
       onClose()
     } catch (error) {
-      console.error('Error cancelling order:', error)
+      // Error cancelling order - error is handled by parent component
     } finally {
       setIsSubmitting(false)
     }
@@ -79,7 +106,9 @@ const CancellationReasonModal = ({ isOpen, onClose, onConfirm, orderId, productN
               disabled={isSubmitting}
             />
             <p className="text-xs text-gray-500 mt-1">
-              This reason will be visible to the customer and sent via email notification.
+              {isAdmin 
+                ? 'This reason will be visible to the customer and sent via email notification.'
+                : 'Your cancellation reason will be shared with the service provider.'}
             </p>
           </div>
 
@@ -87,20 +116,13 @@ const CancellationReasonModal = ({ isOpen, onClose, onConfirm, orderId, productN
           <div className="mb-6">
             <p className="text-sm font-medium text-gray-700 mb-2">Quick Reasons:</p>
             <div className="grid grid-cols-2 gap-2">
-              {[
-                'Out of stock',
-                'Booking area not covered',
-                'Customer request',
-                'Have not enough time',
-                'Technical problem',
-                'Other'
-              ].map((quickReason) => (
+              {quickReasons.map((quickReason) => (
                 <button
                   key={quickReason}
                   type="button"
                   onClick={() => setReason(quickReason)}
                   disabled={isSubmitting}
-                  className="px-3 py-2 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                  className="px-3 py-2 text-xs bg-gray-100 hover:bg-gray-200 hover:border-gray-300 text-gray-700 rounded-lg transition-all disabled:opacity-50 border border-transparent"
                 >
                   {quickReason}
                 </button>

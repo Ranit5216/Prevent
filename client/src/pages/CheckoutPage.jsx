@@ -8,7 +8,7 @@ import Axios from '../utils/Axios'
 import SummaryApi from '../common/SummaryApi'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
-import { FaMapMarkerAlt, FaCalendarAlt, FaCreditCard, FaMoneyBillWave, FaSpinner } from 'react-icons/fa'
+import { FaMapMarkerAlt, FaCalendarAlt, FaWallet, FaPhone } from 'react-icons/fa'
 
 const CheckoutPage = () => {
   const { notDiscountTotalPrice, totalPrice, totalQty, fetchCartItem, fetchOrder } = useGlobalContext()
@@ -16,7 +16,6 @@ const CheckoutPage = () => {
   const addressList = useSelector(state => state.addresses.addressList)
   const [selectAddress, setSelectAddress] = useState(0)
   const [deliveryDate, setDeliveryDate] = useState('')
-  const [isProcessingOrder, setIsProcessingOrder] = useState(false)
   const cartItemsList = useSelector(state => state.cartItem.cart)
   const navigate = useNavigate()
 
@@ -35,20 +34,10 @@ const CheckoutPage = () => {
           toast.error("Please select a delivery date")
           return
       }
-      
-      // Prevent multiple clicks
-      if (isProcessingOrder) {
+      if (!addressList[selectAddress]?._id) {
+          toast.error("Please select a booking address")
           return
       }
-      
-      setIsProcessingOrder(true)
-      
-      // Add timeout to prevent button from being stuck
-      const timeoutId = setTimeout(() => {
-        setIsProcessingOrder(false)
-        toast.error("Request timeout. Please try again.")
-      }, 30000) // 30 seconds timeout
-      
       try {
           const response = await Axios({
             ...SummaryApi.CashOnDeliveryOrder,
@@ -79,156 +68,162 @@ const CheckoutPage = () => {
           }
 
       } catch (error) {
-        // Handle specific error cases
-        if (error.response?.status === 429) {
-          toast.error("Order is already being processed. Please wait a moment.")
-        } else if (error.response?.status === 409) {
-          toast.error("Similar order already exists. Please check your order history.")
-        } else {
-          AxiosToastError(error)
-        }
-      } finally {
-        clearTimeout(timeoutId)
-        setIsProcessingOrder(false)
+        AxiosToastError(error)
       }
   }
 
   return (
-    <section className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8'>
-      <div className='container mx-auto px-4'>
-        <h1 className='text-3xl font-bold text-center mb-8 text-gray-800'>Checkout</h1>
-        
-        <div className='grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto'>
-          {/* Left Column - Address and Delivery Date */}
-          <div className='space-y-6'>
-            {/* Address Section */}
-            <div className='bg-white rounded-xl shadow-lg p-6'>
-              <div className='flex items-center gap-3 mb-4'>
-                <FaMapMarkerAlt className='text-blue-600 text-xl' />
-                <h3 className='text-xl font-semibold text-gray-800'>Booking Address</h3>
-              </div>
+    <section className='min-h-screen bg-[#E8F4F8] py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6'>
+      <div className='max-w-[1200px] mx-auto'>
+        <div className='grid lg:grid-cols-[1fr_400px] gap-4 sm:gap-6 md:gap-8'>
+          {/* LEFT COLUMN - BOOKING DETAILS */}
+          <div className='flex flex-col gap-4 sm:gap-6 md:gap-8'>
+            {/* Booking Address Section */}
+            <div className='bg-white rounded-2xl shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)] border border-[#E5E7EB] p-4'>
+              <h2 className='flex items-center gap-2 text-base sm:text-lg font-bold text-[#111827] mb-3' style={{ fontFamily: 'DM Sans, Inter, sans-serif' }}>
+                <FaMapMarkerAlt className='text-[#DC2626] text-lg sm:text-xl' />
+                Booking Address
+              </h2>
               
-              <div className='space-y-4'>
+              <div className='flex flex-col gap-2 sm:gap-3 mb-3'>
                 {addressList.map((address, index) => (
-                  <label 
-                    key={index}
-                    htmlFor={`address${index}`} 
-                    className={`block ${!address.status && "hidden"}`}
-                  >
-                    <div className={`border-2 rounded-lg p-4 transition-all duration-200 cursor-pointer hover:border-blue-500 ${
-                      selectAddress == index ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
-                    }`}>
-                      <div className='flex gap-4'>
-                        <input 
-                          id={`address${index}`} 
-                          type='radio' 
-                          value={index} 
-                          onChange={(e) => setSelectAddress(e.target.value)} 
-                          name='address'
-                          className='mt-1'
-                        />
-                        <div className='text-gray-700'>
-                          <p className='font-medium'>{address.address_line}</p>
-                          <p>{address.city}, {address.state}</p>
-                          <p>{address.country} - {address.pincode}</p>
-                          <p className='text-blue-600'>{address.mobile}</p>
+                  address.status && (
+                    <label 
+                      key={index}
+                      htmlFor={`address${index}`}
+                      className={`flex items-start gap-3 p-2.5 sm:p-3 border-2 rounded-[10px] cursor-pointer transition-all duration-300 ${
+                        Number(selectAddress) === index 
+                          ? 'border-[#DC2626] bg-[#FEE2E2] shadow-[0_0_0_2px_rgba(220,38,38,0.1)]' 
+                          : 'border-[#E5E7EB] bg-white hover:border-[#FEE2E2] hover:shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] hover:-translate-y-0.5'
+                      }`}
+                    >
+                      <input 
+                        id={`address${index}`}
+                        type='radio'
+                        value={index}
+                        checked={Number(selectAddress) === index}
+                        onChange={(e) => setSelectAddress(Number(e.target.value))}
+                        name='address'
+                        className='mt-0.5 w-4 h-4 flex-shrink-0 cursor-pointer accent-[#DC2626]'
+                      />
+                      <div className='flex-1 min-w-0'>
+                        <div className='font-semibold text-sm sm:text-base text-[#111827] mb-1'>
+                          {address.address_line}
+                        </div>
+                        <div className='text-xs sm:text-sm text-[#6B7280] leading-[1.3] mb-0'>
+                          {address.city}, {address.state}
+                        </div>
+                        <div className='text-xs sm:text-sm text-[#6B7280] leading-[1.3] mb-0'>
+                          {address.country} - {address.pincode}
+                        </div>
+                        <div className='flex items-center gap-1.5 mt-1 text-xs sm:text-sm text-[#6B7280]'>
+                          <FaPhone className='text-[#00b050] text-xs' />
+                          <span>{address.mobile}</span>
                         </div>
                       </div>
-                    </div>
-                  </label>
+                    </label>
+                  )
                 ))}
-                
-                <button 
-                  onClick={() => setOpenAddress(true)}
-                  className='w-full py-3 border-2 border-dashed border-blue-300 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors flex items-center justify-center gap-2'
-                >
-                  <FaMapMarkerAlt />
-                  Add New Address
-                </button>
               </div>
+
+              <button 
+                onClick={() => setOpenAddress(true)}
+                className='w-full py-2.5 sm:py-3 border-2 border-dashed border-[#DC2626] rounded-[10px] bg-transparent text-[#DC2626] font-semibold text-xs sm:text-sm cursor-pointer flex items-center justify-center gap-2 transition-all duration-300 hover:bg-[#FEE2E2] hover:border-[#991B1B] hover:-translate-y-0.5 hover:shadow-[0_1px_2px_0_rgba(0,0,0,0.05)]'
+              >
+                <FaMapMarkerAlt className='text-sm sm:text-base' />
+                Add New Address
+              </button>
             </div>
 
-            {/* Delivery Date Section */}
-            <div className='bg-white rounded-xl shadow-lg p-6'>
-              <div className='flex items-center gap-3 mb-4'>
-                <FaCalendarAlt className='text-blue-600 text-xl' />
-                <h3 className='text-xl font-semibold text-gray-800'>Select Booking Date</h3>
-              </div>
+            {/* Select Booking Date Section */}
+            <div className='bg-white rounded-2xl shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)] border border-[#E5E7EB] p-4'>
+              <h2 className='flex items-center gap-2 text-base sm:text-lg font-bold text-[#111827] mb-3' style={{ fontFamily: 'DM Sans, Inter, sans-serif' }}>
+                <FaCalendarAlt className='text-[#DC2626] text-lg sm:text-xl' />
+                Select Booking Date
+              </h2>
               
-              <div className='space-y-4'>
+              <div className='relative'>
+                <FaCalendarAlt className='absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-[#DC2626] text-lg pointer-events-none' />
                 <input
                   type="date"
                   min={minDate}
                   max={maxDateStr}
                   value={deliveryDate}
                   onChange={(e) => setDeliveryDate(e.target.value)}
-                  className='w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+                  className='w-full py-2.5 sm:py-3 pl-10 sm:pl-12 pr-3 sm:pr-4 bg-[#F3F4F6] border-2 border-[#E5E7EB] rounded-[10px] text-sm sm:text-base text-[#111827] transition-all duration-300 outline-none font-medium cursor-pointer focus:border-[#ffbf00] focus:bg-white focus:shadow-[0_0_0_4px_rgba(255,191,0,0.15),0_4px_12px_rgba(0,0,0,0.1)]'
+                  placeholder="dd-mm-2025"
                 />
-                <p className='text-sm text-gray-500'>
-                  Please select a Booking date between tomorrow and 30 days from now
-                </p>
               </div>
+              
+              <p className='mt-2 sm:mt-3 text-xs sm:text-sm text-[#6B7280] leading-normal'>
+                Please select a Booking date between tomorrow and 30 days from now
+              </p>
             </div>
           </div>
 
-          {/* Right Column - Order Summary */}
-          <div className='bg-white rounded-xl shadow-lg p-6 h-fit'>
-            <h3 className='text-xl font-semibold text-gray-800 mb-6'>Order Summary</h3>
-            
-            <div className='space-y-4'>
-              <div className='flex justify-between items-center text-gray-600'>
-                <span>Items Total</span>
-                <div className='flex items-center gap-2'>
-                  <span className='line-through text-gray-400'>{DisplayPriceInRupees(notDiscountTotalPrice)}</span>
-                  <span className='font-medium text-gray-800'>{DisplayPriceInRupees(totalPrice)}</span>
+          {/* RIGHT COLUMN - ORDER SUMMARY */}
+          <div className='lg:sticky lg:top-8 h-fit'>
+            <div className='bg-white rounded-2xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-2px_rgba(0,0,0,0.05)] border border-[#E5E7EB] p-4 sm:p-5 md:p-6'>
+              <h2 className='text-xl sm:text-2xl font-bold text-[#111827] mb-4 sm:mb-6' style={{ fontFamily: 'DM Sans, Inter, sans-serif' }}>
+                Order Summary
+              </h2>
+              
+              <div className='space-y-3 sm:space-y-4'>
+                {/* Items Total */}
+                <div className='flex justify-between items-center pb-3 sm:pb-4 border-b border-[#E5E7EB]'>
+                  <span className='text-sm sm:text-base text-[#6B7280] font-medium'>Items Total</span>
+                  <div className='flex items-center gap-2'>
+                    <span className='text-sm sm:text-base text-[#6B7280] line-through'>
+                      {DisplayPriceInRupees(notDiscountTotalPrice)}
+                    </span>
+                    <span className='text-sm sm:text-base text-[#DC2626] font-bold'>
+                      {DisplayPriceInRupees(totalPrice)}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Quantity Total */}
+                <div className='flex justify-between items-center pb-3 sm:pb-4 border-b border-[#E5E7EB]'>
+                  <span className='text-sm sm:text-base text-[#6B7280] font-medium'>Quantity Total</span>
+                  <span className='text-sm sm:text-base text-[#111827] font-semibold'>{totalQty} Service</span>
+                </div>
+                
+                {/* Travelling Charge */}
+                <div className='flex justify-between items-center pb-3 sm:pb-4'>
+                  <span className='text-sm sm:text-base text-[#6B7280] font-medium'>Travelling Charge</span>
+                  <span className='text-sm sm:text-base text-[#00b050] font-semibold'>Free</span>
                 </div>
               </div>
               
-              <div className='flex justify-between items-center text-gray-600'>
-                <span>Quantity Total</span>
-                <span className='font-medium text-gray-800'>{totalQty} Service</span>
+              {/* Divider */}
+              <div className='h-px bg-[#E5E7EB] my-4 sm:my-6'></div>
+              
+              {/* Grand Total */}
+              <div className='flex justify-between items-center pt-4 sm:pt-6 border-t-2 border-[#E5E7EB]'>
+                <span className='text-lg sm:text-xl font-bold text-[#111827]' style={{ fontFamily: 'DM Sans, Inter, sans-serif' }}>
+                  Grand Total
+                </span>
+                <span className='text-xl sm:text-2xl md:text-3xl font-bold text-[#DC2626]' style={{ fontFamily: 'DM Sans, Inter, sans-serif' }}>
+                  {DisplayPriceInRupees(totalPrice)}
+                </span>
               </div>
               
-              <div className='flex justify-between items-center text-gray-600'>
-                <span>Travelling Charge</span>
-                <span className='text-green-600 font-medium'>Free</span>
-              </div>
-              
-              <div className='border-t pt-4 mt-4'>
-                <div className='flex justify-between items-center'>
-                  <span className='text-lg font-semibold text-gray-800'>Grand Total</span>
-                  <span className='text-2xl font-bold text-blue-600'>{DisplayPriceInRupees(totalPrice)}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className='mt-8 space-y-4'>
+              {/* Cash on Booking Button */}
               <button 
                 onClick={handleCashOnDelivery}
-                disabled={isProcessingOrder}
-                className={`w-full py-3 border-2 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-                  isProcessingOrder 
-                    ? 'border-gray-300 text-gray-400 bg-gray-50 cursor-not-allowed' 
-                    : 'border-blue-600 text-blue-600 hover:bg-blue-50'
-                }`}
+                className='w-full py-3 sm:py-4 mt-4 sm:mt-6 bg-gradient-to-r from-[#DC2626] to-[#991B1B] text-white rounded-xl font-bold text-sm sm:text-base uppercase tracking-wide shadow-[0_4px_14px_0_rgba(220,38,38,0.3),0_2px_4px_rgba(0,0,0,0.1)] cursor-pointer flex items-center justify-center gap-2 sm:gap-3 transition-all duration-400 hover:from-[#EF4444] hover:to-[#DC2626] hover:-translate-y-1 hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(220,38,38,0.4),0_4px_8px_rgba(0,0,0,0.15)] active:-translate-y-0.5 active:shadow-[0_4px_12px_rgba(220,38,38,0.3)] relative overflow-hidden group'
+                style={{ fontFamily: 'DM Sans, Inter, sans-serif' }}
               >
-                {isProcessingOrder ? (
-                  <>
-                    <FaSpinner className="animate-spin" />
-                    Processing Order...
-                  </>
-                ) : (
-                  <>
-                    <FaMoneyBillWave />
-                    Cash on Booking
-                  </>
-                )}
+                <span className='absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-500 group-hover:left-[100%]'></span>
+                <FaWallet className='text-base sm:text-lg relative z-10' />
+                <span className='relative z-10'>Cash on Booking</span>
               </button>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Add Address Modal */}
       {openAddress && (
         <AddAddress close={() => setOpenAddress(false)} />
       )}
