@@ -132,7 +132,7 @@ const CategoryWiseProductDisplay = ({ id, name }) => {
                         )}
                     </div>
                     {/* Scroll Buttons for Mobile/Tablet */}
-                    <div className='absolute left-0 right-0 top-1/2 -translate-y-1/2 hidden md:flex lg:hidden justify-between pointer-events-none px-2'>
+                    <div className='absolute left-0 right-0 top-1/2 hidden md:flex lg:hidden justify-between pointer-events-none px-2' style={{ transform: 'translateY(-50%)' }}>
                         <button 
                             onClick={handleScrollLeft} 
                             className='z-10 relative bg-white hover:bg-gray-100 shadow-lg text-lg p-3 rounded-full pointer-events-auto transition-all duration-300 hover:scale-110'

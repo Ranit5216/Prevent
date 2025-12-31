@@ -718,7 +718,7 @@ const VendorDashboard = () => {
               <div>
                 <div className="mb-4">
                   <div className="relative">
-                    <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
+                    <FaSearch className="absolute left-3 top-1/2 text-gray-400 text-sm" style={{ transform: 'translateY(-50%)' }} />
               <input
                 type="text"
                 placeholder="Search products..."

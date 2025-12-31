@@ -342,8 +342,9 @@ const OtpVerification = () => {
                         {/* Login Link */}
                         <div className='text-center mt-4 pt-4 border-t border-[#E5E7EB] relative'>
                             <div 
-                                className='absolute top-0 left-1/2 -translate-x-1/2 w-[60px] h-px'
+                                className='absolute top-0 left-1/2 w-[60px] h-px'
                                 style={{
+                                    transform: 'translateX(-50%)',
                                     background: 'linear-gradient(90deg, transparent, #E5E7EB, transparent)'
                                 }}
                             />

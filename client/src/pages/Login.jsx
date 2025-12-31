@@ -153,7 +153,7 @@ const Login = () => {
                                     Email :
                                 </label>
                                 <div className='relative'>
-                                    <FaEnvelope className='absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6B7280] text-[0.875rem] pointer-events-none z-10' />
+                                    <FaEnvelope className='absolute left-3.5 top-1/2 text-[#6B7280] text-[0.875rem] pointer-events-none z-10' style={{ transform: 'translateY(-50%)' }} />
                                     <input
                                         type='email'
                                         id='email'
@@ -264,8 +264,9 @@ const Login = () => {
                         {/* Register Link */}
                         <div className='text-center mt-4 pt-4 border-t border-[#E5E7EB] relative'>
                             <div 
-                                className='absolute top-0 left-1/2 -translate-x-1/2 w-[60px] h-px'
+                                className='absolute top-0 left-1/2 w-[60px] h-px'
                                 style={{
+                                    transform: 'translateX(-50%)',
                                     background: 'linear-gradient(90deg, transparent, #E5E7EB, transparent)'
                                 }}
                             />

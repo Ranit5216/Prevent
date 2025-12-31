@@ -143,7 +143,7 @@ const CheckoutPage = () => {
               </h2>
               
               <div className='relative'>
-                <FaCalendarAlt className='absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-[#DC2626] text-lg pointer-events-none' />
+                <FaCalendarAlt className='absolute left-3 sm:left-4 top-1/2 text-[#DC2626] text-lg pointer-events-none' style={{ transform: 'translateY(-50%)' }} />
                 <input
                   type="date"
                   min={minDate}

@@ -214,7 +214,8 @@ const ProductDisplayPage = () => {
                         e.stopPropagation();
                         handlePrevImage();
                       }}
-                      className="absolute left-2 sm:left-3 md:left-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white p-2 sm:p-2.5 md:p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 border border-gray-200"
+                      className="absolute left-2 sm:left-3 md:left-4 top-1/2 bg-white/95 hover:bg-white p-2 sm:p-2.5 md:p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 border border-gray-200"
+                      style={{ transform: 'translateY(-50%)' }}
                       aria-label="Previous image"
                     >
                       <FaAngleLeft className="text-[#DC2626] text-base sm:text-lg md:text-xl" />
@@ -225,7 +226,8 @@ const ProductDisplayPage = () => {
                         e.stopPropagation();
                         handleNextImage();
                       }}
-                      className="absolute right-2 sm:right-3 md:right-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white p-2 sm:p-2.5 md:p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 border border-gray-200"
+                      className="absolute right-2 sm:right-3 md:right-4 top-1/2 bg-white/95 hover:bg-white p-2 sm:p-2.5 md:p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 border border-gray-200"
+                      style={{ transform: 'translateY(-50%)' }}
                       aria-label="Next image"
                     >
                       <FaAngleRight className="text-[#DC2626] text-base sm:text-lg md:text-xl" />
