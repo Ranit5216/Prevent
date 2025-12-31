@@ -24,6 +24,10 @@ import CartMobile from "../pages/CartMobile";
 import CheckoutPage from "../pages/CheckoutPage";
 import Success from "../pages/Success";
 import Cancel from "../pages/Cancel";
+import CustomerSupport from "../pages/CustomerSupport";
+import AdminChat from "../pages/AdminChat";
+import VendorDashboard from "../pages/VendorDashboard";
+import NotFound from "../pages/NotFound";
 
 
 
@@ -99,16 +103,15 @@ const router = createBrowserRouter([
                     {
                         path : "product",
                         element : <AdminPermision><ProductAdmin/></AdminPermision>
-                    }
-                ]
-            },
-            {
-                path : ":category",
-                children : [
+                    },
                     {
-                        path : ":subCategory",
-                        element : <ProductListPage/>
-                    }
+                        path : "admin-chat",
+                        element : <AdminPermision><AdminChat/></AdminPermision>
+                    },
+                    {
+                        path : "vendor-dashboard",
+                        element : <AdminPermision><VendorDashboard/></AdminPermision>
+                    },
                 ]
             },
             {
@@ -130,6 +133,23 @@ const router = createBrowserRouter([
             {
                 path : "cancel",
                 element : <Cancel/>
+            },
+            {
+                path : "support",
+                element : <CustomerSupport/>
+            },
+            {
+                path : ":category",
+                children : [
+                    {
+                        path : ":subCategory",
+                        element : <ProductListPage/>
+                    }
+                ]
+            },
+            {
+                path: "*",
+                element: <NotFound/>
             }
           
         ]

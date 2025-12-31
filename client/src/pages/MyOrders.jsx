@@ -5,9 +5,10 @@ import Axios from '../utils/Axios'
 import SummaryApi from '../common/SummaryApi'
 import toast from 'react-hot-toast'
 import { useGlobalContext } from '../provider/GlobalProvider'
-import { FaBox, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaEnvelope, FaUser, FaCheckCircle, FaClock, FaTruck, FaTimes, FaSpinner, FaInfoCircle } from 'react-icons/fa'
+import { FaBox, FaCalendarAlt, FaMapMarkerAlt, FaPhone, FaEnvelope, FaUser, FaCheckCircle, FaClock, FaTruck, FaTimes, FaSpinner, FaInfoCircle, FaStar } from 'react-icons/fa'
 import { DisplayPriceInRupees } from '../utils/DisplayPriceInRupees'
 import CancellationReasonModal from '../components/CancellationReasonModal'
+import ReviewModal from '../components/ReviewModal'
 
 const MyOrders = () => {
   const orders = useSelector(state => state.orders.order)
@@ -20,9 +21,14 @@ const MyOrders = () => {
     orderId: '',
     productName: ''
   })
+  const [reviewModal, setReviewModal] = useState({
+    isOpen: false,
+    productId: '',
+    productName: '',
+    productImage: '',
+    orderId: ''
+  })
   
-  // Test modal state
-  console.log('Current modal state:', cancellationModal)
   const [lastUpdateTime, setLastUpdateTime] = useState(new Date())
   const [notificationCount, setNotificationCount] = useState(0)
 
@@ -41,7 +47,7 @@ const MyOrders = () => {
         setNotificationCount(0)
       }
     } catch (error) {
-      console.error(error)
+      // Error handled by AxiosToastError if needed
     } finally {
       setLoading(false)
     }
@@ -59,7 +65,6 @@ const MyOrders = () => {
         setNotificationCount(0)
       }
     } catch (error) {
-      console.error('Error refreshing orders:', error)
       toast.error('Failed to refresh orders')
     } finally {
       setLoading(false)
@@ -93,6 +98,11 @@ const MyOrders = () => {
               duration: 4000,
               icon: '✅'
             })
+          } else if (status === 'DELIVERED') {
+            toast.success(`${productName} has been marked as service done! The customer can now leave a review.`, {
+              duration: 5000,
+              icon: '🎉'
+            })
           } else {
             toast.success(responseData.message)
           }
@@ -104,7 +114,6 @@ const MyOrders = () => {
           fetchOrder()
         }
     } catch (error) {
-      console.error(error)
       toast.error(error.response?.data?.message || "Failed to update order status")
     }
   }
@@ -119,10 +128,14 @@ const MyOrders = () => {
 
       if (responseData.success) {
         toast.success(responseData.message)
-        fetchOrder()
+        // Force refresh orders to get updated status
+        await fetchOrder()
+        // Also refresh all orders if admin
+        if (user.role === "ADMIN") {
+          await fetchAllOrders()
+        }
       }
     } catch (error) {
-      console.error(error)
       toast.error(error.response?.data?.message || "Failed to cancel order")
     }
   }
@@ -143,16 +156,60 @@ const MyOrders = () => {
     })
   }
 
+  const openReviewModal = (order) => {
+    setReviewModal({
+      isOpen: true,
+      productId: order.productId,
+      productName: order.product_details?.name || 'Product',
+      productImage: order.product_details?.image?.[0] || '',
+      orderId: order.orderId
+    })
+  }
+
+  const closeReviewModal = () => {
+    setReviewModal({
+      isOpen: false,
+      productId: '',
+      productName: '',
+      productImage: '',
+      orderId: ''
+    })
+  }
+
+  const handleReviewSubmitted = () => {
+    // Refresh orders after review is submitted
+    if (user.role === "ADMIN") {
+      fetchAllOrders()
+    } else {
+      fetchOrder()
+    }
+  }
+
   const handleCancellationConfirm = async (orderId, status, cancellation_reason) => {
     try {
+      // Validate cancellation reason
+      if (!cancellation_reason || !cancellation_reason.trim()) {
+        toast.error('Cancellation reason is required')
+        return
+      }
+      
       if (user.role === "ADMIN") {
         await handleUpdateStatus(orderId, status, cancellation_reason)
+        closeCancellationModal()
+        // Refresh orders
+        if (user.role === "ADMIN") {
+          await fetchAllOrders()
+        } else {
+          await fetchOrder()
+        }
       } else {
         await handleCancelOrder(orderId, cancellation_reason)
+        closeCancellationModal()
+        // Refresh orders after cancellation
+        await fetchOrder()
       }
     } catch (error) {
-      console.error('Error in cancellation confirmation:', error)
-      toast.error('Failed to cancel order. Please try again.')
+      toast.error(error.response?.data?.message || 'Failed to cancel order. Please try again.')
     }
   }
 
@@ -208,6 +265,21 @@ const MyOrders = () => {
     }
   }
 
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'PENDING':
+        return 'Pending'
+      case 'ACCEPTED':
+        return 'Accepted'
+      case 'CANCELLED':
+        return 'Cancelled'
+      case 'DELIVERED':
+        return 'Service Done'
+      default:
+        return status
+    }
+  }
+
   const getProgressSteps = (order) => {
     const steps = [
       {
@@ -225,7 +297,16 @@ const MyOrders = () => {
               order.order_status === 'CANCELLED' ? 'Order Cancelled' : 'Processing',
         subtitle: order.order_status === 'PENDING' ? 'Admin reviewing your order' : 
                  order.order_status === 'ACCEPTED' ? 'Processing started' : 
-                 order.order_status === 'CANCELLED' ? `Order cancellation reason : ${order.cancellation_reason || 'No reason provided'}` : 'Admin reviewing your order',
+                 order.order_status === 'CANCELLED' 
+                   ? (() => {
+                       const cancelledByText = order.cancelled_by 
+                         ? (user.role === 'ADMIN' 
+                           ? (order.cancelled_by === 'USER' ? 'by Customer' : 'by Admin')
+                           : (order.cancelled_by === 'USER' ? 'by You' : 'by Admin'))
+                         : '';
+                       return `Order cancelled${cancelledByText ? ` ${cancelledByText}` : ''}. Reason: ${order.cancellation_reason || 'No reason provided'}`;
+                     })()
+                   : 'Admin reviewing your order',
         icon: order.order_status === 'PENDING' ? <FaSpinner /> : 
               order.order_status === 'ACCEPTED' ? <FaCheckCircle /> : 
               order.order_status === 'CANCELLED' ? <FaTimes /> : <FaSpinner />,
@@ -238,7 +319,7 @@ const MyOrders = () => {
     return steps
   }
 
-  const renderProgressSteps = (steps) => {
+  const renderProgressSteps = (steps, order) => {
     return (
       <div className="space-y-4">
         {steps.map((step, index) => (
@@ -321,11 +402,32 @@ const MyOrders = () => {
                 }`}>
                   {step.subtitle}
                 </p>
-                {step.cancelled && step.subtitle.includes(':') && (
-                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-xs text-red-700 font-medium">
-                      Cancellation Reason: {step.subtitle.split(': ')[1]}
-                    </p>
+                {step.cancelled && order.cancellation_reason && (
+                  <div className="mt-3 p-4 bg-gradient-to-br from-red-50 to-red-100/50 border-l-4 border-red-500 rounded-r-lg shadow-sm">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
+                          <FaTimes className="text-red-600 text-sm" />
+                        </div>
+                        <div className="flex-1">
+                          <h5 className="text-sm font-bold text-red-800">Cancellation Details</h5>
+                          {order.cancelled_by && (
+                            <p className="text-xs text-red-600 mt-0.5">
+                              {user.role === 'ADMIN' 
+                                ? (order.cancelled_by === 'USER' ? 'Cancelled by Customer' : 'Cancelled by Admin')
+                                : (order.cancelled_by === 'USER' ? 'Cancelled by You' : 'Cancelled by Admin')
+                              }
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="pl-10 border-t border-red-200 pt-3">
+                        <p className="text-xs font-semibold text-red-700 uppercase tracking-wide mb-1.5">Reason</p>
+                        <p className="text-sm text-red-800 leading-relaxed bg-white/60 px-3 py-2 rounded-md border border-red-200">
+                          {order.cancellation_reason}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -367,7 +469,7 @@ const MyOrders = () => {
               <div className="flex flex-col items-end gap-1">
                 <span className={`px-3 py-1 rounded-full text-sm font-semibold border ${getStatusColor(order.order_status)}`}>
                   {getStatusIcon(order.order_status)}
-                  <span className="ml-1">{order.order_status}</span>
+                  <span className="ml-1">{getStatusText(order.order_status)}</span>
                 </span>
 
               </div>
@@ -384,7 +486,7 @@ const MyOrders = () => {
             <FaBox className="text-green-600" />
             Order Progress
           </h4>
-          {renderProgressSteps(progressSteps)}
+          {renderProgressSteps(progressSteps, order)}
         </div>
 
 
@@ -445,7 +547,7 @@ const MyOrders = () => {
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
                 >
                   <FaTruck />
-                  Mark as Delivered
+                  Mark as Service Done
                 </button>
               )}
             </div>
@@ -453,15 +555,57 @@ const MyOrders = () => {
         )}
 
         {/* User Actions */}
-        {user.role !== "ADMIN" && order.order_status === 'PENDING' && (
+        {user.role !== "ADMIN" && (
           <div className="p-6 bg-gray-50 border-t border-gray-200">
-            <button
-              onClick={() => handleCancelOrder(order.orderId)}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
-            >
-              <FaTimes />
-              Cancel Order
-            </button>
+            <div className="flex flex-wrap gap-3">
+              {/* Only show cancel button if order is PENDING */}
+              {order.order_status === 'PENDING' && (
+                <button
+                  onClick={() => openCancellationModal(order.orderId, order.product_details?.name)}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                >
+                  <FaTimes />
+                  Cancel Order
+                </button>
+              )}
+              {/* Show cancelled status badge if order is cancelled */}
+              {order.order_status === 'CANCELLED' && (
+                <div className="w-full p-4 bg-gradient-to-br from-red-50 via-red-50/80 to-red-100/50 border-l-4 border-red-500 rounded-r-xl shadow-sm">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                      <FaTimes className="text-red-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h5 className="text-sm font-bold text-red-800">Order Cancelled</h5>
+                        {order.cancelled_by && (
+                          <span className="text-xs bg-red-200 text-red-800 px-2.5 py-1 rounded-full font-semibold border border-red-300 whitespace-nowrap">
+                            {order.cancelled_by === 'USER' ? 'By You' : 'By Admin'}
+                          </span>
+                        )}
+                      </div>
+                      {order.cancellation_reason && (
+                        <div className="mt-2 pt-2 border-t border-red-200">
+                          <p className="text-xs font-semibold text-red-700 uppercase tracking-wide mb-1.5">Reason</p>
+                          <p className="text-sm text-red-800 bg-white/70 px-3 py-2 rounded-md border border-red-200 leading-relaxed">
+                            {order.cancellation_reason}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {order.order_status === 'DELIVERED' && (
+                <button
+                  onClick={() => openReviewModal(order)}
+                  className="px-4 py-2 bg-gradient-to-r from-[#DC2626] to-[#991B1B] text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2"
+                >
+                  <FaStar />
+                  Write a Review
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -498,7 +642,7 @@ const MyOrders = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-800">
-                  {user.role === "ADMIN" ? "All Orders" : "My Orders"}
+                  {user.role === "ADMIN" ? "All Orders" : "My Booking"}
                 </h1>
                 <p className="text-gray-600">
                   {user.role === "ADMIN" 
@@ -549,6 +693,17 @@ const MyOrders = () => {
         onConfirm={handleCancellationConfirm}
         orderId={cancellationModal.orderId}
         productName={cancellationModal.productName}
+      />
+
+      {/* Review Modal */}
+      <ReviewModal
+        isOpen={reviewModal.isOpen}
+        onClose={closeReviewModal}
+        productId={reviewModal.productId}
+        productName={reviewModal.productName}
+        productImage={reviewModal.productImage}
+        orderId={reviewModal.orderId}
+        onReviewSubmitted={handleReviewSubmitted}
       />
     </div>
   )

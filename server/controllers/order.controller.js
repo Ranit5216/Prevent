@@ -5,6 +5,7 @@ import ProductModel from "../models/product.model.js";
 import UserModel from "../models/user.model.js";
 import mongoose from "mongoose";
 import sendEmail from '../config/sendEmail.js';
+import { sendPushNotification } from './notification.controller.js';
 
 export async function CashOnDeliveryOrderController(request, response) {
     try {
@@ -246,6 +247,27 @@ export async function CashOnDeliveryOrderController(request, response) {
                         subject: userEmailSubject,
                         html: userEmailHtml
                     });
+
+                    // Send push notification for order confirmation
+                    try {
+                        console.log(`🔔 Attempting to send order confirmation push notification to user ${userId}`);
+                        const pushResult = await sendPushNotification(
+                            userId,
+                            `Order Confirmed: ${order.product_details.name}`,
+                            `Your order has been placed successfully! Order ID: ${order.orderId}`,
+                            `/dashboard/myorders`
+                        );
+                        
+                        if (pushResult.success) {
+                            console.log(`✅ Order confirmation push notification sent successfully to user ${userId}`);
+                        } else {
+                            console.warn(`⚠️ Order confirmation push notification failed:`, pushResult.error);
+                        }
+                    } catch (pushError) {
+                        // Don't fail the request if push notification fails
+                        console.error('❌ Error sending order confirmation push notification:', pushError);
+                        console.error('Error stack:', pushError.stack);
+                    }
                 }
                 
             } catch (emailError) {
@@ -284,11 +306,42 @@ export async function getOrderDetailsController(request,response){
     try {
         const userId = request.userId // order id
 
-        const orderlist = await OrderModel.find({ userId : userId }).sort({ createdAt : -1 }).populate('delivery_address')
+        const orderlist = await OrderModel.find({ userId : userId })
+            .sort({ createdAt : -1 })
+            .populate('delivery_address')
+            .lean({ defaults: true }) // Use lean() with defaults to ensure all fields are included
 
+        // Ensure cancelled_by field is always included in response
+        const ordersWithCancelledBy = orderlist.map((order) => {
+            // Explicitly ensure cancelled_by is included - always set it explicitly
+            // Check if property exists in the object, if not, query it separately
+            let cancelledByValue = null
+            if ('cancelled_by' in order) {
+                cancelledByValue = order.cancelled_by
+            } else {
+                // Field doesn't exist, set to null (for old orders)
+                cancelledByValue = null
+            }
+            
+            // Debug log for cancelled orders
+            if (order.order_status === 'CANCELLED') {
+                console.log(`🔍 Order ${order.orderId}: cancelled_by = ${cancelledByValue} (exists: ${'cancelled_by' in order})`)
+            }
+            
+            // Always explicitly include cancelled_by in the response
+            const result = { ...order }
+            result.cancelled_by = cancelledByValue
+            return result
+        })
+
+        // Set cache-control headers to prevent caching
+        response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+        response.setHeader('Pragma', 'no-cache')
+        response.setHeader('Expires', '0')
+        
         return response.json({
             message : "order list",
-            data : orderlist,
+            data : ordersWithCancelledBy,
             error : false,
             success : true
         })
@@ -308,10 +361,38 @@ export async function getAllOrdersController(request, response) {
             .sort({ createdAt: -1 })
             .populate('delivery_address')
             .populate('userId', 'name email mobile')
+            .lean({ defaults: true }) // Use lean() with defaults to ensure all fields are included
 
+        // Ensure cancelled_by field is always included in response
+        const ordersWithCancelledBy = orders.map(order => {
+            // Explicitly ensure cancelled_by is included - always set it explicitly
+            let cancelledByValue = null
+            if ('cancelled_by' in order) {
+                cancelledByValue = order.cancelled_by
+            } else {
+                // Field doesn't exist, set to null (for old orders)
+                cancelledByValue = null
+            }
+            
+            // Debug log for cancelled orders
+            if (order.order_status === 'CANCELLED') {
+                console.log(`🔍 Admin Order ${order.orderId}: cancelled_by = ${cancelledByValue} (exists: ${'cancelled_by' in order})`)
+            }
+            
+            // Always explicitly include cancelled_by in the response
+            const result = { ...order }
+            result.cancelled_by = cancelledByValue
+            return result
+        })
+
+        // Set cache-control headers to prevent caching
+        response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+        response.setHeader('Pragma', 'no-cache')
+        response.setHeader('Expires', '0')
+        
         return response.json({
             message: "All orders retrieved successfully",
-            data: orders,
+            data: ordersWithCancelledBy,
             error: false,
             success: true
         })
@@ -335,6 +416,16 @@ export async function updateOrderStatusController(request, response) {
             throw new Error("Admin not found")
         }
 
+        // Validate status
+        const validStatuses = ['PENDING', 'ACCEPTED', 'DELIVERED', 'CANCELLED'];
+        if (!validStatuses.includes(status)) {
+            return response.status(400).json({
+                message: "Invalid order status",
+                error: true,
+                success: false
+            })
+        }
+
         // Validate cancellation reason if status is CANCELLED
         if (status === 'CANCELLED' && !cancellation_reason) {
             return response.status(400).json({
@@ -349,26 +440,44 @@ export async function updateOrderStatusController(request, response) {
             admin_mobile: status === 'ACCEPTED' ? admin.mobile : ""
         }
 
-        // Add cancellation reason if status is CANCELLED
+        // Add cancellation reason and cancelled_by if status is CANCELLED
         if (status === 'CANCELLED') {
             updateData.cancellation_reason = cancellation_reason
+            updateData.cancelled_by = 'ADMIN' // Admin is cancelling
         }
 
-        const order = await OrderModel.findOneAndUpdate(
+        let order = await OrderModel.findOneAndUpdate(
             { orderId, admin_id },
             updateData,
-            { new: true }
+            { new: true, runValidators: true }
         )
+        
 
         if (!order) {
             throw new Error("Order not found")
         }
+        
+        // Convert to plain object and ensure cancelled_by is explicitly included for cancelled orders
+        order = order.toObject ? order.toObject() : order
+        if (status === 'CANCELLED') {
+            // Verify the field was saved to database
+            const verifyOrder = await OrderModel.findOne({ orderId, admin_id }).lean()
+            console.log(`✅ Admin cancellation saved - Order ${orderId}: cancelled_by = ${verifyOrder?.cancelled_by}`)
+            order.cancelled_by = verifyOrder?.cancelled_by || 'ADMIN'
+            console.log(`📤 Admin cancellation response - Order ${orderId}: cancelled_by = ${order.cancelled_by}`)
+        }
 
         // Send email notification to user about order status update
         try {
-            const statusText = status === 'ACCEPTED' ? 'Accepted' : status === 'CANCELLED' ? 'Cancelled' : status;
-            const statusColor = status === 'ACCEPTED' ? '#28a745' : status === 'CANCELLED' ? '#dc3545' : '#ffc107';
-            const statusIcon = status === 'ACCEPTED' ? '✅' : status === 'CANCELLED' ? '❌' : '⚠️';
+            const statusText = status === 'ACCEPTED' ? 'Accepted' : 
+                              status === 'DELIVERED' ? 'Service Done' : 
+                              status === 'CANCELLED' ? 'Cancelled' : status;
+            const statusColor = status === 'ACCEPTED' ? '#28a745' : 
+                               status === 'DELIVERED' ? '#17a2b8' : 
+                               status === 'CANCELLED' ? '#dc3545' : '#ffc107';
+            const statusIcon = status === 'ACCEPTED' ? '✅' : 
+                              status === 'DELIVERED' ? '🎉' : 
+                              status === 'CANCELLED' ? '❌' : '⚠️';
             
             const emailSubject = `${statusIcon} Order ${statusText}: ${order.product_details.name}`;
             const emailHtml = `
@@ -407,6 +516,12 @@ export async function updateOrderStatusController(request, response) {
                                 <td style="padding: 8px 0; font-weight: bold;">Cancellation Reason:</td>
                                 <td style="padding: 8px 0; color: #dc3545;">${order.cancellation_reason}</td>
                             </tr>
+                            ${order.cancelled_by ? `
+                            <tr>
+                                <td style="padding: 8px 0; font-weight: bold;">Cancelled By:</td>
+                                <td style="padding: 8px 0; color: #6c757d;">${order.cancelled_by === 'USER' ? 'Customer' : 'Admin'}</td>
+                            </tr>
+                            ` : ''}
                             ` : ''}
                         </table>
                         
@@ -414,12 +529,17 @@ export async function updateOrderStatusController(request, response) {
                         <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; padding: 12px; margin: 16px 0;">
                             <p style="margin: 0; color: #155724;"><strong>Great news!</strong> Your Booking has been accepted and is being processed. You will receive further updates on your delivery.</p>
                         </div>
+                        ` : status === 'DELIVERED' ? `
+                        <div style="background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 4px; padding: 12px; margin: 16px 0;">
+                            <p style="margin: 0; color: #0c5460;"><strong>Service Done!</strong> Your service has been successfully completed. We hope you had a great experience! You can now leave a review and rating for this service.</p>
+                        </div>
                         ` : status === 'CANCELLED' ? `
                         <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; padding: 12px; margin: 16px 0;">
                             <p style="margin: 0; color: #721c24;"><strong>Order Cancelled:</strong> Your Booking has been cancelled. If you have any questions, please contact our support team.</p>
                             ${order.cancellation_reason ? `
                             <div style="margin-top: 8px; padding: 8px; background: #fff; border-radius: 4px; border-left: 3px solid #dc3545;">
                                 <p style="margin: 0; color: #721c24;"><strong>Reason:</strong> ${order.cancellation_reason}</p>
+                                ${order.cancelled_by ? `<p style="margin: 4px 0 0 0; color: #6c757d; font-size: 0.9em;"><strong>Cancelled by:</strong> ${order.cancelled_by === 'USER' ? 'Customer' : 'Admin'}</p>` : ''}
                             </div>
                             ` : ''}
                         </div>
@@ -440,6 +560,49 @@ export async function updateOrderStatusController(request, response) {
                 subject: emailSubject,
                 html: emailHtml
             });
+
+            // Send push notification
+            console.log(`\n🔔 ===== PUSH NOTIFICATION ATTEMPT =====`);
+            console.log(`Order ID: ${order.orderId}`);
+            console.log(`User ID: ${order.userId}`);
+            console.log(`Status: ${status}`);
+            
+            try {
+                const pushTitle = `Order ${statusText}: ${order.product_details.name}`;
+                const pushBody = status === 'ACCEPTED' 
+                    ? 'Your order has been accepted and is being processed!'
+                    : status === 'DELIVERED'
+                    ? 'Your service is done! You can now leave a review.'
+                    : status === 'CANCELLED'
+                    ? `Order cancelled. Reason: ${order.cancellation_reason || 'No reason provided'}`
+                    : `Your order status has been updated to ${statusText}`;
+
+                console.log(`📨 Notification content:`, {
+                    title: pushTitle,
+                    body: pushBody
+                });
+
+                const pushResult = await sendPushNotification(
+                    order.userId,
+                    pushTitle,
+                    pushBody,
+                    `/dashboard/myorders`
+                );
+
+                if (pushResult.success) {
+                    console.log(`✅ Push notification sent successfully!`);
+                    console.log(`========================================\n`);
+                } else {
+                    console.warn(`⚠️ Push notification failed:`, pushResult.error);
+                    console.log(`========================================\n`);
+                }
+            } catch (pushError) {
+                // Don't fail the request if push notification fails
+                console.error('❌ Exception sending push notification:', pushError);
+                console.error('Error message:', pushError.message);
+                console.error('Error stack:', pushError.stack);
+                console.log(`========================================\n`);
+            }
             
         } catch (emailError) {
             console.error('Failed to send order status update email to user:', emailError);
@@ -502,12 +665,115 @@ export async function cancelOrderController(request, response) {
         }
 
         // Update order status to cancelled and add cancellation reason
-        order.order_status = 'CANCELLED'
-        order.cancellation_reason = cancellation_reason
+        const updatedOrder = await OrderModel.findOneAndUpdate(
+            { orderId, userId },
+            {
+                order_status: 'CANCELLED',
+                cancellation_reason: cancellation_reason,
+                cancelled_by: 'USER' // User is cancelling
+            },
+            { new: true, runValidators: true }
+        )
+        
+        if (!updatedOrder) {
+            return response.status(500).json({
+                message: "Failed to update order status",
+                error: true,
+                success: false
+            })
+        }
+        
+        // Verify the field was saved to database
+        const verifyOrder = await OrderModel.findOne({ orderId, userId }).lean()
+        
+        // Convert to plain object and ensure cancelled_by is explicitly included
+        const orderResponse = {
+            ...(updatedOrder.toObject ? updatedOrder.toObject() : updatedOrder),
+            cancelled_by: verifyOrder?.cancelled_by || 'USER'
+        }
+
+        // Send email notification to user about cancellation
+        try {
+            const statusText = 'Cancelled';
+            const statusColor = '#dc3545';
+            const statusIcon = '❌';
+            
+            const emailSubject = `${statusIcon} Order ${statusText}: ${updatedOrder.product_details.name}`;
+            const emailHtml = `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eaeaea; border-radius: 8px; overflow: hidden;">
+                    <div style="background: ${statusColor}; color: #fff; padding: 20px 30px;">
+                        <h1 style="margin: 0; font-size: 1.7rem;">Order ${statusText}</h1>
+                    </div>
+                    <div style="padding: 24px 30px; background: #fafbfc;">
+                        <h2 style="margin-top: 0; color: #333;">Order Cancellation Confirmation</h2>
+                        <p style="color: #666; margin-bottom: 20px;">Your order has been cancelled as requested.</p>
+                        
+                        <h3 style="margin-bottom: 8px; color: #333;">Order Details</h3>
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 18px;">
+                            <tr>
+                                <td style="padding: 8px 0; font-weight: bold;">Order ID:</td>
+                                <td style="padding: 8px 0;">${updatedOrder.orderId}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; font-weight: bold;">Product:</td>
+                                <td style="padding: 8px 0;">${updatedOrder.product_details.name}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; font-weight: bold;">Total Amount:</td>
+                                <td style="padding: 8px 0;">₹${updatedOrder.totalAmt}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; font-weight: bold;">Status:</td>
+                                <td style="padding: 8px 0; color: ${statusColor}; font-weight: bold;">${statusText.toUpperCase()}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; font-weight: bold;">Cancellation Reason:</td>
+                                <td style="padding: 8px 0; color: #dc3545;">${cancellation_reason}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; font-weight: bold;">Cancelled By:</td>
+                                <td style="padding: 8px 0; color: #6c757d;">Customer</td>
+                            </tr>
+                        </table>
+                        
+                        <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; padding: 12px; margin: 16px 0;">
+                            <p style="margin: 0; color: #721c24;"><strong>Order Cancelled:</strong> Your booking has been cancelled. If you have any questions, please contact our support team.</p>
+                        </div>
+                        
+                        <div style="margin-top: 24px;">
+                            <a href="https://preevent.in" style="display: inline-block; background: #0d6efd; color: #fff; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold;">View Order Details</a>
+                        </div>
+                    </div>
+                    <div style="background: #f1f1f1; color: #888; text-align: center; padding: 14px 0; font-size: 0.95rem;">
+                        This is an automated notification from Prevent. Please do not reply to this email.
+                    </div>
+                </div>
+            `;
+            
+            await sendEmail({
+                sendTo: updatedOrder.user_details.email,
+                subject: emailSubject,
+                html: emailHtml
+            });
+
+            // Send push notification
+            try {
+                await sendPushNotification(
+                    userId,
+                    `Order Cancelled: ${updatedOrder.product_details.name}`,
+                    `Your order has been cancelled. Reason: ${cancellation_reason}`,
+                    `/dashboard/myorders`
+                );
+            } catch (pushError) {
+                console.error('Failed to send cancellation push notification:', pushError);
+            }
+        } catch (emailError) {
+            console.error('Failed to send cancellation email:', emailError);
+        }
 
         return response.json({
             message: "Order cancelled successfully",
-            data: order,
+            data: orderResponse,
             error: false,
             success: true
         })

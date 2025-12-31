@@ -12,11 +12,33 @@ import jwt from 'jsonwebtoken'
 
 export async function registerUserController(request, response) {
     try {
-        const { name, email, password, role, mobile } = request.body // Add mobile
+        const { name, email, password, mobile, role } = request.body
+        // Allow role selection from client, default to USER if not provided
+        const selectedRole = role || "USER"
 
-        if (!name || !email || !password || !mobile) { // Require mobile
+        // Trim and validate inputs
+        const trimmedName = name?.trim()
+        const trimmedEmail = email?.trim().toLowerCase()
+
+        if (!trimmedName || !trimmedEmail || !password || !mobile) {
             return response.status(400).json({
-                message: "Provide email, name, password, mobile",
+                message: "Provide email, name, password, and mobile",
+                error: true,
+                success: false
+            })
+        }
+
+        // Validate name (2-50 characters, letters, spaces, hyphens, apostrophes only)
+        if (trimmedName.length < 2 || trimmedName.length > 50) {
+            return response.status(400).json({
+                message: "Name must be between 2 and 50 characters",
+                error: true,
+                success: false
+            })
+        }
+        if (!/^[a-zA-Z\s'-]+$/.test(trimmedName)) {
+            return response.status(400).json({
+                message: "Name can only contain letters, spaces, hyphens, and apostrophes",
                 error: true,
                 success: false
             })
@@ -24,7 +46,7 @@ export async function registerUserController(request, response) {
 
         // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if (!emailRegex.test(email)) {
+        if (!emailRegex.test(trimmedEmail)) {
             return response.status(400).json({
                 message: "Please provide a valid email address",
                 error: true,
@@ -32,7 +54,7 @@ export async function registerUserController(request, response) {
             })
         }
 
-        // Validate mobile number (basic check)
+        // Validate mobile number (must be exactly 10 digits)
         if (!/^\d{10}$/.test(mobile)) {
             return response.status(400).json({
                 message: "Please provide a valid 10-digit mobile number",
@@ -42,19 +64,37 @@ export async function registerUserController(request, response) {
         }
 
         // Validate password length
-        if (password.length < 6) {
+        if (password.length < 6 || password.length > 128) {
             return response.status(400).json({
-                message: "Password must be at least 6 characters long",
+                message: "Password must be between 6 and 128 characters long",
                 error: true,
                 success: false
             })
         }
 
-        const user = await UserModel.findOne({ email })
-
-        if (user) {
+        // Check if email already exists
+        const existingUserByEmail = await UserModel.findOne({ email: trimmedEmail })
+        if (existingUserByEmail) {
+            // Check if user is already verified (prevent re-registration)
+            if (existingUserByEmail.verify_email) {
+                return response.status(400).json({
+                    message: "This email is already verified. Please login instead.",
+                    error: true,
+                    success: false
+                })
+            }
             return response.status(400).json({
-                message: "Email already registered",
+                message: "Email already registered. Please verify your email or use a different email.",
+                error: true,
+                success: false
+            })
+        }
+
+        // Check if mobile already exists
+        const existingUserByMobile = await UserModel.findOne({ mobile: Number(mobile) })
+        if (existingUserByMobile) {
+            return response.status(400).json({
+                message: "Mobile number already registered",
                 error: true,
                 success: false
             })
@@ -68,11 +108,11 @@ export async function registerUserController(request, response) {
         const otpExpiry = new Date(Date.now() + 10 * 60 * 1000)
 
         const payload = {
-            name,
-            email,
+            name: trimmedName,
+            email: trimmedEmail,
             password: hashPassword,
-            role: role || "USER", // Use provided role or default to USER
-            mobile, // Save mobile
+            role: selectedRole, // Use selected role from client
+            mobile: Number(mobile), // Convert to number to match schema
             otp,
             otpExpiry
         }
@@ -82,10 +122,10 @@ export async function registerUserController(request, response) {
 
         try {
             await sendEmail({
-                sendTo: email,
+                sendTo: trimmedEmail,
                 subject: "Your Prevent OTP for Email Verification",
                 html: verifyEmailTemplate({
-                    name,
+                    name: trimmedName,
                     otp
                 })
             })
@@ -372,7 +412,17 @@ export async function uploadAvatar(request,response){
 export async function updateUserDetails(request,response){
     try {
         const userId = request.userId //auth middleware
-        const { name, email, mobile, password, facebookLink, youtubeLink, instagramLink } = request.body 
+        const { name, email, mobile, password, facebookLink, youtubeLink, instagramLink, location } = request.body 
+
+        // Check if user is admin and validate location is provided
+        const user = await UserModel.findById(userId)
+        if (user && user.role === 'ADMIN' && location !== undefined && (!location || location.trim() === '')) {
+            return response.status(400).json({
+                message: "City location is required for admin users",
+                error: true,
+                success: false
+            })
+        }
 
         let hashPassword = ""
 
@@ -381,21 +431,31 @@ export async function updateUserDetails(request,response){
             hashPassword = await bcryptjs.hash(password,salt)
         }
 
-        const updateUser = await UserModel.updateOne({ _id : userId},{
+        const updateData = {
             ...(name && { name : name }),
             ...(email && { email : email }),
             ...(mobile && { mobile : mobile }),
             ...(password && { password : hashPassword }),
-            ...(facebookLink && { facebookLink : facebookLink }),
-            ...(youtubeLink && { youtubeLink : youtubeLink }),
-            ...(instagramLink && { instagramLink : instagramLink })
-        })
+            ...(facebookLink !== undefined && { facebookLink : facebookLink }),
+            ...(youtubeLink !== undefined && { youtubeLink : youtubeLink }),
+            ...(instagramLink !== undefined && { instagramLink : instagramLink }),
+        }
+
+        // Always update location if provided in request body (even if empty string)
+        if (location !== undefined) {
+            updateData.location = location ? location.trim() : ""
+        }
+
+        await UserModel.updateOne({ _id : userId}, updateData)
+
+        // Fetch updated user data to return
+        const updatedUser = await UserModel.findById(userId).select('-password -refresh_token')
 
         return response.json({
             message : "Updated successfully",
             error : false,
             success : true,
-            data : updateUser
+            data : updatedUser
         })
 
     } catch (error) {
@@ -659,6 +719,143 @@ export async function userDetails(request,response){
             message : "Something is wrong",
             error : true,
             success : false
+        })
+    }
+}
+
+// Update user role (Admin only)
+export async function updateUserRole(request, response) {
+    try {
+        const adminId = request.userId // Current admin making the request
+        const { userId, role } = request.body
+
+        // Validate inputs
+        if (!userId || !role) {
+            return response.status(400).json({
+                message: "Provide userId and role",
+                error: true,
+                success: false
+            })
+        }
+
+        // Validate role if provided
+        if (selectedRole && !['ADMIN', 'USER'].includes(selectedRole)) {
+            return response.status(400).json({
+                message: "Invalid role. Must be ADMIN or USER",
+                error: true,
+                success: false
+            })
+        }
+
+        // Check if admin exists and is actually an admin
+        const admin = await UserModel.findById(adminId)
+        if (!admin || admin.role !== 'ADMIN') {
+            return response.status(403).json({
+                message: "Permission denied. Admin access required",
+                error: true,
+                success: false
+            })
+        }
+
+        // Prevent admin from changing their own role
+        if (adminId === userId) {
+            return response.status(400).json({
+                message: "You cannot change your own role",
+                error: true,
+                success: false
+            })
+        }
+
+        // Find the user to update
+        const userToUpdate = await UserModel.findById(userId)
+        if (!userToUpdate) {
+            return response.status(404).json({
+                message: "User not found",
+                error: true,
+                success: false
+            })
+        }
+
+        // Update user role
+        userToUpdate.role = role
+        await userToUpdate.save()
+
+        return response.json({
+            message: `User role updated to ${role} successfully`,
+            error: false,
+            success: true,
+            data: {
+                _id: userToUpdate._id,
+                name: userToUpdate.name,
+                email: userToUpdate.email,
+                role: userToUpdate.role
+            }
+        })
+
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false
+        })
+    }
+}
+
+// Get all users (Admin only)
+export async function getAllUsers(request, response) {
+    try {
+        const adminId = request.userId
+
+        // Check if admin exists and is actually an admin
+        const admin = await UserModel.findById(adminId)
+        if (!admin || admin.role !== 'ADMIN') {
+            return response.status(403).json({
+                message: "Permission denied. Admin access required",
+                error: true,
+                success: false
+            })
+        }
+
+        const { page = 1, limit = 20, search = '', role = '' } = request.query
+        const skip = (page - 1) * limit
+
+        // Build query
+        let query = {}
+        if (search) {
+            query.$or = [
+                { name: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } },
+                { mobile: { $regex: search, $options: 'i' } }
+            ]
+        }
+        if (role) {
+            query.role = role
+        }
+
+        const [users, totalCount] = await Promise.all([
+            UserModel.find(query)
+                .select('-password -refresh_token -otp -forgot_password_otp')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(parseInt(limit)),
+            UserModel.countDocuments(query)
+        ])
+
+        return response.json({
+            message: "Users fetched successfully",
+            error: false,
+            success: true,
+            data: users,
+            totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: parseInt(page)
+        })
+
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false
         })
     }
 }
