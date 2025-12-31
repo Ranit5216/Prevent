@@ -207,7 +207,7 @@ const OtpVerification = () => {
 
                     {/* Decorative Background */}
                     <div 
-                        className='absolute -top-1/2 -right-1/2 w-[200%] h-[200%] pointer-events-none'
+                        className='absolute top-[-50%] right-[-50%] w-[200%] h-[200%] pointer-events-none'
                         style={{
                             background: `
                                 radial-gradient(circle at 30% 30%, rgba(220, 38, 38, 0.03) 0%, transparent 50%),

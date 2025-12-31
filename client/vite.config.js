@@ -8,6 +8,11 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  css: {
+    postcss: {
+      plugins: [],
+    },
+  },
   build: {
     // Enable minification (esbuild is faster and built-in)
     minify: 'esbuild',
