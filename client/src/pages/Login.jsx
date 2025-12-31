@@ -114,8 +114,10 @@ const Login = () => {
 
                     {/* Decorative Background */}
                     <div 
-                        className='absolute top-[-50%] right-[-50%] w-[200%] h-[200%] pointer-events-none'
+                        className='absolute w-[200%] h-[200%] pointer-events-none'
                         style={{
+                            top: '-50%',
+                            right: '-50%',
                             background: `
                                 radial-gradient(circle at 30% 30%, rgba(220, 38, 38, 0.03) 0%, transparent 50%),
                                 radial-gradient(circle at 70% 70%, rgba(255, 191, 0, 0.02) 0%, transparent 50%)

@@ -149,3 +149,12 @@ input, textarea, select {
   }
 }
 
+/* Checkout shine effect - avoids negative percentage in Tailwind */
+.checkout-shine {
+  left: -100%;
+}
+
+.group:hover .checkout-shine {
+  left: 100%;
+}
+

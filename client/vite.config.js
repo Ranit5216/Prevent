@@ -12,6 +12,8 @@ export default defineConfig({
     postcss: {
       plugins: [],
     },
+    // Optimize CSS processing
+    devSourcemap: false,
   },
   build: {
     // Enable minification (esbuild is faster and built-in)
@@ -19,7 +21,10 @@ export default defineConfig({
     // Remove console.log in production
     esbuild: {
       drop: ['console', 'debugger'],
+      legalComments: 'none',
     },
+    // Target modern browsers for better optimization
+    target: 'esnext',
     // Optimize chunk splitting
     rollupOptions: {
       output: {

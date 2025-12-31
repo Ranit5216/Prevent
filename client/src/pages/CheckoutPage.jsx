@@ -214,7 +214,7 @@ const CheckoutPage = () => {
                 className='w-full py-3 sm:py-4 mt-4 sm:mt-6 bg-gradient-to-r from-[#DC2626] to-[#991B1B] text-white rounded-xl font-bold text-sm sm:text-base uppercase tracking-wide shadow-[0_4px_14px_0_rgba(220,38,38,0.3),0_2px_4px_rgba(0,0,0,0.1)] cursor-pointer flex items-center justify-center gap-2 sm:gap-3 transition-all duration-400 hover:from-[#EF4444] hover:to-[#DC2626] hover:-translate-y-1 hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(220,38,38,0.4),0_4px_8px_rgba(0,0,0,0.15)] active:-translate-y-0.5 active:shadow-[0_4px_12px_rgba(220,38,38,0.3)] relative overflow-hidden group'
                 style={{ fontFamily: 'DM Sans, Inter, sans-serif' }}
               >
-                <span className='absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-500 group-hover:left-[100%]'></span>
+                <span className='absolute top-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-all duration-500 checkout-shine'></span>
                 <FaWallet className='text-base sm:text-lg relative z-10' />
                 <span className='relative z-10'>Cash on Booking</span>
               </button>
