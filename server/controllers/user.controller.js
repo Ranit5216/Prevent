@@ -1,5 +1,6 @@
 import sendEmail from '../config/sendEmail.js'
 import UserModel from '../models/user.model.js'
+import PendingRegistrationModel from '../models/pendingRegistration.model.js'
 import bcryptjs from 'bcryptjs'
 import verifyEmailTemplate from '../utils/verifyEmailTemplate.js'
 import generatedAccessToken from '../utils/generatedAccessToken.js'
@@ -73,32 +74,49 @@ export async function registerUserController(request, response) {
             })
         }
 
-        // Check if email already exists
+        // Check if email already exists in UserModel (verified users)
         const existingUserByEmail = await UserModel.findOne({ email: trimmedEmail })
         if (existingUserByEmail) {
-            // Check if user is already verified (prevent re-registration)
             if (existingUserByEmail.verify_email) {
                 return response.status(400).json({
-                    message: "This email is already verified. Please login instead.",
+                    message: "This email is already registered and verified. Please login instead.",
                     error: true,
                     success: false
                 })
             }
-            return response.status(400).json({
-                message: "Email already registered. Please verify your email or use a different email.",
-                error: true,
-                success: false
-            })
+            // If user exists but not verified, allow re-registration (delete old unverified user)
+            await UserModel.deleteOne({ _id: existingUserByEmail._id })
         }
 
-        // Check if mobile already exists
+        // Check if email exists in PendingRegistration (unverified registrations)
+        // If user goes back from OTP page, allow them to register again (delete old pending registration)
+        const existingPendingByEmail = await PendingRegistrationModel.findOne({ email: trimmedEmail })
+        if (existingPendingByEmail) {
+            // Delete old pending registration to allow fresh registration
+            await PendingRegistrationModel.deleteOne({ email: trimmedEmail })
+        }
+
+        // Check if mobile already exists in UserModel (verified users only)
         const existingUserByMobile = await UserModel.findOne({ mobile: Number(mobile) })
         if (existingUserByMobile) {
-            return response.status(400).json({
-                message: "Mobile number already registered",
-                error: true,
-                success: false
-            })
+            // Only block if user is verified, allow re-registration for unverified
+            if (existingUserByMobile.verify_email) {
+                return response.status(400).json({
+                    message: "Mobile number already registered",
+                    error: true,
+                    success: false
+                })
+            }
+            // If mobile exists but not verified, allow re-registration (delete old user)
+            await UserModel.deleteOne({ _id: existingUserByMobile._id })
+        }
+
+        // Check if mobile exists in PendingRegistration
+        // If user goes back from OTP page, allow them to register again (delete old pending registration)
+        const existingPendingByMobile = await PendingRegistrationModel.findOne({ mobile: Number(mobile) })
+        if (existingPendingByMobile) {
+            // Delete old pending registration to allow fresh registration
+            await PendingRegistrationModel.deleteOne({ mobile: Number(mobile) })
         }
 
         const salt = await bcryptjs.genSalt(10)
@@ -108,6 +126,9 @@ export async function registerUserController(request, response) {
         const otp = generatedOtp().toString()
         const otpExpiry = new Date(Date.now() + 10 * 60 * 1000)
 
+        // Get optional businessName and businessType from request body
+        const { businessName, businessType } = request.body
+
         const payload = {
             name: trimmedName,
             email: trimmedEmail,
@@ -115,11 +136,15 @@ export async function registerUserController(request, response) {
             role: selectedRole, // Use selected role from client
             mobile: Number(mobile), // Convert to number to match schema
             otp,
-            otpExpiry
+            otpExpiry,
+            ...(businessName && { businessName: businessName.trim() }),
+            ...(businessType && { businessType: businessType.trim() })
         }
 
-        const newUser = new UserModel(payload)
-        const save = await newUser.save()
+        // Save to PendingRegistration instead of UserModel
+        // User will only be created in UserModel after OTP verification
+        const newPendingRegistration = new PendingRegistrationModel(payload)
+        const savePending = await newPendingRegistration.save()
 
         try {
             await sendEmail({
@@ -132,18 +157,19 @@ export async function registerUserController(request, response) {
             })
 
             return response.json({
-                message: "User registered successfully. Please check your email for OTP verification.",
+                message: "Registration initiated. Please check your email for OTP verification.",
                 error: false,
                 success: true,
-                data: { _id: save._id, email: save.email }
+                data: { email: savePending.email }
             })
         } catch (emailError) {
             logger.error("Email sending failed:", emailError)
-            return response.json({
-                message: "User registered, but OTP email failed to send.",
+            // If email fails, delete the pending registration
+            await PendingRegistrationModel.deleteOne({ _id: savePending._id })
+            return response.status(500).json({
+                message: "Failed to send OTP email. Please try again later.",
                 error: true,
-                success: false,
-                data: { _id: save._id, email: save.email }
+                success: false
             })
         }
     } catch (error) {
@@ -160,36 +186,84 @@ export async function registerUserController(request, response) {
 export async function verifyOtpController(request, response) {
     try {
         const { email, otp } = request.body
-        const user = await UserModel.findOne({ email })
-        if (!user) {
+        const trimmedEmail = email?.trim().toLowerCase()
+
+        if (!trimmedEmail || !otp) {
             return response.status(400).json({
-                message: "User not found",
+                message: "Email and OTP are required",
                 error: true,
                 success: false
             })
         }
-        if (user.otp !== otp) {
+
+        // Find pending registration
+        const pendingRegistration = await PendingRegistrationModel.findOne({ email: trimmedEmail })
+        if (!pendingRegistration) {
+            return response.status(400).json({
+                message: "Registration not found. Please register again.",
+                error: true,
+                success: false
+            })
+        }
+
+        // Verify OTP
+        if (String(pendingRegistration.otp) !== String(otp)) {
             return response.status(400).json({
                 message: "Invalid OTP",
                 error: true,
                 success: false
             })
         }
-        if (user.otpExpiry < new Date()) {
+
+        // Check OTP expiry
+        if (pendingRegistration.otpExpiry < new Date()) {
+            // Delete expired pending registration
+            await PendingRegistrationModel.deleteOne({ _id: pendingRegistration._id })
             return response.status(400).json({
-                message: "OTP expired",
+                message: "OTP expired. Please register again.",
                 error: true,
                 success: false
             })
         }
-        user.verify_email = true
-        user.otp = null
-        user.otpExpiry = null
-        await user.save()
+
+        // Check if user already exists in UserModel (shouldn't happen, but safety check)
+        const existingUser = await UserModel.findOne({ email: trimmedEmail })
+        if (existingUser) {
+            // If user exists but not verified, delete and recreate
+            if (!existingUser.verify_email) {
+                await UserModel.deleteOne({ _id: existingUser._id })
+            } else {
+                // User is already verified
+                await PendingRegistrationModel.deleteOne({ _id: pendingRegistration._id })
+                return response.status(400).json({
+                    message: "Email already verified. Please login instead.",
+                    error: true,
+                    success: false
+                })
+            }
+        }
+
+        // Create user in UserModel after OTP verification
+        const userPayload = {
+            name: pendingRegistration.name,
+            email: pendingRegistration.email,
+            password: pendingRegistration.password,
+            role: pendingRegistration.role,
+            mobile: pendingRegistration.mobile,
+            verify_email: true, // Mark as verified
+            otp: null,
+            otpExpiry: null
+        }
+
+        const newUser = new UserModel(userPayload)
+        const savedUser = await newUser.save()
+
+        // Delete pending registration after successful user creation
+        await PendingRegistrationModel.deleteOne({ _id: pendingRegistration._id })
 
         // Generate tokens as in loginController
-        const accesstoken = await generatedAccessToken(user._id)
-        const refreshToken = await genertedRefreshToken(user._id)
+        const accesstoken = await generatedAccessToken(savedUser._id)
+        const refreshToken = await genertedRefreshToken(savedUser._id)
 
         const cookiesOption = {
             httpOnly : true,
@@ -200,7 +274,7 @@ export async function verifyOtpController(request, response) {
         response.cookie('refreshToken',refreshToken,cookiesOption)
 
         return response.json({
-            message: "Email verified successfully!",
+            message: "Email verified successfully! Your account has been created.",
             error: false,
             success: true,
             data: {
@@ -209,8 +283,9 @@ export async function verifyOtpController(request, response) {
             }
         })
     } catch (error) {
+        logger.error("OTP verification error:", error)
         return response.status(500).json({
-            message: error.message || error,
+            message: error.message || "Internal server error. Please try again later.",
             error: true,
             success: false
         })
@@ -221,36 +296,87 @@ export async function verifyOtpController(request, response) {
 export async function resendOtpController(request, response) {
     try {
         const { email } = request.body
-        const user = await UserModel.findOne({ email })
-        if (!user) {
+        const trimmedEmail = email?.trim().toLowerCase()
+
+        if (!trimmedEmail) {
             return response.status(400).json({
-                message: "User not found",
+                message: "Email is required",
                 error: true,
                 success: false
             })
         }
-        // Generate new OTP and expiry
-        const otp = generatedOtp().toString()
-        const otpExpiry = new Date(Date.now() + 10 * 60 * 1000)
-        user.otp = otp
-        user.otpExpiry = otpExpiry
-        await user.save()
-        await sendEmail({
-            sendTo: email,
-            subject: "Your Prevent OTP for Email Verification (Resend)",
-            html: verifyEmailTemplate({
-                name: user.name,
-                otp
+
+        // Find pending registration
+        const pendingRegistration = await PendingRegistrationModel.findOne({ email: trimmedEmail })
+        if (!pendingRegistration) {
+            return response.status(400).json({
+                message: "Registration not found. Please register again.",
+                error: true,
+                success: false
             })
-        })
-        return response.json({
-            message: "OTP resent successfully. Please check your email.",
-            error: false,
-            success: true
-        })
+        }
+
+        // Check if OTP is still valid (within last 9 minutes, allow resend)
+        const timeRemaining = pendingRegistration.otpExpiry - new Date()
+        if (timeRemaining < 60000) { // Less than 1 minute remaining
+            // Generate new OTP and expiry
+            const otp = generatedOtp().toString()
+            const otpExpiry = new Date(Date.now() + 10 * 60 * 1000)
+            pendingRegistration.otp = otp
+            pendingRegistration.otpExpiry = otpExpiry
+            await pendingRegistration.save()
+
+            try {
+                await sendEmail({
+                    sendTo: trimmedEmail,
+                    subject: "Your Prevent OTP for Email Verification (Resend)",
+                    html: verifyEmailTemplate({
+                        name: pendingRegistration.name,
+                        otp
+                    })
+                })
+                return response.json({
+                    message: "New OTP sent successfully. Please check your email.",
+                    error: false,
+                    success: true
+                })
+            } catch (emailError) {
+                logger.error("Email sending failed:", emailError)
+                return response.status(500).json({
+                    message: "Failed to send OTP email. Please try again later.",
+                    error: true,
+                    success: false
+                })
+            }
+        } else {
+            // Resend existing OTP
+            try {
+                await sendEmail({
+                    sendTo: trimmedEmail,
+                    subject: "Your Prevent OTP for Email Verification (Resend)",
+                    html: verifyEmailTemplate({
+                        name: pendingRegistration.name,
+                        otp: pendingRegistration.otp
+                    })
+                })
+                return response.json({
+                    message: "OTP resent successfully. Please check your email.",
+                    error: false,
+                    success: true
+                })
+            } catch (emailError) {
+                logger.error("Email sending failed:", emailError)
+                return response.status(500).json({
+                    message: "Failed to send OTP email. Please try again later.",
+                    error: true,
+                    success: false
+                })
+            }
+        }
     } catch (error) {
+        logger.error("Resend OTP error:", error)
         return response.status(500).json({
-            message: error.message || error,
+            message: error.message || "Internal server error. Please try again later.",
             error: true,
             success: false
         })
@@ -280,10 +406,9 @@ export async function loginController(request,response) {
             })
         }
 
-        // Prevent login if email is not verified, but only for new users
-        // Set your cutoff date below (e.g., when email verification was introduced)
-        const EMAIL_VERIFICATION_CUTOFF = new Date('2025-07-21T00:00:00Z'); // <-- updated to today
-        if(user.createdAt >= EMAIL_VERIFICATION_CUTOFF && !user.verify_email){
+        // Prevent login if email is not verified
+        // All users must verify their email before logging in
+        if(!user.verify_email){
             return response.status(400).json({
                 message: "Please verify your email with OTP before logging in.",
                 error: true,

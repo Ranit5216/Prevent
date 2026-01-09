@@ -243,15 +243,27 @@ const Register = () => {
         setIsLoading(true)
 
         try {
+            const registrationData = {
+                name: data.name.trim(),
+                email: data.email.trim().toLowerCase(),
+                mobile: data.mobile,
+                password: data.password,
+                role: data.role
+            }
+
+            // Add business details for admin registration
+            if (isVendorMode) {
+                if (data.businessName) {
+                    registrationData.businessName = data.businessName.trim()
+                }
+                if (data.businessType) {
+                    registrationData.businessType = data.businessType
+                }
+            }
+
             const response = await Axios({
                 ...SummaryApi.register,
-                data : {
-                    name: data.name.trim(),
-                    email: data.email.trim().toLowerCase(),
-                    mobile: data.mobile,
-                    password: data.password,
-                    role: data.role
-                }
+                data: registrationData
             })
             
             if(response.data.error){
