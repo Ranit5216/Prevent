@@ -108,6 +108,18 @@ img {
   }
 }
 
+/* Slide down animation - moved from tailwind.config.js to avoid percentage parsing issues */
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 /* Scale up animation for notification modal */
 @keyframes scale-up {
   from {
@@ -156,5 +168,22 @@ input, textarea, select {
 
 .group:hover .checkout-shine {
   left: 100%;
+}
+
+/* Responsive max-width for chat messages */
+.chat-message-max-width {
+  max-width: 75%;
+}
+
+@media (min-width: 640px) {
+  .chat-message-max-width {
+    max-width: 70%;
+  }
+}
+
+@media (min-width: 768px) {
+  .chat-message-max-width {
+    max-width: 65%;
+  }
 }
 

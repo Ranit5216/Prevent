@@ -92,7 +92,7 @@ const ProductListPage = () => {
         <div className='grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-3 md:gap-4 lg:gap-5'>
           {/* Sidebar - Categories */}
           <aside className='hidden lg:block'>
-            <div className='sticky top-24 h-[calc(100vh-120px)] overflow-y-auto bg-white rounded-2xl shadow-lg border border-[#E5E7EB] p-3 md:p-4 flex flex-col gap-3 md:gap-4 border-l-4 border-l-[#DC2626]'>
+            <div className='sticky top-24 overflow-y-auto bg-white rounded-2xl shadow-lg border border-[#E5E7EB] p-3 md:p-4 flex flex-col gap-3 md:gap-4 border-l-4 border-l-[#DC2626]' style={{ height: 'calc(100vh - 120px)' }}>
               {/* Custom scrollbar */}
               <style>{`
                 .category-sidebar::-webkit-scrollbar {

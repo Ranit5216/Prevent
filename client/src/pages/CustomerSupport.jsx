@@ -355,9 +355,9 @@ const CustomerSupport = () => {
                     <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#DC2626] text-white flex items-center justify-center font-bold flex-shrink-0 text-xs sm:text-sm`}>
                       {message.sender === 'user' ? (user?.name?.charAt(0)?.toUpperCase() || 'U') : 'ST'}
                     </div>
-                    <div className={`max-w-[75%] sm:max-w-[70%] md:max-w-[65%]`}>
+                    <div className="flex flex-col">
                       <div
-                        className={`p-2.5 sm:p-3 md:p-4 rounded-xl text-xs sm:text-sm md:text-base ${
+                        className={`p-2.5 sm:p-3 md:p-4 rounded-xl text-xs sm:text-sm md:text-base chat-message-max-width ${
                           message.sender === 'user'
                             ? 'bg-[#DC2626] text-white rounded-br-sm'
                             : 'bg-white shadow-sm rounded-bl-sm'

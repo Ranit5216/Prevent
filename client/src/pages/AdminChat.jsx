@@ -315,7 +315,7 @@ const AdminChat = () => {
                           }`}>
                             {message.sender === 'admin' ? (user?.name?.charAt(0)?.toUpperCase() || 'A') : (selectedChat.user_details?.name?.charAt(0)?.toUpperCase() || 'U')}
                           </div>
-                          <div className={`max-w-[70%] ${message.sender === 'admin' ? 'text-right' : ''}`}>
+                          <div style={{ maxWidth: '70%' }} className={message.sender === 'admin' ? 'text-right' : ''}>
                             <div
                               className={`p-3 sm:p-4 rounded-xl text-sm sm:text-base ${
                                 message.sender === 'admin'

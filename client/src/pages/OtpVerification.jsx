@@ -207,8 +207,10 @@ const OtpVerification = () => {
 
                     {/* Decorative Background */}
                     <div 
-                        className='absolute w-[200%] h-[200%] pointer-events-none'
+                        className='absolute pointer-events-none'
                         style={{
+                            width: '200%',
+                            height: '200%',
                             top: '-50%',
                             right: '-50%',
                             background: `
