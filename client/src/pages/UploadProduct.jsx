@@ -323,7 +323,11 @@ const UploadProduct = () => {
           <div>
             <label className="block text-sm font-semibold text-[#0F172A] mb-2">Category</label>
             <select
-              className="w-full px-3.5 py-2.5 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] bg-white transition-all duration-150 hover:border-[#94A3B8] focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2] cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23475569%22%20d%3D%22M6%209L1%204h10z%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_14px_center] pr-10"
+              className="w-full px-3.5 py-2.5 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] bg-white transition-all duration-150 hover:border-[#94A3B8] focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2] cursor-pointer appearance-none bg-no-repeat pr-10"
+              style={{ 
+                backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23475569%22%20d%3D%22M6%209L1%204h10z%22%2F%3E%3C%2Fsvg%3E")`,
+                backgroundPosition: 'right 14px center'
+              }}
               value={selectCategory}
               onChange={(e)=>{
                 const value = e.target.value 
@@ -371,7 +375,11 @@ const UploadProduct = () => {
           <div>
             <label className="block text-sm font-semibold text-[#0F172A] mb-2">Sub Category</label>
             <select
-              className="w-full px-3.5 py-2.5 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] bg-white transition-all duration-150 hover:border-[#94A3B8] focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2] cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23475569%22%20d%3D%22M6%209L1%204h10z%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[right_14px_center] pr-10"
+              className="w-full px-3.5 py-2.5 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] bg-white transition-all duration-150 hover:border-[#94A3B8] focus:outline-none focus:border-[#DC2626] focus:ring-3 focus:ring-[#FEF2F2] cursor-pointer appearance-none bg-no-repeat pr-10"
+              style={{ 
+                backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23475569%22%20d%3D%22M6%209L1%204h10z%22%2F%3E%3C%2Fsvg%3E")`,
+                backgroundPosition: 'right 14px center'
+              }}
               value={selectSubCategory}
               onChange={(e)=>{
                 const value = e.target.value 
