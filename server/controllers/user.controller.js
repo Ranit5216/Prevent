@@ -74,18 +74,15 @@ export async function registerUserController(request, response) {
             })
         }
 
-        // Check if email already exists in UserModel (verified users)
+        // Check if email already exists in UserModel (existing users/admins - should NOT be deleted)
         const existingUserByEmail = await UserModel.findOne({ email: trimmedEmail })
         if (existingUserByEmail) {
-            if (existingUserByEmail.verify_email) {
-                return response.status(400).json({
-                    message: "This email is already registered and verified. Please login instead.",
-                    error: true,
-                    success: false
-                })
-            }
-            // If user exists but not verified, allow re-registration (delete old unverified user)
-            await UserModel.deleteOne({ _id: existingUserByEmail._id })
+            // User already exists in database - they should login, not register again
+            return response.status(400).json({
+                message: "This email is already registered. Please login instead.",
+                error: true,
+                success: false
+            })
         }
 
         // Check if email exists in PendingRegistration (unverified registrations)
@@ -96,19 +93,15 @@ export async function registerUserController(request, response) {
             await PendingRegistrationModel.deleteOne({ email: trimmedEmail })
         }
 
-        // Check if mobile already exists in UserModel (verified users only)
+        // Check if mobile already exists in UserModel (existing users/admins - should NOT be deleted)
         const existingUserByMobile = await UserModel.findOne({ mobile: Number(mobile) })
         if (existingUserByMobile) {
-            // Only block if user is verified, allow re-registration for unverified
-            if (existingUserByMobile.verify_email) {
-                return response.status(400).json({
-                    message: "Mobile number already registered",
-                    error: true,
-                    success: false
-                })
-            }
-            // If mobile exists but not verified, allow re-registration (delete old user)
-            await UserModel.deleteOne({ _id: existingUserByMobile._id })
+            // User already exists in database - they should login, not register again
+            return response.status(400).json({
+                message: "Mobile number already registered. Please login instead.",
+                error: true,
+                success: false
+            })
         }
 
         // Check if mobile exists in PendingRegistration
@@ -399,6 +392,15 @@ export async function loginController(request,response) {
         const user = await UserModel.findOne({ email })
 
         if(!user){
+            // Check if user is in pending registration (new user who hasn't verified yet)
+            const pendingUser = await PendingRegistrationModel.findOne({ email })
+            if(pendingUser){
+                return response.status(400).json({
+                    message: "Please verify your email with OTP before logging in. Check your email for the verification OTP.",
+                    error: true,
+                    success: false
+                })
+            }
             return response.status(400).json({
                 message : "User not register",
                 error : true,
@@ -406,15 +408,12 @@ export async function loginController(request,response) {
             })
         }
 
-        // Prevent login if email is not verified
-        // All users must verify their email before logging in
-        if(!user.verify_email){
-            return response.status(400).json({
-                message: "Please verify your email with OTP before logging in.",
-                error: true,
-                success: false
-            })
-        }
+        // Existing users (registered before OTP system) can login without OTP verification
+        // Only new users who haven't verified yet need to verify (they won't be in UserModel)
+        // If user exists in UserModel, they are either:
+        // 1. Existing user (registered before OTP system) - allow login
+        // 2. New user who already verified - allow login
+        // So we allow all users in UserModel to login without checking verify_email
 
         if(user.status !== "Active"){
             return response.status(400).json({
