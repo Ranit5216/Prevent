@@ -28,11 +28,15 @@ const GlobalProvider = ({children}) => {
           })
           const { data : responseData } = response
     
-          if(responseData.success){
+          if(responseData?.success && responseData?.data){
             dispatch(handleAddItemCart(responseData.data))
           }
     
         } catch (error) {
+          // User not logged in - ignore 401 errors silently
+          if(error?.response?.status !== 401) {
+            console.error('Cart fetch error:', error)
+          }
         }
     }
 
@@ -107,11 +111,14 @@ const GlobalProvider = ({children}) => {
         })
         const { data : responseData } = response
 
-        if(responseData.success){
+        if(responseData?.success && responseData?.data){
           dispatch(handleAddAddress(responseData.data))
         }
       } catch (error) {
-          // AxiosToastError(error)
+          // User not logged in - ignore 401 errors silently
+          if(error?.response?.status !== 401) {
+            console.error('Address fetch error:', error)
+          }
       }
     }
     const fetchOrder = async()=>{
@@ -121,7 +128,7 @@ const GlobalProvider = ({children}) => {
         })
         const { data : responseData } = response
 
-        if(responseData.success){
+        if(responseData?.success && responseData?.data){
             // Debug: Log cancelled orders to verify cancelled_by field
             const cancelledOrders = responseData.data.filter(order => order.order_status === 'CANCELLED')
             if (cancelledOrders.length > 0) {
@@ -134,6 +141,10 @@ const GlobalProvider = ({children}) => {
             dispatch(setOrder(responseData.data))
         }
       } catch (error) {
+        // User not logged in - ignore 401 errors silently
+        if(error?.response?.status !== 401) {
+          console.error('Order fetch error:', error)
+        }
       }
     }
 

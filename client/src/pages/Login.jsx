@@ -48,11 +48,17 @@ const Login = () => {
 
             if(response.data.success){
                 toast.success(response.data.message)
-                localStorage.setItem('accesstoken',response.data.data.accesstoken)
-                localStorage.setItem('refreshToken',response.data.data.refreshToken)
+                
+                // Safely access response data
+                if(response.data.data) {
+                    localStorage.setItem('accesstoken',response.data.data.accesstoken)
+                    localStorage.setItem('refreshToken',response.data.data.refreshToken)
 
-                const userDetails = await fetchUserDetails()
-                dispatch(setUserDetails(userDetails.data))
+                    const userDetails = await fetchUserDetails()
+                    if(userDetails?.data) {
+                        dispatch(setUserDetails(userDetails.data))
+                    }
+                }
 
                 setData({
                     email : "",

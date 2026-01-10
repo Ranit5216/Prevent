@@ -91,10 +91,14 @@ const OtpVerification = () => {
                 } else {
                     localStorage.removeItem('otp_email');
                     // Store tokens and set user state, then redirect to home
-                    localStorage.setItem('accesstoken',response.data.data.accesstoken)
-                    localStorage.setItem('refreshToken',response.data.data.refreshToken)
-                    const userDetails = await fetchUserDetails();
-                    dispatch(setUserDetails(userDetails.data));
+                    if(response.data.data) {
+                        localStorage.setItem('accesstoken',response.data.data.accesstoken)
+                        localStorage.setItem('refreshToken',response.data.data.refreshToken)
+                        const userDetails = await fetchUserDetails();
+                        if(userDetails?.data) {
+                            dispatch(setUserDetails(userDetails.data));
+                        }
+                    }
                     navigate("/");
                 }
             }

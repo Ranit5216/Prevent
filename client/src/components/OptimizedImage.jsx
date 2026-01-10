@@ -40,19 +40,25 @@ const OptimizedImage = ({
     return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0
   }
 
-  // Convert image URL to WebP if supported
+  // Convert image URL to WebP if supported and ensure HTTPS
   const getOptimizedSrc = (originalSrc) => {
     if (!originalSrc || originalSrc.startsWith('data:')) return originalSrc
     
+    // Convert HTTP to HTTPS to avoid mixed content errors
+    let processedSrc = originalSrc
+    if (processedSrc.startsWith('http://')) {
+      processedSrc = processedSrc.replace('http://', 'https://')
+    }
+    
     // If using Cloudinary or similar CDN, add WebP format
-    if (originalSrc.includes('cloudinary') || originalSrc.includes('res.cloudinary')) {
-      const webpSrc = originalSrc.replace(/\.(jpg|jpeg|png)/i, '.webp')
-      return supportsWebP() ? webpSrc : originalSrc
+    if (processedSrc.includes('cloudinary') || processedSrc.includes('res.cloudinary')) {
+      const webpSrc = processedSrc.replace(/\.(jpg|jpeg|png)/i, '.webp')
+      return supportsWebP() ? webpSrc : processedSrc
     }
     
     // For other image hosts, try to add format parameter
     // This is a generic approach - adjust based on your image hosting
-    return originalSrc
+    return processedSrc
   }
 
   // Generate responsive srcset

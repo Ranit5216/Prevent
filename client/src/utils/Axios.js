@@ -44,12 +44,21 @@ Axios.interceptors.response.use(
             const refreshToken = localStorage.getItem("refreshToken")
 
             if(refreshToken){
-                const newAccessToken = await refreshAccessToken(refreshToken)
+                try {
+                    const newAccessToken = await refreshAccessToken(refreshToken)
 
-                if(newAccessToken){
-                    originRequest.headers.Authorization = `Bearer ${newAccessToken}`
-                    return Axios(originRequest)
+                    if(newAccessToken){
+                        originRequest.headers.Authorization = `Bearer ${newAccessToken}`
+                        return Axios(originRequest)
+                    }
+                } catch (refreshError) {
+                    // Refresh token failed, clear tokens and redirect to login
+                    localStorage.removeItem('accesstoken')
+                    localStorage.removeItem('refreshToken')
                 }
+            } else {
+                // No refresh token, clear access token
+                localStorage.removeItem('accesstoken')
             }
         }
         
@@ -67,11 +76,16 @@ const refreshAccessToken = async(refreshToken)=>{
             }
         })
 
-        const accessToken = response.data.data.accessToken
-        localStorage.setItem('accesstoken',accessToken)
-        return accessToken
+        // Safely access response data
+        if(response?.data?.data?.accessToken) {
+            const accessToken = response.data.data.accessToken
+            localStorage.setItem('accesstoken',accessToken)
+            return accessToken
+        }
+        return null
     } catch (error) {
-        
+        console.error('Refresh token error:', error)
+        return null
     }
 }
 
