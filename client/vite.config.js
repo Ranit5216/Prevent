@@ -25,16 +25,27 @@ export default defineConfig({
     },
     // Target modern browsers for better optimization
     target: 'esnext',
-    // Optimize chunk splitting
+    // Optimize chunk splitting - simplified to avoid Vite 6.x bug
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Vendor chunks
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'redux-vendor': ['@reduxjs/toolkit', 'react-redux'],
-          'ui-vendor': ['react-icons', 'framer-motion'],
-          'utils-vendor': ['axios', 'react-hot-toast'],
-          // Route-based chunks (will be automatically split by React.lazy)
+        manualChunks(id) {
+          // Use function-based chunking instead of object to avoid percentage calculation bug
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+              return 'react-vendor'
+            }
+            if (id.includes('@reduxjs/toolkit') || id.includes('react-redux')) {
+              return 'redux-vendor'
+            }
+            if (id.includes('react-icons') || id.includes('framer-motion')) {
+              return 'ui-vendor'
+            }
+            if (id.includes('axios') || id.includes('react-hot-toast')) {
+              return 'utils-vendor'
+            }
+            // Other vendor chunks
+            return 'vendor'
+          }
         },
         // Optimize chunk file names
         chunkFileNames: 'js/[name]-[hash].js',
